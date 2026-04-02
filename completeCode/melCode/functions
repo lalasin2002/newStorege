@@ -1,0 +1,40 @@
+global proc float setRangeFunc (float $value , float $oldMin , float $oldMax , float $Min , float $Max  ) {
+	float $Func = clamp($Min , $Max , $Min + ((($value  -$oldMin  )/($oldMax -$oldMin ) )  * ($Max -  $Min)       )     );
+	return  $Func;
+}
+
+
+global proc float BlendFunc (float $blender , float $color1 , float $color2) {
+    float $output = ((1.0- $blender)*  $color1) + ($blender *  $color2);
+    return $output;
+}
+
+global proc float StretchFunc (float $SwTgt ,float $ScaleDefaultTgt  ,float $Distance , float $DefaultDistance ) {
+	float $Func =  (  $Distance  / ($ScaleDefaultTgt * $DefaultDistance)  ) * $DefaultDistance;
+	float $Blend =  ((1.0 - $SwTgt) *  $DefaultDistance) + ($SwTgt *$Func );
+
+	return  $Blend;
+}
+
+global proc float VolumeFunc (float $SwTgt , float $StretchFunc ,float $Offset) {
+
+	float $Func =  pow(0.5 ,  (  1 / $StretchFunc ));
+	float $Blend = ((1.0 -  $SwTgt) * ($Offset + 1)  ) + ( $SwTgt * ($StretchFunc + $Offset ) );
+	return  $Blend;
+}
+
+global proc float ArcBound (float $x ,float $start , float $end ) {
+    float $width = $end - $start;   //거리 
+    float $nor = ($x - $start) / $width;  //정규화
+    float $Func = clamp(0,1 , 4 * $nor * (1 -$nor ));
+    return $Func;
+}
+
+//
+
+global proc float LinearBound(float $x , float $start , float $end) {
+	float $width = $end - $start;   //거리 
+	float $nor = ($x - $start) / $width;  //정규화
+	float $Func =  clamp(0,1 ,1.0 - abs(($nor - 0.5) * 2.0   ) );
+	return $Func;
+}

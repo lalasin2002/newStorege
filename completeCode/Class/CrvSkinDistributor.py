@@ -162,7 +162,7 @@ class CrvSkinDistributor:
 
 
 #Test 
-#sel = cmds.ls(type = "joint")
+#sel = cmds.ls(sl=1 ,type = "joint")
 #Test = CrvSkinDistributor(sel)
 #Test.InputCrv("Tail_Crv")
 #Test.ReBuildCrvParameter()

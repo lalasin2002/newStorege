@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 import maya.cmds as cmds
 
 def Add_MatrixAttr(Target, LongName, CntTarget=None):

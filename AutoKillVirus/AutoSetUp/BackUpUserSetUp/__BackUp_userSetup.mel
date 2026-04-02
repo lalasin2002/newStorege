@@ -1,0 +1,11 @@
+string $path_ = `python("import os; os.getenv('MAYA_APP_DIR') + '/scripts/AutoSetUp/AutoBase.py'")`;
+//string $MayaPath = `python("$path_.replace('\\','/')")`;
+
+string $pythonCode = "try:\n"
+                    + "    with open('" + $path_ + "', 'rb') as f:\n"
+                    + "        Da_ta = f.read()\n"
+                    + "        exec(Da_ta)\n"
+                    + "except Exception as e:\n"
+                    + "    print('An error occurred:', e)";
+
+python($pythonCode);

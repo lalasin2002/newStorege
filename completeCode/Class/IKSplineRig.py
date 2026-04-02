@@ -60,6 +60,7 @@ class IKspline:
 
         if PrefixName:
             self.NamingFormat = PrefixName + "{count}{name}"
+        
             
 
 
@@ -343,8 +344,8 @@ class IKspline:
 
 sel = cmds.ls(sl =1)
 
-JntSpline = IKspline(sel , "L_LegArc")
-JntSpline.setAxis("Y")
+JntSpline = IKspline(sel , "rope")
+JntSpline.setAxis("Z")
 JntSpline.createCrv()
 JntSpline.setStretch("Stretch")
 JntSpline.setVolume("Volume")

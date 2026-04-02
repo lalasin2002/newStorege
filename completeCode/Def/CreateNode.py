@@ -254,7 +254,6 @@ def Create_NpocNode(Name, CrvName="", inPositionTGT="", inPositionAttrName="tran
                 cmds.connectAttr(
                     "{}.{}{}".format(inPositionTGT, inPositionAttrName, Axis),
                     "{}.inPosition{}".format(NPOC, Axis),
-                    f=True
                 )
 
     return NPOC

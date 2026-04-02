@@ -3,7 +3,7 @@ import maya.cmds as cmds
 import maya.mel as mel
 import maya.OpenMaya as om
 
-def Get_pararmeterCurve(obj_or_pos , Curve ):
+def get_pararmeterCurve(obj_or_pos , Curve ):
     """
     지정한 오브젝트의 위치 또는 좌표값(list, tuple)에서 가장 가까운 커브의 파라미터 값을 찾아 반환합니다.
 
@@ -69,67 +69,81 @@ def Get_pararmeterCurve(obj_or_pos , Curve ):
 
 
 
-def GetMeshVtx_SequencePos(FirstVtxs , ConversionTuple = True):
-    """메쉬 버텍스 시작점 부터 시퀀스 대로 중심점 Pos 가져오기"""
-    Mesh = None
-    MeshTF = None
-    AllVtx = None
-    TatalRange = 0
-    RenturnList = []
-    if any("vtx" in x for x in FirstVtxs): 
-        MeshTF = FirstVtxs[0].split(".")[0]
-        if cmds.objExists(MeshTF):
-            Mesh = cmds.listRelatives(MeshTF , s =1 , type = "mesh")[0]
+
+
+def getMeshVtx_SequencePos(FirstVtxs, ConversionTuple=True, MaxLoop=1000):
+    """
+    메쉬 버텍스 시작점부터 시퀀스(Ring) 단위로 확장하며 각 구간의 중심점 Pos를 가져오기
+    Args:
+        -FirstVtxs      (list): 시작 버텍스 리스트 (예: ['pSphere1.vtx[0]'])
+        -ConversionTuple(bool): 결과 위치값을 튜플(tuple) 형태로 반환할지 여부
+        -MaxLoop        (int) : 무한루프 방지를 위한 최대 반복 횟수 제한값
+    Returns:
+        거리값 리스트(list)
+    """
+    if not FirstVtxs or not cmds.objExists(FirstVtxs[0].split(".")[0]):
+        return []
+        
+    MeshTF = FirstVtxs[0].split(".")[0]
+    AllVtx = cmds.ls("{}.vtx[*]".format(MeshTF), fl=True)
+    TotalVtxCount = len(AllVtx)
+    
+    ReturnList = []
+    SearchedSet = set(FirstVtxs)  
+    CurrentRing = list(FirstVtxs) 
+    Add = list(FirstVtxs)         
+    
+    loop_count = 0
+    
+    
+    while len(SearchedSet) <= TotalVtxCount:
+        
+        
+        if loop_count >= MaxLoop:
+            print(u"경고: MaxLoop 제한에 도달하여 연산을 강제 중지합니다.")
+            break
             
-        if cmds.objExists(Mesh):
-            AllVtx = cmds.ls("{}.vtx[*]" .format(MeshTF) , fl =1 )
-
-            SearcheList = []
-            Add = FirstVtxs
-            Current = FirstVtxs
-            while  len(SearcheList) < len(AllVtx) :
-
-                cmds.select(Add )
-                mel.eval('PolySelectTraverse 1')
-                Add = cmds.ls(sl =1 ,fl =1)
-                SearcheList += Add 
-                SearcheList = list(set(SearcheList))
-                TatalRange +=1
-
-                if len(SearcheList) == len(AllVtx):
-                    break
-            TatalRange = TatalRange+ 1
-            SearcheList = []
-            Add = FirstVtxs
-            Current = FirstVtxs
-
-            for x in range(TatalRange):
-
-                Cls = cmds.cluster(Current)
-                PointTf = cmds.createNode("transform" ,  n = "PreSet_{}{}_Tf" .format(MeshTF[0] , TatalRange))
-                CP = cmds.parentConstraint(Cls[-1] , PointTf , mo = 0)
-                Pos = cmds.xform(PointTf ,q =1,  ws =1, t =1)
-
-                if ConversionTuple:
-                    Pos = tuple(Pos)
-                RenturnList.append(Pos)
-                cmds.delete(CP)
-                cmds.delete(Cls)
-                cmds.delete(PointTf)
-
-
-                
-                cmds.select(Add )
-                mel.eval('PolySelectTraverse 1')
-                Add = cmds.ls(sl =1 ,fl =1)
-                Current = list(set(Add) -  set(SearcheList))
-                SearcheList += Add 
-                SearcheList = list(set(SearcheList))
-                
-        return RenturnList
+        
+        if CurrentRing:
+            x_sum, y_sum, z_sum = 0.0, 0.0, 0.0
+            for vtx in CurrentRing:
+                pos = cmds.xform(vtx, q=True, ws=True, t=True)
+                x_sum += pos[0]
+                y_sum += pos[1]
+                z_sum += pos[2]
+            
+            vtx_count = len(CurrentRing)
+            center_pos = [x_sum / vtx_count, y_sum / vtx_count, z_sum / vtx_count]
+            
+            if ConversionTuple:
+                center_pos = tuple(center_pos)
+            ReturnList.append(center_pos)
+        
+        
+        if len(SearchedSet) == TotalVtxCount:
+            break
+            
+        
+        cmds.select(Add)
+        mel.eval('PolySelectTraverse 1')
+        new_selection = cmds.ls(sl=True, fl=True)
+        
+        # 안전 장치
+        if len(new_selection) == len(Add):
+            print(u"알림: 메쉬가 끊어져 있어 더 이상 확장할 수 없습니다.")
+            break
+            
+        
+        CurrentRing = list(set(new_selection) - SearchedSet)
+        SearchedSet.update(new_selection)
+        Add = new_selection
+        
+        loop_count += 1
+        
+    return ReturnList
 
 
-def Get_PoleVectorPos(Root , Middle , End , Scalar = 1):
+def get_poleVectorPos(Root , Middle , End , Scalar = 1):
     """IK PoleVector 정확한 위치 가져오기"""
     RootPos = cmds.xform(Root , q= 1, ws =1 , t =1)
     MiddlePos = cmds.xform(Middle , q= 1, ws =1 , t =1)
@@ -158,8 +172,30 @@ def Get_PoleVectorPos(Root , Middle , End , Scalar = 1):
 
     Pole_Vecotor_Pos = [Pole_Vector.x , Pole_Vector.y , Pole_Vector.z]
     return Pole_Vecotor_Pos
+
+
+def getCenter(target_list):
+    center = None 
+    valid_points = 0
+    if isinstance(target_list , (list , tuple)) and all(cmds.objExists(x) for x in target_list):
+        center = [0.0 , 0.0 , 0.0]
+        for element in target_list:
+            pos = cmds.xform(element ,query=True, translation=True, worldSpace=True)
+            center[0] += pos[0]
+            center[1] += pos[1]
+            center[2] += pos[2]
+            valid_points  +=1
+        if valid_points >0:
+            center = [p/ valid_points for p in center]
+    else:
+        raise ValueError (u"Some of the input objects do not exist in the scene.")
+    
+    return center
+
+
+
 #----------------------------------------------------------------------------------Attr
-def Get_EnumAttrItem(Target, LongName):
+def get_EnumAttrItem(Target, LongName):
     """Enum 속성의 항목 리스트 반환."""
     if cmds.attributeQuery(LongName, node=Target, exists=True):
         Enum = cmds.attributeQuery(LongName, node=Target, listEnum=True)
@@ -167,7 +203,7 @@ def Get_EnumAttrItem(Target, LongName):
     return []
 
 
-def Get_AttrValue(Target, LongName):
+def get_AttrValue(Target, LongName):
     """속성의 최소, 최대, 현재 값을 딕셔너리로 반환."""
     if cmds.attributeQuery(LongName, node=Target, exists=True):
         Dic = {}
@@ -177,7 +213,7 @@ def Get_AttrValue(Target, LongName):
         return Dic
     return {}
 
-def Get_JntRotateOrder(Jnt):
+def get_JntRotateOrder(Jnt):
     """
     조인트의 'rotateOrder' 속성 값(정수)을 maya.api.OpenMaya.MEulerRotation.RotationOrder 열거형으로 변환.
     """
@@ -192,7 +228,7 @@ def Get_JntRotateOrder(Jnt):
         return mapping[ro_attr_val]
 
 #---------------------------------------------------------------------------Obj
-def Get_HierarchyObj_List(Target , Type = None):
+def get_HierarchyObj_List(Target , Type = None):
     cmds.select(Target, hi=1)
     lst = cmds.ls(sl=1 )
     if not Type == None:
@@ -200,27 +236,64 @@ def Get_HierarchyObj_List(Target , Type = None):
     cmds.select(cl =1)
     return lst
 
-def Get_SelectFaces(list):
+def get_SelectFaces(list):
     Faces = [x for x in list if ".f" in x]
     return Faces
 
-def Get_SelectEdges(list):
+def get_SelectEdges(list):
     Edges = [x for x in list if ".e" in x]
     return Edges
 
-def Get_SelectVtxs(list):
+def get_SelectVtxs(list):
     Vtxs = [x for x in list if ".vtx" in x]
     return Vtxs
 
+def get_ShapeType( target, nodeType):
+        """
+        (내부 헬퍼) 주어진 이름과 타입으로 트랜스폼과 셰이프 노드를 안정적으로 찾아 반환합니다.
 
+        `target`으로 트랜스폼 이름이 들어오든 셰이프 이름이 들어오든, 
+        항상 (트랜스폼, 셰이프) 쌍을 튜플로 반환합니다.
+
+        :param str target: 찾을 노드의 이름입니다.
+        :param str or list nodeType: 찾을 노드의 타입. 단일 타입은 문자열, 복수 타입은 리스트로 지정합니다.
+        :return: tuple: `(트랜스폼_이름, 셰이프_이름)`을 반환합니다. 실패 시 `(None, None)`.
+        :주의점: `nucleus`처럼 셰이프가 없는 노드는 `(노드_이름, 노드_이름)` 형태로 반환될 수 있습니다.
+        """
+        if not target or not cmds.objExists(target):
+            return (None, None)
+
+        if not isinstance(nodeType, list):
+            nodeType = [nodeType]
+
+        transform_node = None
+        shape_node = None
+
+        if any(cmds.objectType(target, isAType=nt) for nt in nodeType):
+            shape_node = target
+            parents = cmds.listRelatives(shape_node, parent=True, fullPath=True)
+            if parents:
+                transform_node = parents[0]
+            else:
+                transform_node = shape_node
+        
+        elif cmds.objectType(target, isAType='transform'):
+            transform_node = target
+            shapes = cmds.listRelatives(transform_node, shapes=True, fullPath=True) or []
+            for shp in shapes:
+                if any(cmds.objectType(shp, isAType=nt) for nt in nodeType):
+                    shape_node = shp
+                    break
+        
+        return (transform_node, shape_node)
 #---------------------------------------------------------------------------Skin
 
 
-def Get_SkinCluster(obj):
+def get_SkinCluster(obj):
     skin_cluster_nodes = mel.eval('findRelatedSkinCluster("{}")'.format(obj))
     return skin_cluster_nodes
 
-def Get_SkinPercent(obj):
+def get_SkinPercent(obj):
     Dic = {}
     Shp = cmds.listRelatives(obj, s=1)[0]
     skinCluter = cmds.listConnections(Shp, type='skinCluster')[0]
@@ -246,7 +319,7 @@ def Get_SkinPercent(obj):
 
 
 #---------------------------------------------------------------------------Render
-def Get_Shader(Obj , Type = "lambert"):
+def getShader(Obj , Type = "lambert"):
     """타입별 오브젝트 쉐이더 가져오기"""
     WorkItme = Obj
     ShadingEngine = None
@@ -265,7 +338,7 @@ def Get_Shader(Obj , Type = "lambert"):
     
     return Shader
 
-def Get_RenderSet(Obj):
+def getRenderSet(Obj):
     lstAttr = ['castsShadows', 'receiveShadows', 'holdOut', 'motionBlur', 'primaryVisibility', 'smoothShading',
                'visibleInReflections', 'visibleInRefractions', 'doubleSided']
 
@@ -275,7 +348,7 @@ def Get_RenderSet(Obj):
         Dic[lstAttr[x]] = GetValue
     return Dic
 
-def Get_Node_From_MeshShaderEngine(Object , Types = ["blendColors" , "RedshiftMaterialBlender"],returnToDic = True ):
+def getNode_From_MeshShaderEngine(Object , Types = ["blendColors" , "RedshiftMaterialBlender"],returnToDic = True ):
     """
     오브젝트(transform 또는 mesh)에서 셰이딩 엔진을 찾아, 연결된 모든 상위 노드 중 
     지정한 타입의 노드들을 반환합니다.
@@ -346,19 +419,26 @@ def Get_Node_From_MeshShaderEngine(Object , Types = ["blendColors" , "RedshiftMa
 
 
 #-------------------------------------------------------------------Cal
-def Get_Distance(StartObj, EndObj ):
-    """두 오브젝트의 거리값 가져오기"""
+def getDistance(StartObj, EndObj ):
+    """
+    두 오브젝트의 거리값 가져오기
+    Args:
+        -StartObj (str): 첫번째 오브젝트
+        -EndObj   (str): 두번째 오브젝트
+    Returns:
+        거리값(float)
+    """
     S_Pos = cmds.xform(StartObj , q =1, t =1 ,ws =1)
     E_Pos = cmds.xform(EndObj, q=1, t=1, ws=1)
     DT = ((S_Pos[0] - E_Pos[0])**2 + (S_Pos[1] - E_Pos[1])**2 + (S_Pos[2] - E_Pos[2])**2)**0.5
     return DT
 
-def Get_ParameterValue(Total , Parameter):
+def getParameterValue(Total , Parameter):
     """정규화된 파라미터 기반 값 구하기"""
     Value = Total * Parameter
     return Value
 
-def Get_Parmeter(Total, Value):
+def getParmeter(Total, Value):
     """정규화"""
     Parameter = Value / Total
     return Parameter

@@ -1005,16 +1005,16 @@ class Ikrig:
 
             self.poleVectorDic["obj"] = poleLoc
             self.poleVectorDic["shape"] = poleLocShape
+        if annotationRoot:
+            if cmds.objExists(annotationRoot):
+                annotationShape = cmds.createNode("annotationShape" , n = uniqueName + "_ANTShape")
+                parentAnnotation = cmds.listRelatives( annotationShape , p =1 , type = "transform")[0]
+                annotation = cmds.rename(parentAnnotation , uniqueName + "_ANT")
 
-        if cmds.objExists(annotationRoot):
-            annotationShape = cmds.createNode("annotationShape" , n = uniqueName + "_ANTShape")
-            parentAnnotation = cmds.listRelatives( annotationShape , p =1 , type = "transform")[0]
-            annotation = cmds.rename(parentAnnotation , uniqueName + "_ANT")
+                cmds.pointConstraint(annotationRoot , annotation , mo= 0)
 
-            cmds.pointConstraint(annotationRoot , annotation , mo= 0)
-
-            self.poleVectorDic["annotation"] = annotation
-            self.poleVectorDic["annotationShape"] = annotationShape
+                self.poleVectorDic["annotation"] = annotation
+                self.poleVectorDic["annotationShape"] = annotationShape
 
         if poleLocShape and annotationShape:
             cmds.connectAttr("{}.worldMatrix[0]" .format(poleLocShape) , "{}.dagObjectMatrix[0]".format(annotationShape) ,f=1)
@@ -1082,9 +1082,9 @@ class Ikrig:
 select = cmds.ls(sl =1)
 
 a = Ikrig(select) 
-a.setIKHandle("Test", a.Jntlist[0] , a.Jntlist[2] , 1)
+a.setIKHandle("Hip_L_IK", a.Jntlist[0] , a.Jntlist[2] , 1)
 a.setScaleDefault()
-a.setAxis("Z")
+a.setAxis("Y")
 pprint.pprint(a.Jntlist)
 
 Pos = a.getPoleVectorPosData(select[0],select[1] ,select[2])
@@ -1100,8 +1100,8 @@ a.createVolumeNode("Volume" , a.stretchNodeDic["stretchBC"] ,  "outputR"  )
 
 a.connectStrerchToJoint(a.Jntlist[1])
 a.connectStrerchToJoint(a.Jntlist[2])
-a.setSlide(a.Jntlist[1] , a.Jntlist[0]  , "Slide_1")
-a.setSlide(a.Jntlist[2] , a.Jntlist[0]  , "Slide_2")
+a.setSlide(a.Jntlist[1] , a.Jntlist[0]  , "Knee_Slide")
+a.setSlide(a.Jntlist[2] , a.Jntlist[0]  , "Ankle_Slide")
 a.connectVolumeToJoint(a.Jntlist[1])
 a.createPoleVectorStretchNode(a.Jntlist[1] )
 a.createPoleVectorStretchNode(a.Jntlist[2] )
