@@ -2,6 +2,7 @@
 import maya.cmds as cmds
 import maya.mel as mel
 import maya.OpenMaya as om
+import re
 
 def get_pararmeterCurve(obj_or_pos , Curve ):
     """
@@ -66,7 +67,6 @@ def get_pararmeterCurve(obj_or_pos , Curve ):
             cmds.delete(nearestPointOnCrv)
 
         return Parameter
-
 
 
 
@@ -192,6 +192,12 @@ def getCenter(target_list):
     
     return center
 
+def getSize(targetObject):
+    bbox = cmds.exactWorldBoundingBox(targetObject)
+    size_x = bbox[3] - bbox[0]
+    size_y = bbox[4] - bbox[1]
+    size_z = bbox[5] - bbox[2]
+    return [size_x, size_y, size_z]
 
 
 #----------------------------------------------------------------------------------Attr
@@ -442,3 +448,26 @@ def getParmeter(Total, Value):
     """정규화"""
     Parameter = Value / Total
     return Parameter
+
+def sortDef(items):
+    def sortNum(item):
+        return [int(x) if x.isdigit() else x for x in re.split(r"(\d+)",item  )]
+    
+    cmds.undoInfo(openChunk=True)
+    
+    Total = []
+    WorkCounts = [] 
+    Dict = {}
+    for x in items:
+        childs = cmds.listRelatives(x , c =1, type = "transform")
+        WorkCounts.append(len(childs))
+        Total += childs
+    Total.sort(key = sortNum)
+    
+    Count = 0
+    for i,  Nums in enumerate(WorkCounts):
+        for x in range(Nums):
+            cmds.parent(Total[Count] , items[i])
+            Count +=1
+    return Total
+    cmds.undoInfo(closeChunk=True)

@@ -10,7 +10,7 @@ def match_ConstraintObject(Staric, Target, Bool_Point=True, Bool_Orient=True, Bo
     각 Bool_(Point , Orient , Scale) 은 Constrain의 타입사용을 의미함
     '''
     if Bool_Point == True:
-        Po = cmds.pointConstraint(Staric, Target, mo=0)q
+        Po = cmds.pointConstraint(Staric, Target, mo=0)
         cmds.delete(Po)
     if Bool_Orient == True:
         Or = cmds.orientConstraint(Staric, Target, mo=0)

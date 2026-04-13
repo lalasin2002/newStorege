@@ -715,46 +715,51 @@ def Create_PointOnSurface_FromMeshEdge(startEdge , endEdge  , Names = ["start_cu
 
 
 
-def d_MeshHardEdge_Ctrl(MeshItem, Name, size=1, Position=False):
+def d_MeshFeatureEdge_Ctrl(MeshItem, Name, angle_threshold=30, size=1, Position=False):
     """
-    (Python 2.7 Compatible)
-    주어진 메쉬(MeshItem)의 하드 엣지(Hard Edge)를 감지하여,
-    해당 엣지들의 형태를 따라 커브 컨트롤러를 생성합니다.
-
-    이 함수는 먼저 메쉬에서 모든 하드 엣지를 찾습니다. 그 다음, 각 하드 엣지를
-    별도의 커브로 변환하고, 이 커브들을 하나의 그룹(컨트롤러)으로 묶습니다.
-    생성된 컨트롤러의 크기와 위치를 조절할 수 있습니다.
-
+    오브젝트의 외곽 형태(Border) 및 일정 각도 이상 꺾이는 특징적 엣지(Feature Edge)를 
+    추출하여 커브 컨트롤러를 생성합니다.
     Args:
-        MeshItem (str): 컨트롤러를 생성할 대상 메쉬의 이름.
-        Name (str): 생성될 컨트롤러(그룹)의 이름.
-        size (float, optional): 컨트롤러의 전체적인 크기. 기본값은 1.
-        Position (bool, optional):
-            True이면 컨트롤러의 위치와 회전값을 대상 메쉬와 일치시킵니다.
-            False이면 월드 원점(0,0,0)에 생성됩니다. 기본값은 False.
-
+        -MeshItem        (str): 컨트롤러를 생성할 대상 메쉬의 이름
+        -Name            (str): 생성될 컨트롤러(그룹)의 이름
+        -angle_threshold (int): 엣지 추출 기준 각도 (기본값 30도)
+        -size            (float): 컨트롤러의 전체적인 크기 (기본값 1)
+        -Position        (bool): 대상 메쉬와의 위치/회전 일치 여부 (기본값 False)
     Returns:
-        str: 생성된 컨트롤러(그룹)의 이름.
+        생성된 컨트롤러의 이름(str)
     """
 
     if not cmds.objExists(MeshItem):
+        print(u"대상 메쉬가 존재하지 않습니다.")
         return None
     
     shapes = cmds.listRelatives(MeshItem, shapes=True, fullPath=True) or []
     if not any(cmds.objectType(s) == 'mesh' for s in shapes):
+        print(u"메쉬 타입이 아닙니다.")
         return None
 
     cmds.select(MeshItem)
+    TargetEdges = []
+
     try:
-        cmds.polySelectConstraint(mode=3, type=0x8000, smoothness=1)
-        # selection constraint를 비활성화해야 ls 명령이 제대로 동작합니다.
+        # 1. 특정 각도 이상 꺾이는 엣지 선택 (Feature Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, angle=True, anglebound=(angle_threshold, 180))
+        angle_edges = cmds.ls(sl=True, fl=True) or []
         cmds.polySelectConstraint(disable=True)
-        HardEdges = cmds.ls(sl=True, fl=True)
+
+        # 2. 열린 경계 엣지 선택 (Border Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, where=1)
+        border_edges = cmds.ls(sl=True, fl=True) or []
+        cmds.polySelectConstraint(disable=True)
+
+        # 두 결과물의 중복 제거 및 통합
+        TargetEdges = list(set(angle_edges + border_edges))
+
     finally:
         cmds.polySelectConstraint(disable=True)
 
-    if not HardEdges:
-        #cmds.warning("하드 엣지를 찾을 수 없습니다.")
+    if not TargetEdges:
+        print(u"외곽 형태를 정의할 엣지를 찾을 수 없습니다.")
         cmds.select(cl=True)
         return None
 
@@ -763,14 +768,13 @@ def d_MeshHardEdge_Ctrl(MeshItem, Name, size=1, Position=False):
     mesh_rot = cmds.xform(MeshItem, q=True, ws=True, ro=True)
     
     offset_pos = [-x for x in mesh_pos]
-
     temp_curves_to_delete = []
-    for i, edge in enumerate(HardEdges):
+
+    for i, edge in enumerate(TargetEdges):
         cmds.select(edge)
         crv_transform = cmds.polyToCurve(degree=1, form=2, ch=False)[0]
         cmds.xform(crv_transform, ws=True, t=offset_pos, r=True)
         
-        # 트랜스폼 값을 셰이프에 굽습니다 (Freeze Transformations)
         cmds.makeIdentity(crv_transform, apply=True, t=1, r=1, s=1, n=0)
 
         shp = cmds.listRelatives(crv_transform, s=True)[0]
@@ -779,15 +783,12 @@ def d_MeshHardEdge_Ctrl(MeshItem, Name, size=1, Position=False):
         
         temp_curves_to_delete.append(crv_transform)
         
-    # 임시로 만들었던 커브 트랜스폼들을 한번에 삭제
     if temp_curves_to_delete:
         cmds.delete(temp_curves_to_delete)
 
-    # 7. 컨트롤러의 최종 크기 및 위치 설정
     cmds.scale(size, size, size, Ctrl)
     cmds.makeIdentity(Ctrl, apply=True, s=1)
 
-    # Position=True 옵션이 켜져 있다면, 완성된 컨트롤러를 원본 메쉬 위치로 이동
     if Position:
         cmds.xform(Ctrl, ws=True, t=mesh_pos)
         cmds.xform(Ctrl, ws=True, ro=mesh_rot)
@@ -848,3 +849,56 @@ def Create_Foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
         cmds.setAttr("{}.parameter{}" .format(FoliShp , Axis) , ParameterUV[i])
         
     return returnList
+
+
+def Create_TextCrv_Fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8, Font="Lucida Sans Unicode", selected=True):
+    """
+    텍스트 커브 생성 및 히스토리 강제 삭제
+    Args:
+        -Name            (str): 생성될 텍스트 커브의 최상위 그룹 이름
+        -TextString      (str): 생성할 텍스트 내용
+        -CenterPivotBool (bool): 텍스트의 중심을 월드 원점(X=0)으로 맞출지 여부
+        -FontSizePt      (float): 폰트 크기
+        -Font            (str): 폰트 종류
+        -selected        (bool): 생성 완료 후 해당 컨트롤러 선택 여부
+    Returns:
+        최상위 그룹 이름(str)
+    """
+    FontOption = "{}, {}pt".format(Font, FontSizePt)
+    textObject = cmds.textCurves(t=TextString, f=FontOption)[0]
+    
+    #  textForCurves 노드제거 , freeze 위함
+    cmds.delete(textObject, constructionHistory=True)
+    
+    Ctrl = cmds.createNode("transform", n=Name)
+    
+    # 커브 쉐입 경로 수집
+    curves = cmds.listRelatives(textObject, ad=True, type="nurbsCurve", fullPath=True) or []
+    if not curves:
+        print (u"생성된 텍스트 커브가 없습니다.")
+        cmds.delete([textObject, Ctrl])
+        return ""
+
+    # 피벗 중앙 정렬
+    if CenterPivotBool:
+        bbox = cmds.xform(textObject, query=True, boundingBox=True)
+        center_x = (bbox[0] + bbox[3]) / 2.0
+        cmds.move(-center_x, 0, 0, textObject, relative=True, worldSpace=True)
+    
+    # Freeze (0,0,0 날아감 방지)
+    all_transforms = cmds.listRelatives(textObject, ad=True, type="transform", fullPath=True) or []
+    all_transforms.append(textObject) 
+    cmds.makeIdentity(all_transforms, apply=True, t=1, r=1, s=1, n=0, pn=1)
+    
+    
+    for i, shape in enumerate(curves):
+        new_shape = cmds.parent(shape, Ctrl, shape=True, relative=True)[0]
+        curve = cmds.rename(new_shape, "{}{}shape".format(Name, i + 1))
+        
+        
+    cmds.delete(textObject)
+    
+    if selected:
+        cmds.select(Ctrl)
+        
+    return Ctrl
