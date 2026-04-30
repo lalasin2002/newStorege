@@ -1,0 +1,21 @@
+{
+    "except_text": "_backup, mayaSwatches , /rig/", 
+    "clean_skin": false, 
+    "del_unused": true, 
+    "search_text": "\\.(ma|mb)", 
+    "del_mayaSecureSys": true, 
+    "hierarchy": true, 
+    "other_text": "MayaNodeEditorSavedTabsInfo", 
+    "del_orphan_shp_cb": true, 
+    "del_script_job": true, 
+    "mb_type": true, 
+    "del_orphan_real": false, 
+    "skin_threshold": 0.001, 
+    "ma_type": false, 
+    "orphan_text": "mesh , nurbsSurface", 
+    "save_as_type": false, 
+    "save_type": true, 
+    "clean_useSetUp": true, 
+    "del_other": false, 
+    "save_name": "{fileName}_another"
+}

@@ -951,7 +951,7 @@ class DesignerUI(QtWidgets.QDialog):
 
                 if not errorLogs == "":
                     errorLogs += "____"*10 + "\n"
-                    errorLogs += u">>---- 에러 발생 ---- <<"
+                    errorLogs += u">>---- 에러 발생 ---- <<"\n
                     errorLogs += "____"*10 + "\n"
                     errorLogs += u">> 에러 숫자 {}/{}\n".format(errorCount , Total)
 

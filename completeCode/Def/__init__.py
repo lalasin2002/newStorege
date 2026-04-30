@@ -6,6 +6,6 @@ from . import GetData
 from . import Group
 from . import MatchObject
 from . import SetContstrain
-from . import SetDefrom
+from . import SetDeform
 from . import Skininng
 from . import undo 

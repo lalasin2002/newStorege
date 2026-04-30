@@ -865,10 +865,13 @@ def Create_TextCrv_Fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8
         최상위 그룹 이름(str)
     """
     FontOption = "{}, {}pt".format(Font, FontSizePt)
-    textObject = cmds.textCurves(t=TextString, f=FontOption)[0]
+    textObject = cmds.textCurves(t=TextString, f=FontOption )
     
-    #  textForCurves 노드제거 , freeze 위함
-    cmds.delete(textObject, constructionHistory=True)
+    cmds.delete(textObject[-1])
+    
+    textObject = textObject[0]
+    
+
     
     Ctrl = cmds.createNode("transform", n=Name)
     
@@ -880,15 +883,16 @@ def Create_TextCrv_Fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8
         return ""
 
     # 피벗 중앙 정렬
+    
     if CenterPivotBool:
         bbox = cmds.xform(textObject, query=True, boundingBox=True)
         center_x = (bbox[0] + bbox[3]) / 2.0
         cmds.move(-center_x, 0, 0, textObject, relative=True, worldSpace=True)
     
     # Freeze (0,0,0 날아감 방지)
-    all_transforms = cmds.listRelatives(textObject, ad=True, type="transform", fullPath=True) or []
-    all_transforms.append(textObject) 
-    cmds.makeIdentity(all_transforms, apply=True, t=1, r=1, s=1, n=0, pn=1)
+    #all_transforms = cmds.listRelatives(textObject, ad=True, type="transform", fullPath=True) or []
+    #all_transforms.append(textObject) 
+    cmds.makeIdentity(textObject, apply=True, t=1, r=1, s=1, n=0, pn=1)
     
     
     for i, shape in enumerate(curves):
@@ -900,5 +904,9 @@ def Create_TextCrv_Fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8
     
     if selected:
         cmds.select(Ctrl)
-        
+    
     return Ctrl
+    
+    
+    
+    

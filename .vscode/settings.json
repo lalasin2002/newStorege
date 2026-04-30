@@ -3,5 +3,5 @@
     "C:/Program Files/Autodesk/Maya2025/Python/Lib/site-packages",
     "C:/Program Files/Autodesk/Maya2025/devkit/other/pymel/extras/completion/py"
   ],
-  "python-envs.defaultEnvManager": "ms-python.python:system"
+  "python-envs.defaultEnvManager": "ms-python.python:venv"
 }

@@ -10,7 +10,7 @@ if path not in sys.path:
     sys.path.append(path)
 
 # 모듈 임포트 (이때 translateTool.py를 읽어오며 에러가 발생했던 것임)
-from mcpTool import translateTool
+from mayaMCP.mcpTool import objectTransform
 
 def get_moduleTools(module):
     """
@@ -23,5 +23,5 @@ def get_moduleTools(module):
     return [func for name, func in inspect.getmembers(module, inspect.isfunction)]
 
 # 실행
-tool_list = get_moduleTools(translateTool)
+tool_list = get_moduleTools(objectTransform)
 pprint.pprint(tool_list)

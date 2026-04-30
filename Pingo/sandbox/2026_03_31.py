@@ -59,46 +59,51 @@ def Grping(Target , Count , Grp_Suffix = ["_Grp" , "_Offset" , "_Prime" , '_GrpP
 
 
 
-def d_MeshHardEdge_Ctrl(MeshItem, Name, size=1, Position=False):
+def d_MeshFeatureEdge_Ctrl(MeshItem, Name, angle_threshold=30, size=1, Position=False):
     """
-    (Python 2.7 Compatible)
-    주어진 메쉬(MeshItem)의 하드 엣지(Hard Edge)를 감지하여,
-    해당 엣지들의 형태를 따라 커브 컨트롤러를 생성합니다.
-
-    이 함수는 먼저 메쉬에서 모든 하드 엣지를 찾습니다. 그 다음, 각 하드 엣지를
-    별도의 커브로 변환하고, 이 커브들을 하나의 그룹(컨트롤러)으로 묶습니다.
-    생성된 컨트롤러의 크기와 위치를 조절할 수 있습니다.
-
+    오브젝트의 외곽 형태(Border) 및 일정 각도 이상 꺾이는 특징적 엣지(Feature Edge)를 
+    추출하여 커브 컨트롤러를 생성합니다.
     Args:
-        MeshItem (str): 컨트롤러를 생성할 대상 메쉬의 이름.
-        Name (str): 생성될 컨트롤러(그룹)의 이름.
-        size (float, optional): 컨트롤러의 전체적인 크기. 기본값은 1.
-        Position (bool, optional):
-            True이면 컨트롤러의 위치와 회전값을 대상 메쉬와 일치시킵니다.
-            False이면 월드 원점(0,0,0)에 생성됩니다. 기본값은 False.
-
+        -MeshItem        (str): 컨트롤러를 생성할 대상 메쉬의 이름
+        -Name            (str): 생성될 컨트롤러(그룹)의 이름
+        -angle_threshold (int): 엣지 추출 기준 각도 (기본값 30도)
+        -size            (float): 컨트롤러의 전체적인 크기 (기본값 1)
+        -Position        (bool): 대상 메쉬와의 위치/회전 일치 여부 (기본값 False)
     Returns:
-        str: 생성된 컨트롤러(그룹)의 이름.
+        생성된 컨트롤러의 이름(str)
     """
 
     if not cmds.objExists(MeshItem):
+        print(u"대상 메쉬가 존재하지 않습니다.")
         return None
     
     shapes = cmds.listRelatives(MeshItem, shapes=True, fullPath=True) or []
     if not any(cmds.objectType(s) == 'mesh' for s in shapes):
+        print(u"메쉬 타입이 아닙니다.")
         return None
 
     cmds.select(MeshItem)
+    TargetEdges = []
+
     try:
-        cmds.polySelectConstraint(mode=3, type=0x8000, smoothness=1)
-        # selection constraint를 비활성화해야 ls 명령이 제대로 동작합니다.
+        # 1. 특정 각도 이상 꺾이는 엣지 선택 (Feature Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, angle=True, anglebound=(angle_threshold, 180))
+        angle_edges = cmds.ls(sl=True, fl=True) or []
         cmds.polySelectConstraint(disable=True)
-        HardEdges = cmds.ls(sl=True, fl=True)
+
+        # 2. 열린 경계 엣지 선택 (Border Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, where=1)
+        border_edges = cmds.ls(sl=True, fl=True) or []
+        cmds.polySelectConstraint(disable=True)
+
+        # 두 결과물의 중복 제거 및 통합
+        TargetEdges = list(set(angle_edges + border_edges))
+
     finally:
         cmds.polySelectConstraint(disable=True)
 
-    if not HardEdges:
-        #cmds.warning("하드 엣지를 찾을 수 없습니다.")
+    if not TargetEdges:
+        print(u"외곽 형태를 정의할 엣지를 찾을 수 없습니다.")
         cmds.select(cl=True)
         return None
 
@@ -107,14 +112,13 @@ def d_MeshHardEdge_Ctrl(MeshItem, Name, size=1, Position=False):
     mesh_rot = cmds.xform(MeshItem, q=True, ws=True, ro=True)
     
     offset_pos = [-x for x in mesh_pos]
-
     temp_curves_to_delete = []
-    for i, edge in enumerate(HardEdges):
+
+    for i, edge in enumerate(TargetEdges):
         cmds.select(edge)
         crv_transform = cmds.polyToCurve(degree=1, form=2, ch=False)[0]
         cmds.xform(crv_transform, ws=True, t=offset_pos, r=True)
         
-        # 트랜스폼 값을 셰이프에 굽습니다 (Freeze Transformations)
         cmds.makeIdentity(crv_transform, apply=True, t=1, r=1, s=1, n=0)
 
         shp = cmds.listRelatives(crv_transform, s=True)[0]
@@ -123,22 +127,18 @@ def d_MeshHardEdge_Ctrl(MeshItem, Name, size=1, Position=False):
         
         temp_curves_to_delete.append(crv_transform)
         
-    # 임시로 만들었던 커브 트랜스폼들을 한번에 삭제
     if temp_curves_to_delete:
         cmds.delete(temp_curves_to_delete)
 
-    # 7. 컨트롤러의 최종 크기 및 위치 설정
     cmds.scale(size, size, size, Ctrl)
     cmds.makeIdentity(Ctrl, apply=True, s=1)
 
-    # Position=True 옵션이 켜져 있다면, 완성된 컨트롤러를 원본 메쉬 위치로 이동
     if Position:
         cmds.xform(Ctrl, ws=True, t=mesh_pos)
         cmds.xform(Ctrl, ws=True, ro=mesh_rot)
 
     cmds.select(Ctrl)
     return Ctrl
-
 
 
 pattern = r"(.+)(_Geo)"
@@ -151,8 +151,13 @@ for i ,x in enumerate(selects):
         matchNames = search.group(1)
 
         #edges = cmds.ls(x + ".e[*]" ,fl =1)
+        rotPos = cmds.xform(x , ws =1 , q =1 , ro =1)
+        cmds.xform(x , ws =1 , ro = [0,0,0])
+        Ctrl = d_MeshFeatureEdge_Ctrl(x ,  matchNames + "_Ctrl" , 30 , 1.05 )
+        cmds.xform(x , ws =1, ro = rotPos)
+        Match_ConstraintObject(x ,Ctrl )
 
-        Ctrl = d_MeshHardEdge_Ctrl(x ,  matchNames + "_Ctrl" , 1.25)
+
         constraintGrp = cmds.createNode("transform" , n = matchNames + "_conStraint" )
         cmds.parentConstraint(Ctrl , constraintGrp)
         cmds.scaleConstraint(Ctrl , constraintGrp)
