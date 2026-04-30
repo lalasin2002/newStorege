@@ -61,7 +61,7 @@ def insertJnt(insertName , startJnt, endJnt , parameter):
     except NameError:
         string_type = str
 
-
+    #---------------------------------------------------
     if not cmds.objExists(startJnt):
         raise ValueError(u"{}가 존재하지 않습니다." .format(startJnt))
     if not cmds.objectType(startJnt) == "joint":
@@ -83,18 +83,93 @@ def insertJnt(insertName , startJnt, endJnt , parameter):
     if endJnt not in childrens:
         raise ValueError(u"{}는 {}의 자식 계층이 아닙니다.".format(endJnt, startJnt))
     
-    startPos = cmds.xform(startJnt , q = 1 , ws =1 , rp=True)
-    endPos = cmds.xform(endJnt , q = 1 , ws =1 , rp=True)
 
-    startVector = om.MVector(*startPos)
-    endVector = om.MVector(*endPos)
+    startVector = om.MVector(*cmds.xform(startJnt , q = 1 , ws =1 , rp=True))
+    endVector = om.MVector(*cmds.xform(endJnt , q = 1 , ws =1 , rp=True))
 
     diffVector = endVector - startVector
-    #diffLength = diffVector.length()
+    diffLength = diffVector.length()
 
-    childJnt = None
-    parentJnt = None
-    insertVector = diffVector *  parameter
+    #---------------------------------------------------
+
+    insertVector = startVector + diffVector *  parameter
+    # startVector + diffVector 이유  >> startVector안 더하면 (0,0,0) 위치에서 적용됨 
+    # startVector부터 삽입해야하니까 >> 헷갈리지 말것
+
+
+    childVector = None
+    insertChildJnt  = None
+    insertParentJnt = None 
+    closestDistance = float('inf') 
+    chains = getJntChains(startJnt, endJnt)
+
+
+
+    parentJnt =chains[0]
+    parentVector= om.MVector(*cmds.xform( chains[0] , q = 1 , ws =1 , rp=True))
+    for child in chains[1:]:
+        childVector = om.MVector(*cmds.xform( child , q = 1 , ws =1 , rp=True))
+        firstBetweenDiff =  childVector - parentVector
+        secondBetweenDiff = insertVector - parentVector
+
+        # dotP 계산을 위한 Diff들 (각도기 모양 )
+        # first는 child간 방향벡터
+        # second는 insertVector간 방향벡터
+
+        dotP = firstBetweenDiff * secondBetweenDiff
+
+        
+        projectDistanceNormal = dotP/(firstBetweenDiff *firstBetweenDiff)
+        # 아래와 같은 식임 
+        # projectDistance = dotP/firstBetweenDiff.length()
+        # projectDistanceNormal = projectDistance / firstBetweenDiff.length()
+
+        # dotP / (firstBetweenDiff * firstBetweenDiff) 가 더 효율적인 이유:
+        # .length() = √(x²+y²+z²)  → 제곱근(√) 연산 포함, 비싼 연산
+        # 벡터 자기 자신과의 dot product = x²+y²+z² = |AB]² → 제곱근 없이 바로 |AB]² 가 나옴
+        # 어차피 |AB|로 두 번 나누는 거 = |AB]² 으로 한 번 나누는 거랑 같음
+        # → 제곱근 두 번 계산하느니, dot product 한 번이 빠름
+
+        projectDistanceNormal = max(0.0, min(1.0, projectDistanceNormal))
+        # min(1, t): 위에서 막음 (1 이상이면 1로)
+        # max(0, ...): 아래에서 막음 (0 이하면 0으로)
+
+        projectPoint = parentVector + firstBetweenDiff * projectDistanceNormal
+        projectDistance = (insertVector - projectPoint).length()
+        
+        # closestDistance = firstBetweenDiff 투영했을때의 거리 (비교)
+        if  projectDistance < closestDistance:
+            closestDistance = projectDistance
+            insertParentJnt = parentJnt   # ← 현재 segment의 parent 이름
+            insertChildJnt  = child 
+        
+        parentVector = childVector 
+        parentJnt    = child
+
+        
+    print(u"끼울 위치: {} <-> {} 사이".format(insertParentJnt, insertChildJnt))
+    print(u"insertVector 좌표: {}".format(insertVector.x))
+    print(u"가장 가까운 거리: {}".format(closestDistance))
+
+
+
+
+
+insertJnt("ss" , "joint1" , "joint4" , 0.777)
+
+## x 방향 기준 (world)
+# joint1 0
+# joint2 2
+# joint3 6
+# joint4 10
+
+## 프린트 결과
+'''
+
+끼울 위치: joint3 <-> joint4 사이
+insertVector 좌표: 7.770000100135803
+가장 가까운 거리: 0.0
+'''
 
 
 
