@@ -97,10 +97,17 @@ class matchAimParent:
         """
         # (참고) 현재 코드의 유효성 검사 로직에 버그가 있을 수 있으나,
         # 사용자의 원본 코드를 그대로 유지합니다.
-        if not isinstance(AimVector , tuple) and len(AimVector) ==3 and all(isinstance(x , (float, int) ) for x in AimVector):
+
+        self._validate_vector(AimVector , "AimVector")
+        self.UnpackDic["aimVector"] = AimVector
+        # old Code
+        '''
+        if not (isinstance(AimVector , tuple) and len(AimVector) ==3 and all(isinstance(x , (float, int) ) for x in AimVector)):
             raise TypeError("Invalid input. Expected a tuple of 3 floats.")
         else:
             self.UnpackDic["aimVector"] = AimVector
+        '''
+
 
     def set_UpVector(self , UpVector = (0,1,0)):
         """
@@ -112,10 +119,16 @@ class matchAimParent:
         :return: None
         :주의점: 기본값은 (0,1,0)입니다.
         """
-        if not isinstance(UpVector , tuple) and len(UpVector) ==3  and all(isinstance(x , (float, int) ) for x in UpVector):
+        self._validate_vector(UpVector , "UpVector")
+        self.UnpackDic["upVector"]= UpVector 
+
+        # oldCode
+        '''
+        if not (isinstance(UpVector , tuple) and len(UpVector) ==3  and all(isinstance(x , (float, int) ) for x in UpVector)):
             raise TypeError("Invalid input. Expected a tuple of 3 floats.")
         else:
             self.UnpackDic["upVector"]= UpVector 
+        '''
             
     def set_WorldVector(self , WorldVector = (0,1,0)):
         """
@@ -127,10 +140,14 @@ class matchAimParent:
         :return: None
         :주의점: 기본값은 (0,1,0) (월드 Y축)입니다.
         """
+        self._validate_vector(WorldVector , "WorldVector")
+        self.UnpackDic["worldUpVector"] = WorldVector
+        '''
         if not isinstance(WorldVector , tuple) and len(WorldVector) ==3  and all(isinstance(x , (float, int) ) for x in WorldVector):
             raise TypeError("Invalid input. Expected a tuple of 3 floats.")
         else:
             self.UnpackDic["worldUpVector"] = WorldVector
+        '''
 
     def set_Type(self , Type = "scene" , Object = None):
         """
@@ -152,8 +169,17 @@ class matchAimParent:
             raise TypeError("Invalid Type. Must be one of 'scene', 'object', 'objectrotation', 'vector', or 'none'.")
         
         self.UnpackDic["worldUpType"] = Type
-        if cmds.objExists(Object) and Type in ["object", "objectrotation"]: # 'object' 타입도 Object가 필요합니다.
+        if Type in ["object", "objectrotation"]:
+            if Object is None:
+                raise ValueError(u"Type이 '{}'일 때는 Object가 필요합니다.".format(Type))
+            if not cmds.objExists(Object):
+                raise ValueError(u"{}가 존재하지 않습니다.".format(Object))
             self.UnpackDic["worldUpObject"] = Object
+
+
+
+        #if cmds.objExists(Object) and Type in ["object", "objectrotation"]: # 'object' 타입도 Object가 필요합니다.
+        #    self.UnpackDic["worldUpObject"] = Object
 
     def set_Option(self, **kwargs):
         """
@@ -226,3 +252,11 @@ class matchAimParent:
                 if Old:
                     cmds.parent(x , Old)
                 Old  = x
+
+    def _validate_vector(self , vec , nameString):
+        if not isinstance(vec, tuple):
+            raise TypeError(u"{}는 tuple이어야 합니다.".format(nameString))
+        if len(vec) != 3:
+            raise ValueError(u"{}는 길이 3이어야 합니다.".format(nameString))
+        if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in vec):
+            raise TypeError(u"{}의 요소는 int/float이어야 합니다.".format(nameString))

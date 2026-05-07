@@ -53,6 +53,8 @@ def undoChunk(func):
     # 스크립트를 처음 읽을 때(1단계), 원래 함수의 이름표를 이 wrapper로 둔갑시킴
     return wrapper
 
+
+@undoChunk
 def connectFunc(root , rootFoli, FoliDict , surFace):
 
 
@@ -79,9 +81,12 @@ def connectFunc(root , rootFoli, FoliDict , surFace):
 
         #DM = cmds.createNode("decomposeMatrix", n = key + "_DM")
         #cmds.connectAttr(key + ".")
-
-        cmds.parentConstraint(value , key , mo =1)
-
+        Parents = cmds.listRelatives(key , p = 1)[0]
+        Foli = cmds.listRelatives(value , p = 1)[0]
+        
+        cmds.delete(cmds.pointConstraint(  Foli ,Parents , mo =0 ))
+        cmds.parentConstraint( Foli ,Parents , mo =1)
+    cmds.parentConstraint(rootFoli , root , mo =1)
 
     
 
@@ -108,8 +113,8 @@ luluFoliRoot = "{}:FaceRoot_surFace_loc".format(luluNameSpace)
 
 
 
-pokyCtrls = cmds.ls("{}:pokyAttach*_NPOS_Ctrl".format(propNameSpace ) , type = "transform")
-luluCtrls = cmds.ls("{}:luluAttatch*_NPOS_Ctrl".format(propNameSpace ) , type = "transform")
+pokyCtrls = cmds.ls("{}:pokyAttach*_NPOS_Ctrl_Grp".format(propNameSpace ) , type = "transform")
+luluCtrls = cmds.ls("{}:luluAttatch*_NPOS_Ctrl_Grp".format(propNameSpace ) , type = "transform")
 pokyFolis = cmds.ls("{}:Face*_FoliShape" .format(pokyNameSpace) , type = "follicle")
 luluFolis = cmds.ls("{}:Face*_FoliShape" .format(luluNameSpace) , type = "follicle")
 
@@ -126,9 +131,5 @@ if luluCtrls and luluFolis:
         luluDicts = Dicts
 
 
-'''
-if cmds.objExists(pokyFoliRoot) and cmds.objExists(pokyRoot):
-    pokyRoocDict[pokyRoot] = pokyFoliRoot
-if cmds.objExists(luluFoliRoot) and cmds.objExists(luluRoot):
-    luluRootDict[luluRoot] = luluFoliRoot
-'''
+connectFunc(pokyRoot ,pokyFoliRoot , pokyDicts , porkSurFace )
+connectFunc(luluRoot ,luluFoliRoot , luluDicts , luluSurFace )
