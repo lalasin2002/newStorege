@@ -6,41 +6,48 @@ import maya.OpenMaya as om
 
 class jointInserter:
     """
-    두 조인트 사이에 새 조인트를 끼워넣는 도구.
+    조인트 체인을 다루는 도구. 두 조인트 사이에 새 조인트를 끼워넣거나
+    체인 안의 기존 조인트를 다른 위치로 옮길 수 있다.
     
-    startJnt와 endJnt의 직선 보간 위치에 새 조인트를 생성하고,
-    체인 상의 가장 가까운 segment에 끼워넣어 hierarchy를 재구성한다.
+    startJnt → endJnt의 직선 보간 기반으로 작업하며,
+    체인이 꺾여있으면 가장 가까운 segment에 끼우거나 그 segment로 이동한다.
     선택적으로 aimConstraint를 이용한 방향 정렬도 수행 가능.
     
-    사용 순서:
-        1. __init__       - 입력 검증 및 저장
-        2. calculateVector - 위치 및 segment 계산
-        3. printData      - (선택) 디버그 출력
-        4. createInsertJnt - 조인트 생성 및 hierarchy 재구성
-        5. orientJnt      - (선택) 방향 정렬
+    사용 순서 (조인트 끼워넣기):
+        1. __init__         - 체인 시작/끝 지정 및 검증
+        2. calculateVector  - 끼울 위치 및 segment 계산
+        3. printData        - (선택) 디버그 출력
+        4. createInsertJnt  - 조인트 생성 및 hierarchy 재구성
+        5. orientJnt        - (선택) 방향 정렬
+    
+    사용 순서 (조인트 옮기기):
+        1. __init__         - 체인 시작/끝 지정 및 검증
+        2. moveJointInChain - 체인 안의 조인트를 새 위치로 이동
     
     예시:
-        inserter = jointInserter("newJnt", "joint1", "joint4", 0.5)
-        inserter.calculateVector()
+        # 끼워넣기
+        inserter = jointInserter("joint1", "joint4")
+        inserter.calculateVector("newJnt", 0.5)
         inserter.createInsertJnt()
         inserter.orientJnt((1,0,0), (0,1,0), (0,1,0))
+        
+        # 옮기기
+        inserter = jointInserter("joint1", "joint4")
+        inserter.moveJointInChain("joint2", 0.7)
     """
 
-    def __init__(self, insertName, startJnt, endJnt, parameter):
+    def __init__(self, startJnt, endJnt):
         """
-        클래스를 초기화하고 입력값을 검증 후 저장.
+        클래스를 초기화하고 체인의 시작/끝 조인트를 검증 후 저장.
 
         Args:
-            -insertName (str)   : 생성할 새 조인트의 이름
-            -startJnt   (str)   : 체인의 시작 조인트 (씬에 존재해야 함)
-            -endJnt     (str)   : 체인의 끝 조인트 (startJnt의 후손이어야 함)
-            -parameter  (float) : 0.0 ~ 1.0 사이의 보간 비율 (start→end 직선 기준)
+            -startJnt (str): 체인의 시작 조인트 (씬에 존재해야 함)
+            -endJnt   (str): 체인의 끝 조인트 (startJnt의 후손이어야 함)
         Returns:
             None
         주의점:
-            insertName이 이미 씬에 존재하면 에러.
-            endJnt가 startJnt의 후손이 아니면 에러.
-            parameter가 0.0 ~ 1.0 범위를 벗어나면 에러.
+            endJnt가 startJnt의 후손 계층에 없으면 에러.
+            insertName, parameter 등은 calculateVector 호출 시 지정.
         """
         self.string_type = None
 
@@ -63,16 +70,9 @@ class jointInserter:
         #---------------------------------------------------
         self._validate_object(startJnt)
         self._validate_object(endJnt)
+        
 
-
-        if not isinstance(insertName , self.string_type):
-            raise TypeError(u"{}는 문자열만 유효합니다.".format(insertName))
-        if not isinstance(parameter , (int , float)) or isinstance(parameter, bool):
-            raise TypeError(u"{}는 실수만 유효합니다.".format(parameter))
-        if not 0.0 <= parameter <= 1.0:
-            raise ValueError(u"parameter는 0.0 ~ 1.0 범위여야 합니다. 입력값: {}".format(parameter))
-        if cmds.objExists(insertName):
-            raise ValueError(u"{}가 이미 존재합니다.".format(insertName))
+        
         
         childrens = cmds.listRelatives(startJnt, allDescendents=True, type='joint') or []
         if endJnt not in childrens:
@@ -80,13 +80,13 @@ class jointInserter:
         
         self.startJnt = startJnt
         self.endJnt = endJnt
-        self.insertName = insertName
-        self.parameter = parameter
+        
 
         #----------------------------------------------------------------------------------
 
 
-    def calculateVector(self):
+    def calculateVector(self, insertName ,parameter ):
+        
         """
         새 조인트가 들어갈 위치(insertVector)와 끼워넣을 segment를 계산.
         
@@ -95,87 +95,87 @@ class jointInserter:
         가장 가까운 segment를 찾아 parent/child 조인트를 결정한다.
 
         Args:
-            None (모든 입력은 __init__에서 저장된 self값 사용)
+            -insertName (str)   : 생성할 새 조인트의 이름 (씬에 같은 이름 없어야 함)
+            -parameter  (float) : 0.0 ~ 1.0 사이의 보간 비율 (start→end 직선 기준)
         Returns:
             None (결과는 self.insertVector, self.parentJnt, self.childJnt, 
                   self.closestDistance에 저장됨)
         주의점:
-            __init__이 먼저 호출되어 self.startJnt, self.endJnt, self.parameter가
-            세팅되어 있어야 함. 이 메서드 호출 후 createInsertJnt 가능.
+            __init__이 먼저 호출되어 self.startJnt, self.endJnt가 세팅되어 있어야 함.
+            이 메서드 호출 후 createInsertJnt 호출 가능.
         """
+        if not isinstance(insertName , self.string_type):
+            raise TypeError(u"{}는 문자열만 유효합니다.".format(insertName))
+        if not isinstance(parameter , (int , float)) or isinstance(parameter, bool):
+            raise TypeError(u"{}는 실수만 유효합니다.".format(parameter))
+        if not 0.0 <= parameter <= 1.0:
+            raise ValueError(u"parameter는 0.0 ~ 1.0 범위여야 합니다. 입력값: {}".format(parameter))
+        if cmds.objExists(insertName):
+            raise ValueError(u"{}가 이미 존재합니다.".format(insertName))
+
+
+
+
         if self.startJnt is None:
             raise ValueError(u"self.startJnt의 정의가 None 입니다.")
         if self.endJnt is None:
             raise ValueError(u"self.endJnt의 정의가 None 입니다.")
-        if self.parameter is None:
-            raise ValueError(u"self.parameter가 정의가 이루어지지 않았습니다.")
+        #if self.parameter is None:
+        #    raise ValueError(u"self.parameter가 정의가 이루어지지 않았습니다.")
+
+        self.insertName = insertName
+        self.parameter = parameter
+        
+        self.insertVector = self._calc_insert_position(parameter)
+        self.parentJnt, self.childJnt, self.closestDistance = self._find_closest_segment(self.insertVector)
 
 
-        startVector = om.MVector(*cmds.xform(self.startJnt , q = 1 , ws =1 , rp=True))
-        endVector = om.MVector(*cmds.xform(self.endJnt , q = 1 , ws =1 , rp=True))
 
-        diffVector = endVector - startVector
+        #self.closestDistance = closestDistance
+        #self.parentJnt = insertParentJnt
+        #self.insertVector =  insertVector
+        #self.childJnt = insertChildJnt
+
+    def moveJointInChain(self , editJnt , parameter ):
+        """
+        체인 안의 기존 조인트를 새 parameter 위치로 이동시키고 hierarchy를 재구성.
+        
+        editJnt를 일단 월드로 빼낸 뒤 새 위치로 이동시키고,
+        새 위치에 가장 가까운 segment의 사이로 다시 끼워넣는다.
+
+        Args:
+            -editJnt   (str)   : 옮길 조인트 (체인 안에 있어야 함)
+            -parameter (float) : 0.0 ~ 1.0 사이의 보간 비율 (start→end 직선 기준)
+        Returns:
+            None
+        주의점:
+            editJnt가 startJnt나 endJnt면 체인 기준점이 흔들리므로 막힘.
+            editJnt가 체인 안에 없으면 에러.
+            이동 후 hierarchy가 재구성되므로 자식 조인트들도 영향 받음.
+        """
+
+        chains = self._getJntChains(self.startJnt, self.endJnt)
+        if not editJnt in chains:
+            raise ValueError(u"{}는 조인트체인안에 없습니다.".format(editJnt))
+        if not 0.0 <= parameter <= 1.0:
+            raise ValueError(u"parameter는 0.0 ~ 1.0 범위여야 합니다. 입력값: {}".format(parameter))
         
 
-        #---------------------------------------------------
+        editPos = self._calc_insert_position(parameter)
+        self.parentJnt, self.childJnt, self.closestDistance = self._find_closest_segment(editPos , editJnt)
 
-        insertVector = startVector + diffVector *  self.parameter
-        # startVector + diffVector 이유  >> startVector안 더하면 (0,0,0) 위치에서 적용됨 
-        # startVector부터 삽입해야하니까 >> 헷갈리지 말것
+        cmds.parent(editJnt , ws =1)
+        cmds.xform(editJnt  , ws =1 , t= [editPos.x , editPos.y , editPos.z])
 
-
-        childVector = None
-        insertChildJnt  = None
-        insertParentJnt = None 
-        closestDistance = float('inf') 
-        chains = self._getJntChains(self.startJnt, self.endJnt)
+        if self.parentJnt:
+            cmds.parent(editJnt ,self.parentJnt)
+        if self.childJnt:
+            cmds.parent(self.childJnt , editJnt)
 
 
 
-        parentJnt =chains[0]
-        parentVector= om.MVector(*cmds.xform( chains[0] , q = 1 , ws =1 , rp=True))
-        for child in chains[1:]:
-            childVector = om.MVector(*cmds.xform( child , q = 1 , ws =1 , rp=True))
-            firstBetweenDiff =  childVector - parentVector
-            secondBetweenDiff = insertVector - parentVector
 
-            # dotP 계산을 위한 Diff들 (각도기 모양 )
-            # first는 child간 방향벡터
-            # second는 insertVector간 방향벡터
 
-            dotP = firstBetweenDiff * secondBetweenDiff
-
-            
-            projectDistanceNormal = dotP/(firstBetweenDiff *firstBetweenDiff)
-            # 아래와 같은 식임 
-            # projectDistance = dotP/firstBetweenDiff.length()
-            # projectDistanceNormal = projectDistance / firstBetweenDiff.length()
-
-            # dotP / (firstBetweenDiff * firstBetweenDiff) 가 더 효율적인 이유:
-            # .length() = √(x²+y²+z²)  → 제곱근(√) 연산 포함, 비싼 연산
-            # 벡터 자기 자신과의 dot product = x²+y²+z² = |AB]² → 제곱근 없이 바로 |AB]² 가 나옴
-            # 어차피 |AB|로 두 번 나누는 거 = |AB]² 으로 한 번 나누는 거랑 같음
-            # → 제곱근 두 번 계산하느니, dot product 한 번이 빠름
-
-            projectDistanceNormal = max(0.0, min(1.0, projectDistanceNormal))
-            # min(1, t): 위에서 막음 (1 이상이면 1로)
-            # max(0, ...): 아래에서 막음 (0 이하면 0으로)
-
-            projectPoint = parentVector + firstBetweenDiff * projectDistanceNormal
-            projectDistance = (insertVector - projectPoint).length()
-            
-            # closestDistance = firstBetweenDiff 투영했을때의 거리 (비교)
-            if  projectDistance < closestDistance:
-                closestDistance = projectDistance
-                insertParentJnt = parentJnt   # ← 현재 segment의 parent 이름
-                insertChildJnt  = child 
-            
-            parentVector = childVector 
-            parentJnt    = child
-        self.closestDistance = closestDistance
-        self.parntJnt = insertParentJnt
-        self.insertVector =  insertVector
-        self.childJnt = insertChildJnt
 
 
     def printData(self):
@@ -190,11 +190,11 @@ class jointInserter:
         Returns:
             None (print만 수행)
         주의점:
-            calculateVector가 먼저 호출되어 self.parntJnt, self.childJnt,
-            self.insertVector가 세팅되어 있어야 함.
+            calculateVector 또는 moveJointInChain이 먼저 호출되어 
+            self.parentJnt, self.childJnt, self.insertVector가 세팅되어 있어야 함.
         """
-        if  self.parntJnt is None:
-            raise ValueError(u"self.parntJnt가 정의되지 않았습니다.")
+        if  self.parentJnt is None:
+            raise ValueError(u"self.parentJnt가 정의되지 않았습니다.")
         if  self.childJnt is None:
             raise ValueError(u"self.childJnt가 정의되지 않았습니다.")
         if  self.insertVector is None:
@@ -307,6 +307,7 @@ class jointInserter:
         주의점:
             startJnt에서 endJnt로 가는 경로가 없으면 ValueError.
             체인이 분기되어 있어도 endJnt를 향하는 경로 하나만 반환.
+        체인이 segment 1개도 못 만들면(예: excludeJnt로 다 제거) 오작동 가능.
         """
         if not cmds.objExists(startJnt):
             raise ValueError(u"{}가 존재하지 않습니다." .format(startJnt))
@@ -387,3 +388,61 @@ class jointInserter:
             raise ValueError(u"{}는 존재하지 않습니다" .format(target))
         if not cmds.nodeType(target) == typeString:
             raise TypeError(u"{}는 조인트가 아닙니다" .format(target))
+        
+    def _calc_insert_position(self, parameter):
+        """startJnt와 endJnt 사이를 parameter로 보간한 위치 반환"""
+        startVector = om.MVector(*cmds.xform(self.startJnt, q=True, ws=True, rp=True))
+        endVector   = om.MVector(*cmds.xform(self.endJnt,   q=True, ws=True, rp=True))
+        diffVector  = endVector - startVector
+        return startVector + diffVector * parameter
+    
+    def _find_closest_segment(self, targetVector , excludeJnt=None):
+        """체인에서 targetVector에 가장 가까운 segment의 (parent, child)와 거리 반환"""
+        chains = self._getJntChains(self.startJnt, self.endJnt)
+        if excludeJnt:
+            chains = [j for j in chains if j != excludeJnt]
+        closestDistance = float('inf')
+        insertParentJnt = None
+        insertChildJnt  = None
+        
+        parentJnt    = chains[0]
+        parentVector = om.MVector(*cmds.xform(chains[0], q=True, ws=True, rp=True))
+        
+        for child in chains[1:]:
+            childVector = om.MVector(*cmds.xform(child, q=True, ws=True, rp=True))
+            firstBetweenDiff  = childVector - parentVector
+            secondBetweenDiff = targetVector - parentVector
+            
+            dotP = firstBetweenDiff * secondBetweenDiff
+            # dotP 계산을 위한 Diff들 (각도기 모양 )
+            # first는 child간 방향벡터
+            # second는 insertVector간 방향벡터
+
+            projectDistanceNormal = dotP / (firstBetweenDiff * firstBetweenDiff)
+            # 아래와 같은 식임 
+            # projectDistance = dotP/firstBetweenDiff.length()
+            # projectDistanceNormal = projectDistance / firstBetweenDiff.length()
+
+            # dotP / (firstBetweenDiff * firstBetweenDiff) 가 더 효율적인 이유:
+            # .length() = √(x²+y²+z²)  → 제곱근(√) 연산 포함, 비싼 연산
+            # 벡터 자기 자신과의 dot product = x²+y²+z² = |AB]² → 제곱근 없이 바로 |AB]² 가 나옴
+            # 어차피 |AB|로 두 번 나누는 거 = |AB]² 으로 한 번 나누는 거랑 같음
+            # → 제곱근 두 번 계산하느니, dot product 한 번이 빠름
+
+            projectDistanceNormal = max(0.0, min(1.0, projectDistanceNormal))
+            # min(1, t): 위에서 막음 (1 이상이면 1로)
+            # max(0, ...): 아래에서 막음 (0 이하면 0으로)
+
+            projectPoint = parentVector + firstBetweenDiff * projectDistanceNormal
+            projectDistance = (targetVector - projectPoint).length()
+
+            # closestDistance = firstBetweenDiff 투영했을때의 거리 (비교)
+            if projectDistance < closestDistance:
+                closestDistance = projectDistance
+                insertParentJnt = parentJnt  # ← 현재 segment의 parent 이름
+                insertChildJnt  = child
+            
+            parentVector = childVector
+            parentJnt    = child
+        
+        return insertParentJnt, insertChildJnt, closestDistance

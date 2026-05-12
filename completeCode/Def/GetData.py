@@ -455,19 +455,6 @@ def sortDef(items):
     
     cmds.undoInfo(openChunk=True)
     
-    Total = []
-    WorkCounts = [] 
-    Dict = {}
-    for x in items:
-        childs = cmds.listRelatives(x , c =1, type = "transform")
-        WorkCounts.append(len(childs))
-        Total += childs
-    Total.sort(key = sortNum)
-    
-    Count = 0
-    for i,  Nums in enumerate(WorkCounts):
-        for x in range(Nums):
-            cmds.parent(Total[Count] , items[i])
-            Count +=1
-    return Total
+    items.sort(key = sortNum)
+    return items
     cmds.undoInfo(closeChunk=True)
