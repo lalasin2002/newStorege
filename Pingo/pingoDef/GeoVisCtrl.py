@@ -160,19 +160,19 @@ for x in sel:
                                           (1, -1, -1), (1, 1, -1), (-1, 1, -1), (-1, -1, -1), (1, -1, -1),
                                           (-1, -1, -1), (-1, -1, 1), (-1, 1, 1), (-1, -1, 1), (1, -1, 1)],
                                   k=[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15])
-        VisCtrl = Create_TextCrv(match + "_Vis_Ctrl" , "Vis")
-        Attr = Add_BoolAttr(VisCtrl , "GeoVis")
-        cmds.connectAttr(VisCtrl + ".{}" .format(Attr) , GeoGrp + ".visibility" , f =1)
+        #VisCtrl = Create_TextCrv(match + "_Vis_Ctrl" , "Vis")
+        #Attr = Add_BoolAttr(VisCtrl , "GeoVis")
+        #cmds.connectAttr(VisCtrl + ".{}" .format(Attr) , GeoGrp + ".visibility" , f =1)
 
 
         Match_ConstraintObject(x ,GeoGrp )
         Match_ConstraintObject(x , Ctrl)
-        Match_ConstraintObject(x , VisCtrl)
+        #Match_ConstraintObject(x , VisCtrl)
 
         CtrlGrp = Grping(Ctrl , 2)
-        VisCtrlGrp = Grping(VisCtrl , 2)
+        #VisCtrlGrp = Grping(VisCtrl , 2)
 
-        cmds.parent(VisCtrlGrp[-1] , Ctrl)
+       # cmds.parent(VisCtrlGrp[-1] , Ctrl)
         Constraint_WithScale(Ctrl , GeoGrp)
 
         
