@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import sys , os ,re ,json ,io ,time
+import sys , os ,re ,json ,io ,time , tempfile
 
 try:
     from PySide6 import QtWidgets, QtCore, QtUiTools , QtGui
@@ -27,9 +27,16 @@ def pathAppend(log = True):
 
 
 #-------------------------------------------------------------preSetting
+if sys.version_info[0] < 3:
+    text_type = unicode
+else:
+    text_type = str
+
 currentPath = os.path.dirname(os.path.abspath(__file__))
 jsonPath = os.path.join(currentPath , "_prev.json")
 uiPath =os.path.join(currentPath , "mayafyui.ui")
+
+
 pathAppend()
 
 #import module
@@ -37,21 +44,82 @@ from core import makeCode ,  connectSocket
 
 
 #-------------------------------------------------------------
+class EmittingStream(QtCore.QObject):
+    textWritten = QtCore.Signal(text_type) 
 
+    def __init__(self):
+        super(EmittingStream, self).__init__()
+        '''
+        self.ignore_keywords = [
+            "Arnold",           # 아놀드 렌더러 로그
+            "oiio",             # OpenImageIO 로그
+            "qt.svg",           # Qt 아이콘 에러
+            "loading metadata", # 아놀드 메타데이터 로딩
+            "loading plugins",  # 플러그인 로딩 잡다한 소리
+            "Global variable",  # 멜 스크립트 전역 변수 경고 (imageFormats.mel 등)
+            "NVLink",           # 그래픽카드 관련
+            "rlm",              # 라이센스 관련
+            "running on",       # 아놀드 실행 정보
+        ]
+        '''
+
+        self._writing = False 
+
+    def write(self, text):
+        # EmittingStream 사용중인지 확인
+        if self._writing:
+            return
+        
+        #if text.strip(): 
+        #    for keyword in self.ignore_keywords:
+        #        if keyword in text:
+        #            return # 그냥 무시하고 함수 끝냄
+        self._writing = True
+        try:
+            # 내용이 있을 때만 신호 발사
+            if text: 
+                self.textWritten.emit(text)
+            
+            # [중요] 원래 콘솔(cmd)에도 찍어줌 (UI가 죽어도 cmd에선 보이게)
+            sys.__stdout__.write(text)
+            
+        except Exception:
+            # 혹시 에러나면 원래 콘솔에라도 뱉음
+            sys.__stdout__.write(text)
+            
+        finally:
+            # 3. 다 썼으니 깃발 내리기
+            self._writing = False
+
+    def flush(self):
+        pass
+
+
+#------------------------------------------------------------ui
 class DesignerUI(QtWidgets.QDialog):
     def __init__(self , parent = None):
         super(DesignerUI ,self).__init__(parent) 
 
         self.ui =None
-        #self._isMayaPort = None
+        self._log_stream = None
+
+
+        self._isMayaPort = False
+        self._isComfyuiPort = False
+
         self._mayaPort = None
         self._comfyuiPort = None
         self._host = None
 
+
+        self._isPrev = None
         self._prevData = {
             "mayaPort" : None,
             "comfyuiPort" :None,
-            "host" : None
+            "host" : None,
+            "snapShotScale" : None ,
+            "snapShotWidth" : None , 
+            "snapShotHeight" : None 
 
         }
 
@@ -76,16 +144,12 @@ class DesignerUI(QtWidgets.QDialog):
 
         uiFile.close() #열었으면 닫아야지
 
-        
+        self._setup_log()
         self._setup_icons() #아이콘셋업
         self._connect_function()
     def show_ui(self):
         if self.ui:
             self.ui.show()
-
-
-
-
 
 
 
@@ -96,11 +160,40 @@ class DesignerUI(QtWidgets.QDialog):
         ## makeConnetCode
         self.ui.makeConnectCode_Btn.clicked.connect(self._savePrev)
         self.ui.makeConnectCode_Btn.clicked.connect(lambda : self._make_Connect_mayaScript(True))
-
+        
         ## connectPort
-        self.ui.connectPort_Btn.clicked.connect(self._check_socket)
+        self.ui.connectPort_Btn.clicked.connect(self._check_mayaSocket)
+        #self.ui.connectPort_Btn.clicked.connect(lambda : print ("ssssss")) # 로그 검사용
+
+        ## load cams
+        self.ui.reloadMayaCamera_Btn.clicked.connect(self._get_mayaCameras)
+        #self.ui.reloadMayaCamera_Btn.clicked.connect(self._test_commandPort_return)
 
 
+    def _setup_log(self):
+        
+        self._log_stream = EmittingStream() #스트림 지정 변수
+        # print ("sss")든 앞으로 나오는 메세지는 _textlog함수에 할당한다 라는 의미(text에 넣어라)
+        self._log_stream.textWritten.connect(self._textlog) 
+
+        # "앞으로 stdout으로 갈 거 다 self._log_stream으로 보내고, stderr도 마찬가지로."
+        sys.stdout = self._log_stream #메세지를 가져온다.
+        sys.stderr = self._log_stream #에러도 가져온다
+
+
+        if self._log_stream:
+            print(u">> log 스트림 설정됨") 
+        
+
+    def _textlog(self , text):
+        #시그널 발사시 호춯
+        self.ui.log_Te.moveCursor(QtGui.QTextCursor.End) # 커서가 그 위치에서 끝 메모장 글쓸때 깜빡깜빡 할대 그위치
+        self.ui.log_Te.insertPlainText(text)
+
+    def closeEvent(self, event):
+        sys.stdout = sys.__stdout__
+        sys.stderr = sys.__stderr__
+        super(DesignerUI, self).closeEvent(event)
 
 
     def _setup_icons(self):
@@ -137,14 +230,55 @@ class DesignerUI(QtWidgets.QDialog):
 
     #--------------------------------------------ui function
 
-    def _check_socket(self ):
-        checkMaya , mayaResponse = connectSocket.check_mayaConnection(u"print ('pong')")
-        print (checkMaya , mayaResponse)
+    def _check_mayaSocket(self ):
+        self._isMayaPort , mayaResponse = connectSocket.check_mayaConnection(u"print ('pong')")
+        if self._isMayaPort:
+            self.ui.setMayaPort_Le.setStyleSheet("background-color: #5DADE2;") #소프트 스틸 블루
+            print (u">> maya port가 연결되었습니다.")
+        if self._isMayaPort == False:
+            self.ui.setMayaPort_Le.setStyleSheet("background-color: #CD5C5C;") #인디안 레드
+            print (u">> maya port가 연결되지 않았습니다.")
+
+
+
+    def _get_mayaCameras(self):
+        if not self._isMayaPort:
+            raise ValueError(u">> mayaPort가 연결되지 않았습니다.")
+        
+        #tempfile.gettempdir() 는 임시 temp경로
+        tempPath = os.path.join(tempfile.gettempdir(), "mayafyui_cameras.json").replace("\\", "/")
+        code = """import maya.cmds as cmds
+import json
+cam_shapes = cmds.ls(type='camera')
+user_shapes = [s for s in cam_shapes if not cmds.camera(s, query=True, startupCamera=True)]
+with open("{p}"  , "w" ) as f:
+    json.dump(user_shapes , f)
+""".format(p = tempPath )
+        success , data = connectSocket.send_to_maya_for_jsonFile(code, tempPath)
+
+        try:
+            print (u">> 마야 카메라 정보 : {}" , format(data))
+            self.ui.selectMayaCamera_Cbb.clear()
+            self.ui.selectMayaCamera_Cbb.addItems(data)
+        except Exception as e:
+            print(u">> 에러 :: {}".format(e))
+
+        
+    
+
+        
 
 
     def _loadPrev(self):
         #작업예정
-        pass
+        self._isPrev = os.path.exists(jsonPath)
+
+        data = None
+        if self._isPrev:
+            pass
+
+        
+
 
 
 
@@ -188,7 +322,6 @@ class DesignerUI(QtWidgets.QDialog):
         filePath = os.path.join(currentPath , fileName)
 
         code =r'''# -*- coding: utf-8 -*-
-
 import sys, os, json
 import maya.cmds as cmds
 import maya.mel as mel

@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import socket
+import socket , tempfile ,json , os ,io
 
 def send_to_maya(code , host = "127.0.0.1" , port = 7771 ,  timeout=3.0):
     """
@@ -50,7 +50,32 @@ def check_mayaConnection(code ,host = "127.0.0.1" , port = 7771 , checkVersion =
 
     return send_to_maya(command  , host  , port )
     
+def send_to_maya_for_jsonFile(code, path, host="127.0.0.1", port=7771):
+    """
+    Maya에 코드 보내고, 파일로 결과 받기.
+    
+    Args:
+        code (str): Maya에서 실행할 코드. 결과를 path에 JSON 저장하는 내용 포함해야 함
+        path (str): 결과 JSON 파일 경로
+    
+    Returns:
+        (success, data):
+            success=True: data는 JSON 결과
+            success=False: data는 에러 메시지
+    """
+    success, response = send_to_maya(code, host, port)
+    if not success:
+        return False, response
 
-##테스트용
-#check , res = check_mayaConnection("hello?")
-#print (check , res )
+    # 파일 생성 확인
+    if not os.path.exists(path):
+        return False, u"결과 파일이 생성되지 않음 (Maya에서 코드 실행 실패 가능성)"
+
+    # 파일 읽기
+    try:
+        with io.open(path, "r", encoding="utf-8") as f:
+            data = json.load(f)
+        os.remove(path)    # 청소
+        return True, data
+    except Exception as e:
+        return False, u"json 읽기 실패: {}".format(e)
