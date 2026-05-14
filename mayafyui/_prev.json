@@ -1,1 +1,9 @@
-["perspShape1", "perspShape2", "perspShape3", "perspShape4", "perspShape5"]
+{
+    "mayaPort": 7771,
+    "comfyuiPort": 8188,
+    "host": "127.0.0.1",
+    "snapShotScale": 1.0,
+    "snapShotWidth": 1024,
+    "snapShotHeight": 640,
+    "snapShotShowGrid": false
+}

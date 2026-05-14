@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-
 import sys, os, json
 import maya.cmds as cmds
 import maya.mel as mel
