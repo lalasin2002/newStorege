@@ -1307,7 +1307,14 @@ QToolTip {
                               </widget>
                              </item>
                              <item>
-                              <widget class="QComboBox" name="selectCheckPoint_Cbb"/>
+                              <widget class="QComboBox" name="selectCheckPoint_Cbb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>185</width>
+                                 <height>28</height>
+                                </size>
+                               </property>
+                              </widget>
                              </item>
                             </layout>
                            </item>
@@ -1330,7 +1337,14 @@ QToolTip {
                               </widget>
                              </item>
                              <item>
-                              <widget class="QComboBox" name="selectSampler_Cbb"/>
+                              <widget class="QComboBox" name="selectSampler_Cbb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>185</width>
+                                 <height>28</height>
+                                </size>
+                               </property>
+                              </widget>
                              </item>
                             </layout>
                            </item>
@@ -1370,6 +1384,18 @@ QToolTip {
                              </item>
                              <item>
                               <widget class="QSpinBox" name="setHeight_Sb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
                                <property name="minimum">
                                 <number>64</number>
                                </property>
@@ -1405,8 +1431,14 @@ QToolTip {
                               <widget class="QDoubleSpinBox" name="setCFG_Dsb">
                                <property name="minimumSize">
                                 <size>
-                                 <width>0</width>
+                                 <width>64</width>
                                  <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>16777215</height>
                                 </size>
                                </property>
                               </widget>
@@ -1433,6 +1465,18 @@ QToolTip {
                              </item>
                              <item>
                               <widget class="QSpinBox" name="setStep_Sb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
                                <property name="minimum">
                                 <number>1</number>
                                </property>
@@ -1463,6 +1507,18 @@ QToolTip {
                              </item>
                              <item>
                               <widget class="QSpinBox" name="setWidth_Sb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
                                <property name="minimum">
                                 <number>64</number>
                                </property>
@@ -1496,6 +1552,18 @@ QToolTip {
                              </item>
                              <item>
                               <widget class="QDoubleSpinBox" name="setDenoise_Dsb">
+                               <property name="minimumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>0</height>
+                                </size>
+                               </property>
+                               <property name="maximumSize">
+                                <size>
+                                 <width>64</width>
+                                 <height>16777215</height>
+                                </size>
+                               </property>
                                <property name="minimum">
                                 <double>0.000000000000000</double>
                                </property>
@@ -1789,7 +1857,7 @@ QToolTip {
                     <widget class="QPushButton" name="openPreviewImage_Btn">
                      <property name="minimumSize">
                       <size>
-                       <width>20</width>
+                       <width>40</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -1811,7 +1879,7 @@ QToolTip {
                     <widget class="QPushButton" name="openPreviewImageFolder_Btn">
                      <property name="minimumSize">
                       <size>
-                       <width>20</width>
+                       <width>40</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -1833,7 +1901,7 @@ QToolTip {
                     <widget class="QPushButton" name="reloadPreviewImage_Btn">
                      <property name="minimumSize">
                       <size>
-                       <width>20</width>
+                       <width>40</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -1858,7 +1926,7 @@ QToolTip {
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
-                     <height>20</height>
+                     <height>28</height>
                     </size>
                    </property>
                    <property name="maximumSize">
@@ -2029,7 +2097,7 @@ QToolTip {
                     <widget class="QPushButton" name="openCreateImage_Btn">
                      <property name="minimumSize">
                       <size>
-                       <width>20</width>
+                       <width>40</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2051,7 +2119,7 @@ QToolTip {
                     <widget class="QPushButton" name="openCreateImageFolder_Btn">
                      <property name="minimumSize">
                       <size>
-                       <width>20</width>
+                       <width>40</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2073,7 +2141,7 @@ QToolTip {
                     <widget class="QPushButton" name="reloadCreateImage_Btn">
                      <property name="minimumSize">
                       <size>
-                       <width>20</width>
+                       <width>40</width>
                        <height>0</height>
                       </size>
                      </property>
@@ -2098,7 +2166,7 @@ QToolTip {
                    <property name="minimumSize">
                     <size>
                      <width>0</width>
-                     <height>20</height>
+                     <height>28</height>
                     </size>
                    </property>
                    <property name="maximumSize">

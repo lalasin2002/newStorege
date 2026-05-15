@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import sys , os  ,json ,io  , tempfile ,requests
+import sys , os  ,json ,io  , tempfile ,pprint
 
 try:
     from PySide6 import QtWidgets, QtCore, QtUiTools , QtGui 
@@ -34,7 +34,7 @@ uiPath =os.path.join(currentPath , "mayafyui.ui")
 pathAppend()
 
 #import module
-from core import makeCode ,connectMayaSocket ,setPath , controlMayaCode , pysideHelper , stream
+from core import makeCode ,connectMayaSocket ,setPath , controlMayaCode , pysideHelper , stream , requestComfyui
 
 
 #------------------------------------------------------------ui
@@ -131,9 +131,15 @@ class DesignerUI(QtWidgets.QDialog):
         self._setup_icons() #아이콘셋업
         self._connect_function()
         self._loadPrev()
+
         self._check_mayaSocket()
-        self._get_mayaCameras()
         self._check_comfyuiPath()
+        self._check_compyfiPort()
+
+        self._get_mayaCameras()
+        self._get_checkPoints_For_widget()
+        self._get_samplers_For_widget()
+        
 
     def show_ui(self):
         self.show()
@@ -150,7 +156,13 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.connectPort_Btn.clicked.connect(self._savePrev)
         self.ui.connectPort_Btn.clicked.connect(self._check_mayaSocket)
         self.ui.connectPort_Btn.clicked.connect(self._check_comfyuiPath)
+        self.ui.connectPort_Btn.clicked.connect(self._check_compyfiPort)
+
+
+        ## get Data
         self.ui.connectPort_Btn.clicked.connect(self._get_mayaCameras)
+        self.ui.connectPort_Btn.clicked.connect(self._get_checkPoints_For_widget)
+        self.ui.connectPort_Btn.clicked.connect(self._get_samplers_For_widget)
 
         ## search comfyui Path
         self.ui.setComfyuiPath_Btn.clicked.connect(self.set_comfyuiFolderPath)
@@ -176,8 +188,12 @@ class DesignerUI(QtWidgets.QDialog):
         ## select IconsImage
         self.ui.previewImage_Lw.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.ui.previewImage_Lw.itemClicked.connect(lambda : self.load_Preview(self.ui.previewImage_Lw.currentItem(),self.ui.previewSnapShotNames_Lb , self.ui.previewSnapShotResolution_Lb , self.ui.previewSnapShot_Lb ))
-        self.ui.previewImage_Lw.customContextMenuRequested.connect( lambda pos: self.show_contextMenu(pos , self.ui.previewImage_Lw)
-        )
+        self.ui.previewImage_Lw.customContextMenuRequested.connect( lambda pos: self.show_contextMenu(pos , self.ui.previewImage_Lw))
+
+
+        ## comfyui
+        self.ui.reloadComfyui_Btn.clicked.connect(self._get_checkPoints_For_widget)
+        self.ui.reloadComfyui_Btn.clicked.connect(self._get_samplers_For_widget)
 
 
     def _setup_log(self):
@@ -246,15 +262,27 @@ class DesignerUI(QtWidgets.QDialog):
             self.ui.setComfyuiPath_Le.setStyleSheet("background-color: #5DADE2;")
             self._comfyuiFolderPath = path
             self.set_comfyuiSubPath()
-            print(u">> comfyui 가 연결되었습니다.")
+            print(u">> comfyui 의 경로가 설정 되었습니다.")
         else:
             self.ui.setComfyuiPath_Le.setStyleSheet("background-color: #CD5C5C;")
             self._comfyuiFolderPath = None
             if path:
-                print(u">> comfyui 가 연결되지 않았습니다.")
+                print(u">> comfyui 의 경로가 설정 되지 않습니다.")
 
+    def _check_compyfiPort(self):
+
+        self._isComfyuiPort , _ = requestComfyui.check_comfyuiConnection()
+        #print (check )
+        #pprint.pprint(a)
+
+        if self._isComfyuiPort:
+            self.ui.setComfyuiPort_Sb.setStyleSheet("background-color: #5DADE2;")
+            print(u">> comfyui Port 가 연결되었습니다.")
+        else:
+            self.ui.setComfyuiPort_Sb.setStyleSheet("background-color: #CD5C5C;")
+            print(u">> comfyui Port 가 연결 되지 않습니다.")
     
-    #-----------------------------------------------------------------------------------------check comfyui 
+    #-----------------------------------------------------------------------------------------check comfyuiPath 
 
     def is_valid_comfyuiPath(self , path):
         """순수 함수 - 경로가 유효한 ComfyUI 폴더인지만 확인"""
@@ -333,7 +361,40 @@ class DesignerUI(QtWidgets.QDialog):
             self._comfyuiBatPath = None
             print(u">> 경고 : .bat 파일 없음 ")
 
+    #---------------------------------------------------------------------------request comfyui
+    def _get_checkPoints_For_widget(self):
+        if not self._isComfyuiPort:
+            print (u">> comfyui Port가 연결되지 않았습니다.")
+            return
+        
+        success , data = requestComfyui.get_checkPoints()
 
+        if not isinstance(data, list):
+            print(u">> 에러 : 예상치 못한 응답 형식: {}".format(data))
+            return
+
+        if success:
+            data.sort()
+            self.ui.selectCheckPoint_Cbb.clear()
+            self.ui.selectCheckPoint_Cbb.addItems(data)
+            print (u">> checkPoint 정보 : {}". format(data))
+
+    def _get_samplers_For_widget(self):
+        if not self._isComfyuiPort:
+            print (u">> comfyui Port가 연결되지 않았습니다.")
+            return
+        
+        success , data = requestComfyui.get_samplers()
+
+
+        if not isinstance(data, list):
+            print(u">> 에러 : 예상치 못한 응답 형식: {}".format(data))
+            return
+        if success:
+            data.sort()
+            self.ui.selectSampler_Cbb.clear()
+            self.ui.selectSampler_Cbb.addItems(data)
+            print (u">> sampler 정보 : {} 개". format(len(data)))
 
     #---------------------------------------------------------------------------send To Maya
 
@@ -362,10 +423,11 @@ with open("{p}"  , "w" ) as f:
 
 
         try:
-            print (u">> 마야 카메라 정보 : {}". format(data))
+            
             data.sort()
             self.ui.selectMayaCamera_Cbb.clear()
             self.ui.selectMayaCamera_Cbb.addItems(data)
+            print (u">> 마야 카메라 정보 : {}". format(data))
         except Exception as e:
             print(u">> 에러 : {}".format(e))
 
@@ -487,6 +549,10 @@ else:
         else:
             print(u">> 에러 : snapShot 실패: {}".format(response))
 
+    
+
+
+
 
 
     #---------------------------------------------------------------------------control snapShot Function
@@ -538,13 +604,15 @@ else:
             return
 
         try:
+            
+            exec_file = QtGui.QAction("open", self)
+            open_folder = QtGui.QAction("open folder", self)
             delete_act = QtGui.QAction("delete", self)
-            exec_file = QtGui.QAction("open", self)
-            open_folder = QtGui.QAction("open folder", self)
         except:
-            delete_act = QtWidgets.QAction("delete", self)
+            
             exec_file = QtGui.QAction("open", self)
             open_folder = QtGui.QAction("open folder", self)
+            delete_act = QtWidgets.QAction("delete", self)
 
 
         
