@@ -1,21 +1,18 @@
-# -*- coding: utf-8 -*-
+
 import sys, os, json
 import maya.cmds as cmds
 import maya.mel as mel
 
 def onMayaDroppedPythonFile(*args):
+    PORT = 7771
+    
     curentPath = os.path.dirname(os.path.abspath(__file__))
     jsonPath = os.path.join(curentPath, "_prev.json")
-    PORT = 7771
-    jsonData = None
-    
     if os.path.exists(jsonPath):
         try:
             with open(jsonPath, "r") as f:
                 jsonData = json.load(f)
-            
-            # get 사용 시 기본값(Fallback) 추가
-            PORT = int(jsonData.get("mayaPort", 7771))
+            PORT = int(jsonData.get("mayaPort", PORT))
         except Exception as e:
             print(">> json 읽기 실패:", e)
     
@@ -28,7 +25,6 @@ import maya.cmds as cmds
 
 port_addr = "{port}"
 
-# 토글 동작
 if cmds.commandPort(port_addr, q=True):
     cmds.commandPort(name=port_addr, cl=True)
     print(u">> [mayafyui] 포트 닫힘: {port}")

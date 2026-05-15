@@ -33,11 +33,13 @@ def send_to_maya(code , host = "127.0.0.1" , port = 7771 ,  timeout=3.0):
         return True, response
 
     except socket.timeout:
-        return False , u"연결시간 초과"
+        return False, u"연결시간 초과"
     except ConnectionRefusedError:
-        return False , u"연결 거부됨 (Maya port 확인 권고) "
+        return False, u"연결 거부됨 (Maya port 확인 권고)"
+    except socket.error as e:  # ★ 이 줄 추가
+        return False, u"소켓 에러: {}".format(e)
     except Exception as e:
-        return False , u"에러 :{}".format(e)
+        return False, u"에러 :{}".format(e)
     finally: #에외와 상관없이 열린 포트는 닫는다.
         if socketItem:
             socketItem.close()

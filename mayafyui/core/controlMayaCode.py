@@ -15,7 +15,7 @@ except Exception as e:
     return code
 
 def take_mayaSnapShot(path , width , height , scale , ext =  "jpg"  , showGrid=False):
-    maya_percent = float(scale * 100.0)
+    
     attrUnpack = {
             "format" : "image" ,
             "compression" : ext,
@@ -42,3 +42,37 @@ except Exception as e:
 """.format(attr = repr(attrUnpack))
     return  code
     
+def set_viewPortOption( addDict = None , HQ = False):
+    if addDict is None:
+        addDict = {
+            "wireframeOnShaded": False,
+            "nurbsCurves": True,
+            "jointXray": False
+        }
+    upDate =addDict 
+    #upDate.update({"edit" : True})
+    if HQ:
+        upDate.update({
+            "displayTextures": True,
+            "shadows": True,
+            "ssaoEnable": True,
+            "antiAlias": True
+        })
+
+    code ="""
+import maya.cmds as cmds
+import os
+panel = cmds.getPanel(withFocus=True)
+if cmds.getPanel(typeOf=panel) != 'modelPanel':
+    panels = cmds.getPanel(type='modelPanel')
+    if panels:
+        panel = panels[0]
+
+unpack = {attr}
+try:
+    cmds.modelEditor(panel,e =1 ,  **unpack )
+    cmds.refresh(force=True) 
+except Exception as e:
+    print( e)
+""".format(attr = repr(upDate))
+    return  code

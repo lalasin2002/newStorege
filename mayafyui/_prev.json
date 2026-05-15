@@ -4,6 +4,18 @@
     "host": "127.0.0.1",
     "snapShotScale": 1.0,
     "snapShotWidth": 1024,
-    "snapShotHeight": 640,
-    "snapShotShowGrid": false
+    "snapShotHeight": 1080,
+    "snapShotShowGrid": true,
+    "snapShotShowCurve": false,
+    "snapShotShowJoint": false,
+    "snapShotShowWire": true,
+    "snapShotShowHQ": false,
+    "comfyuiWidth": 1920,
+    "comfyuiHeight": 1080,
+    "comfyuiCFG": 7.0,
+    "comfyuiDenoise": 1.0,
+    "comfyuiSeed": -1,
+    "comfyui_positive_prompt": "",
+    "comfyui_negative_prompt": "",
+    "comfyuiPath": "D:/Code/MayaCode/ComfyUI_windows_portable"
 }
