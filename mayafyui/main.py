@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import sys , os  ,json ,io  , tempfile 
+import sys , os  ,json ,io  , tempfile ,requests
 
 try:
     from PySide6 import QtWidgets, QtCore, QtUiTools , QtGui 
@@ -34,7 +34,7 @@ uiPath =os.path.join(currentPath , "mayafyui.ui")
 pathAppend()
 
 #import module
-from core import makeCode ,connectSocket ,setPath , controlMayaCode , pysideHelper , stream
+from core import makeCode ,connectMayaSocket ,setPath , controlMayaCode , pysideHelper , stream
 
 
 #------------------------------------------------------------ui
@@ -226,7 +226,7 @@ class DesignerUI(QtWidgets.QDialog):
     #---------------------------------------------------------------------------ui socket
 
     def _check_mayaSocket(self ):
-        self._isMayaPort , _ = connectSocket.check_mayaConnection(u"print ('pong')")
+        self._isMayaPort , _ = connectMayaSocket.check_mayaConnection(u"print ('pong')")
 
 
         if self._isMayaPort:
@@ -351,7 +351,7 @@ user_shapes = [s for s in cam_shapes if not cmds.camera(s, query=True, startupCa
 with open("{p}"  , "w" ) as f:
     json.dump(user_shapes , f)
 """.format(p = tempPath )
-        success , data = connectSocket.send_to_maya_for_jsonFile(code, tempPath, self.ui.setHost_Le.text() , self.ui.setMayaPort_Sb.value())
+        success , data = connectMayaSocket.send_to_maya_for_jsonFile(code, tempPath, self.ui.setHost_Le.text() , self.ui.setMayaPort_Sb.value())
 
         if not success:
             print(u">> 에러 : 카메라 목록 가져오기 실패: {}".format(data))
@@ -466,7 +466,7 @@ else:
 
         finalCode = code_viewPortOption +  "\n" +  code_lookThru + "\n" +  code_snapShot
         
-        success , response = connectSocket.send_to_maya(finalCode , self.ui.setHost_Le.text() , self.ui.setMayaPort_Sb.value())
+        success , response = connectMayaSocket.send_to_maya(finalCode , self.ui.setHost_Le.text() , self.ui.setMayaPort_Sb.value())
         if   success:
             self._previewSnapShotPath = pathFolder
             self.load_snapShotFolders()
