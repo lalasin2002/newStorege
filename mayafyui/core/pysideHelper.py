@@ -73,3 +73,12 @@ def delete_QwidgetItems( Qwidget):
             print (">> 이미지 삭제 에러 : {}" .format (e))
 
         del item
+
+
+def setDefault_QcomboBox(Qwidget , string ):
+    
+    count = Qwidget.count()
+    Qwidget.clear()
+    if count == 0:
+        Qwidget.addItem(string)
+    

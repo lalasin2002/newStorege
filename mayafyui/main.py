@@ -139,7 +139,10 @@ class DesignerUI(QtWidgets.QDialog):
         self._get_mayaCameras()
         self._get_checkPoints_For_widget()
         self._get_samplers_For_widget()
-        
+
+        pysideHelper.setDefault_QcomboBox(self.ui.selectMayaCamera_Cbb , "--select camara--")
+        pysideHelper.setDefault_QcomboBox(self.ui.selectCheckPoint_Cbb , "--select checkPoint--")
+        pysideHelper.setDefault_QcomboBox(self.ui.selectSampler_Cbb , "--select sampler--")
 
     def show_ui(self):
         self.show()
@@ -375,7 +378,8 @@ class DesignerUI(QtWidgets.QDialog):
 
         if success:
             data.sort()
-            self.ui.selectCheckPoint_Cbb.clear()
+            #self.ui.selectCheckPoint_Cbb.clear()
+            pysideHelper.setDefault_QcomboBox(self.ui.selectCheckPoint_Cbb,"---select checkPoint--- ")
             self.ui.selectCheckPoint_Cbb.addItems(data)
             print (u">> checkPoint 정보 : {}". format(data))
 
@@ -392,7 +396,7 @@ class DesignerUI(QtWidgets.QDialog):
             return
         if success:
             data.sort()
-            self.ui.selectSampler_Cbb.clear()
+            pysideHelper.setDefault_QcomboBox(self.ui.selectSampler,"---select sampler--- ")
             self.ui.selectSampler_Cbb.addItems(data)
             print (u">> sampler 정보 : {} 개". format(len(data)))
 
@@ -425,7 +429,8 @@ with open("{p}"  , "w" ) as f:
         try:
             
             data.sort()
-            self.ui.selectMayaCamera_Cbb.clear()
+            pysideHelper.setDefault_QcomboBox(self.ui.selectMayaCamera_Cbb , "--select camara--")
+            #self.ui.selectMayaCamera_Cbb.clear()
             self.ui.selectMayaCamera_Cbb.addItems(data)
             print (u">> 마야 카메라 정보 : {}". format(data))
         except Exception as e:
