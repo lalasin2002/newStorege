@@ -75,10 +75,28 @@ def delete_QwidgetItems( Qwidget):
         del item
 
 
-def setDefault_QcomboBox(Qwidget , string ):
+def select_QcomboBoxItem(Qwidget, string):
+    """콤보박스에서 string과 일치하는 항목을 찾아서 선택.
+    못 찾으면 변경 없이 그대로 두고 False 리턴."""
+    if not string:
+        return False
     
-    count = Qwidget.count()
+    index = Qwidget.findText(string)
+    if index < 0:
+        return False  # 못 찾음 — 현재 선택 유지
+    
+    Qwidget.setCurrentIndex(index)
+    return True
+
+
+
+def setDefault_QcomboBox(Qwidget , string ):
+    #count = Qwidget.count()
+    #items = [Qwidget.itemText(i) for i in range(count)]
+    #if string in items:
+    #    count= count - 1
+    
     Qwidget.clear()
-    if count == 0:
-        Qwidget.addItem(string)
+    #if count == 0:
+    Qwidget.addItem(string)
     

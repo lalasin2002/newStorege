@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1078</width>
+    <width>970</width>
     <height>866</height>
    </rect>
   </property>
@@ -473,13 +473,13 @@ QToolTip {
           <widget class="QFrame" name="option_H">
            <property name="minimumSize">
             <size>
-             <width>250</width>
+             <width>300</width>
              <height>0</height>
             </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>250</width>
+             <width>300</width>
              <height>16777215</height>
             </size>
            </property>
@@ -716,7 +716,20 @@ QToolTip {
                   </widget>
                  </item>
                  <item>
-                  <widget class="QLineEdit" name="setComfyuiPath_Le"/>
+                  <widget class="QLineEdit" name="setComfyuiPath_Le">
+                   <property name="minimumSize">
+                    <size>
+                     <width>159</width>
+                     <height>0</height>
+                    </size>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>159</width>
+                     <height>16777215</height>
+                    </size>
+                   </property>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QPushButton" name="setComfyuiPath_Btn">
@@ -746,6 +759,13 @@ QToolTip {
                 <widget class="QPushButton" name="makeConnectCode_Btn">
                  <property name="text">
                   <string>make connect code</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="execComfyui_Btn">
+                 <property name="text">
+                  <string>exec comfyui</string>
                  </property>
                 </widget>
                </item>
@@ -967,9 +987,18 @@ QToolTip {
                              <widget class="QDoubleSpinBox" name="setSnapScale_Dsb">
                               <property name="minimumSize">
                                <size>
-                                <width>200</width>
+                                <width>57</width>
                                 <height>0</height>
                                </size>
+                              </property>
+                              <property name="maximumSize">
+                               <size>
+                                <width>57</width>
+                                <height>16777215</height>
+                               </size>
+                              </property>
+                              <property name="buttonSymbols">
+                               <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
                               </property>
                               <property name="decimals">
                                <number>3</number>
@@ -1276,17 +1305,20 @@ QToolTip {
                       <string>comfyui</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_3">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
                       <property name="leftMargin">
-                       <number>3</number>
+                       <number>0</number>
                       </property>
                       <property name="topMargin">
-                       <number>3</number>
+                       <number>0</number>
                       </property>
                       <property name="rightMargin">
-                       <number>3</number>
+                       <number>0</number>
                       </property>
                       <property name="bottomMargin">
-                       <number>3</number>
+                       <number>0</number>
                       </property>
                       <item>
                        <layout class="QVBoxLayout" name="setComfyui1_QG">
@@ -1319,6 +1351,18 @@ QToolTip {
                           </item>
                           <item>
                            <widget class="QPushButton" name="reloadComfyui_Btn">
+                            <property name="minimumSize">
+                             <size>
+                              <width>30</width>
+                              <height>0</height>
+                             </size>
+                            </property>
+                            <property name="maximumSize">
+                             <size>
+                              <width>30</width>
+                              <height>16777215</height>
+                             </size>
+                            </property>
                             <property name="text">
                              <string/>
                             </property>
@@ -1664,6 +1708,21 @@ QToolTip {
                       <string>positive prompt</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_5">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
                       <item>
                        <widget class="QPlainTextEdit" name="positivePrompt_Pte"/>
                       </item>
@@ -1676,10 +1735,32 @@ QToolTip {
                       <string>negative prompt</string>
                      </property>
                      <layout class="QVBoxLayout" name="verticalLayout_6">
+                      <property name="spacing">
+                       <number>0</number>
+                      </property>
+                      <property name="leftMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="topMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="rightMargin">
+                       <number>0</number>
+                      </property>
+                      <property name="bottomMargin">
+                       <number>0</number>
+                      </property>
                       <item>
                        <widget class="QPlainTextEdit" name="negativePrompt_Pte"/>
                       </item>
                      </layout>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="convertPrompt_Btn">
+                     <property name="text">
+                      <string>convert prompt</string>
+                     </property>
                     </widget>
                    </item>
                   </layout>
@@ -2153,22 +2234,6 @@ QToolTip {
                     </widget>
                    </item>
                   </layout>
-                 </item>
-                 <item>
-                  <widget class="QComboBox" name="createFolder_Cbb">
-                   <property name="minimumSize">
-                    <size>
-                     <width>0</width>
-                     <height>28</height>
-                    </size>
-                   </property>
-                   <property name="maximumSize">
-                    <size>
-                     <width>16777215</width>
-                     <height>20</height>
-                    </size>
-                   </property>
-                  </widget>
                  </item>
                  <item>
                   <widget class="QListWidget" name="createImage_Lw">

@@ -1,7 +1,7 @@
 
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import sys 
+import sys ,traceback
 try:
     from PySide6 import QtCore
 except:
@@ -13,8 +13,6 @@ if sys.version_info[0] < 3:
     text_type = unicode
 else:
     text_type = str
-
-
 
 
 class EmittingStream(QtCore.QObject):
@@ -50,15 +48,55 @@ class EmittingStream(QtCore.QObject):
                 self.textWritten.emit(text)
             
             # [중요] 원래 콘솔(cmd)에도 찍어줌 (UI가 죽어도 cmd에선 보이게)
-            sys.__stdout__.write(text)
-            
+            if sys.__stdout__ is not None:
+                sys.__stdout__.write(text)
         except Exception:
-            # 혹시 에러나면 원래 콘솔에라도 뱉음
-            sys.__stdout__.write(text)
+            if sys.__stdout__ is not None:
+                sys.__stdout__.write(text)
             
         finally:
             # 3. 다 썼으니 깃발 내리기
             self._writing = False
 
     def flush(self):
-        pass
+        if sys.__stdout__ is not None:
+            try:
+                sys.__stdout__.flush()
+            except Exception:
+                pass
+
+class thread(QtCore.QThread):
+    progress_signal = QtCore.Signal(int)
+    finished_signal = QtCore.Signal(str)
+    error_signal = QtCore.Signal(str)
+    def __init__(self, target_func, *args, **kwargs):
+        """
+        :param target_func: 스레드에서 실행할 메인 함수
+        :param args: 함수에 전달할 인자
+        :param kwargs: 함수에 전달할 키워드 인자
+        """
+        super(thread, self).__init__()
+        self.target_func = target_func
+        self.args = args
+        self.kwargs = kwargs
+        self._is_running = True
+    def run(self):
+        try:
+            # 1. 실행할 함수(target_func)에 진행률과 종료 체크용 콜백 함수를 몰래 찔러 넣어줍니다.
+            # (단, target_func가 이 kwargs를 받을 수 있게 정의되어 있어야 합니다.)
+            self.kwargs['progress_callback'] = self.progress_signal.emit #emit 함수 안해서 작동시 나타나는 숫자
+            self.kwargs['is_running_check'] = lambda: self._is_running
+
+            # 
+            result = self.target_func(*self.args, **self.kwargs) # 기존 함수에 self.kwargs ,
+
+            # 3. 사용자가 강제 종료한 게 아니라면 완료 시그널 발송
+            if self._is_running:
+                self.finished_signal.emit(result)
+
+        except Exception as e:
+            err_msg = "{}\n{}".format(e, traceback.format_exc())
+            self.error_signal.emit(err_msg)
+
+    def stop(self):
+        self._is_running = False
