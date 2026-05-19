@@ -76,9 +76,12 @@ def delete_QwidgetItems( Qwidget):
 
 
 def setDefault_QcomboBox(Qwidget , string ):
+    #count = Qwidget.count()
+    #items = [Qwidget.itemText(i) for i in range(count)]
+    #if string in items:
+    #    count= count - 1
     
-    count = Qwidget.count()
     Qwidget.clear()
-    if count == 0:
-        Qwidget.addItem(string)
+    #if count == 0:
+    Qwidget.addItem(string)
     

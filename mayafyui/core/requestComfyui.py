@@ -1,6 +1,10 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import requests
+import requests , os ,io
+try:
+    from PySide6 import QtCore
+except:
+    from PySide2 import QtCore
 
 
 def request_toGet_comfyuiData( endPoint  ,  host="127.0.0.1", port=8188, timeout=3.0):
@@ -89,3 +93,33 @@ def get_samplers(host="127.0.0.1", port=8188):
         return False, u"응답 형식 이상: {}".format(e)
     
 
+
+
+def upload_image(path , host="127.0.0.1", port=8188):
+    if not os.path.exists(path):
+        return False, u"파일이 존재하지 않음: {}".format(path)
+    
+    url = "http://{}:{}/upload/image".format(host, port)
+
+    try:
+        with io.open(path, "rb") as f:
+            files = {"image": f}
+            data = {"overwrite": "true"}  # 같은 이름 있으면 덮어쓰기
+            response = requests.post(url, files=files, data=data, timeout=30.0)
+        
+        if not response.status_code == 200:
+            return False, u"HTTP {}: {}".format(response.status_code, response.text[:100])
+        
+        return True, response.json()
+    except requests.exceptions.Timeout:
+        return False, u"업로드 시간 초과"
+    except Exception as e:
+        return False, u"업로드 실패: {}".format(e)
+
+def queue_prompt(workflow_data, host="127.0.0.1", port=8188):
+    """워크플로우 JSON을 큐에 던지기. 응답에 prompt_id 들어있음"""
+    return post_to_comfyui("/prompt", {"prompt": workflow_data}, host, port, timeout=10.0)
+
+def get_history(prompt_id, host="127.0.0.1", port=8188):
+    endPoint = "/history/{}".format(prompt_id)
+    return request_toGet_comfyuiData(endPoint, host, port , timeout=5.0)
