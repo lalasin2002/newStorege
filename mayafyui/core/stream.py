@@ -48,18 +48,22 @@ class EmittingStream(QtCore.QObject):
                 self.textWritten.emit(text)
             
             # [중요] 원래 콘솔(cmd)에도 찍어줌 (UI가 죽어도 cmd에선 보이게)
-            sys.__stdout__.write(text)
-            
+            if sys.__stdout__ is not None:
+                sys.__stdout__.write(text)
         except Exception:
-            # 혹시 에러나면 원래 콘솔에라도 뱉음
-            sys.__stdout__.write(text)
+            if sys.__stdout__ is not None:
+                sys.__stdout__.write(text)
             
         finally:
             # 3. 다 썼으니 깃발 내리기
             self._writing = False
 
     def flush(self):
-        pass
+        if sys.__stdout__ is not None:
+            try:
+                sys.__stdout__.flush()
+            except Exception:
+                pass
 
 class thread(QtCore.QThread):
     progress_signal = QtCore.Signal(int)

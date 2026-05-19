@@ -25,12 +25,29 @@ def pathAppend(log = True):
     if log:
         print (st)
 
+def resource_path(relative_path):
+    """리소스 파일의 절대 경로 반환 (.py 실행 / .exe 실행 둘 다 지원)"""
+    if hasattr(sys, '_MEIPASS'):
+        # PyInstaller로 빌드된 exe 실행 중
+        base_path = sys._MEIPASS
+    else:
+        # 일반 Python 스크립트로 실행 중
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, relative_path)
+
+def writable_path(relative_path):
+    """쓰기 가능 경로 (.py: 프로젝트 폴더, .exe: exe가 있는 폴더)"""
+    if hasattr(sys, '_MEIPASS'):
+        base_path = os.path.dirname(sys.executable)  # exe가 있는 폴더
+    else:
+        base_path = os.path.dirname(os.path.abspath(__file__))
+    return os.path.join(base_path, relative_path)
 
 #-------------------------------------------------------------preSetting
 
 currentPath = os.path.dirname(os.path.abspath(__file__))
-jsonPath = os.path.join(currentPath , "_prev.json")
-uiPath =os.path.join(currentPath , "mayafyui.ui")
+jsonPath = writable_path( "_prev.json")
+uiPath =resource_path( "mayafyui.ui")
 pathAppend()
 
 #import module
@@ -53,8 +70,8 @@ class DesignerUI(QtWidgets.QWidget):
         self._comfyuiOutputPath = None
         self._comfyuiInputPath = None
         
-        self._workFlowPath = os.path.join(currentPath , "works")
-        self._comfyuiTempletePath = os.path.join(currentPath ,"_comfyuiTemplete.json") 
+        self._workFlowPath = writable_path( "works")
+        self._comfyuiTempletePath = resource_path("_comfyuiTemplete.json") 
         self._comfyuiRequestData = None
 
         self._positive_prompt = ""
