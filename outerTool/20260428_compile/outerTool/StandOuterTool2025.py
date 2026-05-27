@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-import sys , os ,re ,json ,io
+import sys , os ,re ,json ,io , traceback
 
 sep ="\n" + "_____"*5
 DefaultVersion = 2020
@@ -278,7 +278,7 @@ def restore_UI_Config(backup_data , node_name = "backUp_uiConfigurationScriptNod
 
 def nonCntShapes(Type):
     List = []
-    shapes = cmds.ls(type = Type)
+    shapes = cmds.ls(type = Type) or []
     for x in shapes:
         IsInCnt = cmds.listConnections(x ,s =1)
         IsOutCnt = cmds.listConnections(x ,d =1)
@@ -348,14 +348,17 @@ def get_skinWeights(Target_skinCluster, operator=None, threshold=0.001):
     Dicts = {}
     connect_geos = cmds.skinCluster(Target_skinCluster, query=True, geometry=True)
     if connect_geos :
-        connect_geos = [x for x in connect_geos if  cmds.objectType(x) == "mesh"]
-        Jnts = cmds.skinCluster(Target_skinCluster, query=True, influence=True)
+        connect_geos = [x for x in connect_geos if  cmds.objectType(x) == "mesh"] 
+        Jnts = cmds.skinCluster(Target_skinCluster, query=True, influence=True) or []
+
+        if not Jnts:
+            return Dicts
         for shp in connect_geos:
             vtx_count = cmds.polyEvaluate(shp, vertex=True)
             for i in range(vtx_count):
                 vtx = "{}.vtx[{}]".format(shp, i)
                 skinData = {} # 버텍스마다 초기화
-                val = cmds.skinPercent(Target_skinCluster, vtx, query=True, value=True)
+                val = cmds.skinPercent(Target_skinCluster, vtx, query=True, value=True) 
 
                 if not val:
                         continue
@@ -442,11 +445,11 @@ class DesignerUI(QtWidgets.QDialog):
         self._SaveRun = None
         self._SaveAsName = None
 
-        self._IsKillMalwave = None
-        self._IsDeleteScriptJob = None
-        self._IsDeleteUnusedNodes = None
-        self._IsDeleteOrphanShapes = None
-        self._IsCleanUpSkinWeight = None
+        self._IsKillMalwave = False
+        self._IsDeleteScriptJob = False
+        self._IsDeleteUnusedNodes = False
+        self._IsDeleteOrphanShapes = False
+        self._IsCleanUpSkinWeight = False
 
         self._IsCleanUserSetUp = None
         self._IsDelete_Bad_maya_secure = None
@@ -745,6 +748,7 @@ class DesignerUI(QtWidgets.QDialog):
                         cmds.delete(x)
                         count +=1
                     except Exception as e:
+                        
                         errorlog = u""
                         errorlog += u">> [delete_orphan] : !! 제거실패 !! >> {}\n".format(x)
                         errorlog += u">> [delete_orphan] 상세내용 : {}\n" .format(e)
@@ -762,7 +766,7 @@ class DesignerUI(QtWidgets.QDialog):
         count = 0
         errorCount = 0
 
-        skinClusters = cmds.ls(type = "skinCluster")
+        skinClusters = cmds.ls(type = "skinCluster") or []
         for skinC in skinClusters:
             Dict = get_skinWeights(skinC)
             if Dict:
@@ -829,7 +833,7 @@ class DesignerUI(QtWidgets.QDialog):
 
         if typeTextSplit:
             for element in SearchType:
-                nodes = cmds.ls("*{}*" .format(element))
+                nodes = cmds.ls("*{}*" .format(element)) or []
 
                 for x in nodes:
                     try:
@@ -947,8 +951,10 @@ class DesignerUI(QtWidgets.QDialog):
                                     detected_issues.append(task_name)
 
                         except Exception as e:
+                            error_trace = traceback.format_exc()
                             errorSubs += u">> [작업 실행 에러] 예상치 못한 오류 발생!\n"
-                            errorSubs += u">> 상세내용 : {}\n".format(text_type(e))
+                            errorSubs += u">> [작업 과정] : {}\n".format(task_name )
+                            errorSubs += u">> 상세내용 : {}\n".format( error_trace)
                             #errorSubs += res.get("errorLog" , e)
                             #errorCount += 1
                     

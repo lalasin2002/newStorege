@@ -199,6 +199,18 @@ def getSize(targetObject):
     size_z = bbox[5] - bbox[2]
     return [size_x, size_y, size_z]
 
+def getSizeOnLattice(targetObject):
+    Lattice = cmds.lattice(targetObject, dv=(2, 2, 2), oc=True )[1]
+    getSize = []
+    
+    for ax in "XYZ":
+        get = cmds.getAttr(Lattice + ".scale{}".format(ax))
+        getSize.append(get)
+    
+    cmds.delete(Lattice)
+    return getSize
+
+
 
 #----------------------------------------------------------------------------------Attr
 def get_EnumAttrItem(Target, LongName):

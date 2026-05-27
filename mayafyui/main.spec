@@ -11,7 +11,8 @@ a = Analysis(
         # (소스 경로, exe 안에서의 경로)
         ('mayafyui.ui', '.'),
         ('_comfyuiTemplete.json', '.'),
-        ('core', 'core'),  # core 폴더 통째로
+        ('core', 'core'),
+        ('readMe', 'readMe'),  # core 폴더 통째로
     ],
     hiddenimports=[
         # PyInstaller가 자동으로 못 찾는 모듈들
@@ -47,7 +48,7 @@ exe = EXE(
     upx=True,
     upx_exclude=[],
     runtime_tmpdir=None,
-    console=False,
+    console=True,
     disable_windowed_traceback=False,
     target_arch=None,
     codesign_identity=None,

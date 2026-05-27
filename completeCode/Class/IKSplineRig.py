@@ -52,7 +52,7 @@ class IKspline:
         self.FoldAttrName = None
         self.FoldOffsetName = None
         self.FoldAttrExpDic = None
-        self.FoldFuncExpDic = None
+        self.FoldFuncExpItemDic  = None
         self.FoldOffsetAttrExpDic = None
 
         self.NamingFormat = "NoneName_" + "{count}{name}"
@@ -186,18 +186,23 @@ class IKspline:
         else:
             print ("AttrName is None")
 
-    def setFold(self , AttrName = "Fold" ,  Min = 0 , Max = 10 , Offset_suffixName = "_Offset"):
+    def setFold(self , AttrName = "Fold" ,  Min = 0 , Max = 10 , offsetMin = 0.001 ):
         if AttrName and self.Root:
             self.IsFold = True
             self.FoldAttrName = AttrName
-            self.FoldOffsetName = AttrName + Offset_suffixName
+            #self.FoldOffsetName = AttrName + Offset_suffixName
             if cmds.attributeQuery(self.FoldAttrName , node = self.Root , exists=1) == False:
-                cmds.addAttr(self.Root , ln = self.FoldAttrName , at = "float" , k =1 , min = Min , max = Max)
-            if cmds.attributeQuery(self.FoldOffsetName , node = self.Root , exists=1) == False:
-                cmds.addAttr(self.Root, ln=self.FoldOffsetName , at='float', k=1 )
+                cmds.addAttr(self.Root , ln = self.FoldAttrName , at = "float" , k =1 , min = Min , max = Max, dv = Max )
+            #if cmds.attributeQuery(self.FoldOffsetName , node = self.Root , exists=1) == False:
+            #    cmds.addAttr(self.Root, ln=self.FoldOffsetName , at='float', k=1 )
 
-            self.FoldAttrExpDic = {"FoldExpFunc" : "float $FoldSwitch = setRangeFunc({root}.{attr} , {oldmin} , {oldmax} , 0 , 1);\n" .format(root = self.Root , attr = self.FoldAttrName , oldmin = Min , oldmax = Max)  , "FoldExpVar" : "$FoldSwitch"}
-            self.FoldOffsetAttrExpDic =  {"FoldOffsetExpFunc" : "float $FoldOffset = {}.{} +1;\n" .format(self.Root ,self.FoldOffsetName ) ,"FoldOffsetExpVar" : "$FoldOffset" }
+            self.FoldAttrExpDic = {"FoldExpFunc" : "float $FoldSwitch = setRangeFunc({root}.{attr} , {oldmin} , {oldmax} , 0 , 1);\n" .format(root = self.Root , attr = self.FoldAttrName , oldmin = Min , oldmax = Max)  , "FoldExpVar" : "$FoldSwitch" , "FoldOffsetMin": offsetMin}
+
+
+
+
+
+
 
     def createCrv(self , CrvList = None):
         '''
@@ -224,6 +229,7 @@ class IKspline:
 
 
 
+
     def setIKBuild(self ):
         '''
         [메서드 설명]
@@ -235,6 +241,31 @@ class IKspline:
 
         if self.Jntlst and self.Crv and self.IsNamingFormat:
             #print (self.Jntlst)
+
+            if self.IsFold:
+                FoldExp = ""
+                self.FoldFuncExpItemDic = {"FoldItem" : []}
+                reverseJnt = list(reversed(self.Jntlst))
+                div = 1.0/(len(reverseJnt[:-1]))
+                oldMin = 0
+
+                for i, x in enumerate(reverseJnt[:-1]):
+                    count = i+1
+                    oldMax = div * count
+                    FoldExp += "float $FoldSetrange{num} = setRangeFunc({attr} , {oldmin} , {oldmax} , {offsetMin} , 1);\n".format(num =len(reverseJnt)- count  ,attr = self.FoldAttrExpDic["FoldExpVar"] , oldmin =oldMin , oldmax = oldMax , offsetMin = self.FoldAttrExpDic["FoldOffsetMin"])
+                    
+                    oldMin = oldMax
+                    self.FoldFuncExpItemDic["FoldItem"].append("$FoldSetrange{}".format(len(reverseJnt)- count ))
+
+                
+                self.FoldFuncExpItemDic["FoldItem"].reverse()
+                self.ExpTotal += self.FoldAttrExpDic["FoldExpFunc"]
+                self.ExpTotal += FoldExp
+
+
+
+
+
 
             IKSet = cmds.ikHandle( n = self.NamingFormat.format(count = "" , name = "_IK") , c = self.Crv[0] , ee =self.Jntlst[-1] , sj = self.Jntlst[0] , sol = "ikSplineSolver",ccv = 0)
             self.IK = IKSet
@@ -287,10 +318,11 @@ class IKspline:
                     self.StretchFuncExpDic["DistanceExpFunc"].append("float $DTB{} = {}.distance;\n".format(str(i+1), Distance ) )
                     ##self.StretchFuncExpDic["DisTanceExpVar"].append("$DTB{}" .format(str(i+1)))
 
-
-
                 self.ExpTotal += self.ScaleDefaultExpDic["ScaleDefaultExpFunc"]
                 self.ExpTotal += self.StretchAttrExpDic["StretchExpFunc"]
+
+            
+
             OldJnt= self.Jntlst[1]
             PlusMiuns = 1
             if self.IsStretch and self.AxisDic:
@@ -302,13 +334,26 @@ class IKspline:
 
                     StretchExp = "{}.translate{} = " .format(self.Jntlst[i+1] , self.AxisDic["Axis"])
                     StretchExp += "{} * $Static_{}_DT" .format(PlusMiuns , str(i+1))
-                    StretchExp += "* BlendFunc({attr} , 1 , {distance}/({static}* {scale}) );" .format(attr = self.StretchAttrExpDic["StretchExpVar"] , distance = "$DTB{}" .format(str(i+1)) ,static = "$Static_{}_DT".format(str(i+1)) , scale = self.ScaleDefaultExpDic["ScaleDefaultVar"] )
+                    StretchExp += "* BlendFunc({attr} , 1 , {distance}/({static}* {scale}) )" .format(attr = self.StretchAttrExpDic["StretchExpVar"] , distance = "$DTB{}" .format(str(i+1)) ,static = "$Static_{}_DT".format(str(i+1)) , scale = self.ScaleDefaultExpDic["ScaleDefaultVar"] )
+                    if self.IsFold:
+                        try:
+                            func ="* " + self.FoldFuncExpItemDic.get("FoldItem")[i]
+                        except:
+                            func = ""
+                        StretchExp += "{};".format( func )
+                    else:
+                        StretchExp += ";"
                     StretchExp += "\n"
 
                     self.StretchFuncExpDic["StretchExpFunc"].append(StretchExp)
                 for String in [ "DistanceExpFunc" ,"StaticExpFunc" , "StretchExpFunc"  ]:
                     for x in self.StretchFuncExpDic[String]:
                         self.ExpTotal +=x
+
+
+
+
+
 
     
             if self.IsVolume and self.AxisOtherDic:
@@ -318,11 +363,33 @@ class IKspline:
                 for  i , Distance in enumerate(DisTanceNodes[:-1]):
                     FuncStringExp = "float $VolumeFunc_{num} =  pow((1 / ({dt} / ({static} * {scale}))) , 0.5);\n" .format(num = str(i+1) , dt = "$DTB{}" .format(str(i+1)) ,  static = "$Static_{}_DT".format(str(i+1)) ,  scale = self.ScaleDefaultExpDic["ScaleDefaultVar"] )
                     self.VolumeFuncExpDic["DivPowerExpVar"].append(FuncStringExp)
-                for  i , Func in enumerate(DisTanceNodes[:-1]):
-                    FuncStringExp = "{jt}.scale{ax} = ".format(jt = self.Jntlst[i+1] ,ax =  self.AxisOtherDic["Axis"][0])
-                    FuncStringExp += "BlendFunc({attr} , {offset} , $VolumeFunc_{num} *{offset} );\n" .format(attr = self.VolumeAttrExpDic["VolumeExpVar"] , num = str(i+1), offset = self.VolumeOffsetAttrExpDic["VolumeOffsetExpVar"])
-                    FuncStringExp += "{jt}.scale{ax} = ".format(jt = self.Jntlst[i+1] ,ax =  self.AxisOtherDic["Axis"][1])
-                    FuncStringExp += "BlendFunc({attr} , {offset} , $VolumeFunc_{num} *{offset});\n" .format(attr = self.VolumeAttrExpDic["VolumeExpVar"] , num = str(i+1), offset = self.VolumeOffsetAttrExpDic["VolumeOffsetExpVar"])
+                for  i , Func in enumerate(DisTanceNodes):
+                    if 0 < i < (len(DisTanceNodes)-1):
+                        FuncStringExp = "{jt}.scale{ax} = ".format(jt = self.Jntlst[i] ,ax =  self.AxisOtherDic["Axis"][0])
+                        FuncStringExp += "BlendFunc({attr} , {offset} , $VolumeFunc_{num} *{offset} )" .format(attr = self.VolumeAttrExpDic["VolumeExpVar"] , num = str(i), offset = self.VolumeOffsetAttrExpDic["VolumeOffsetExpVar"])
+                        if self.IsFold:
+                            FuncStringExp += "* {};\n".format(self.FoldFuncExpItemDic["FoldItem"][i] )
+                        else:
+                            FuncStringExp += ";\n"
+
+                        FuncStringExp += "{jt}.scale{ax} = ".format(jt = self.Jntlst[i] ,ax =  self.AxisOtherDic["Axis"][1])
+                        FuncStringExp += "BlendFunc({attr} , {offset} , $VolumeFunc_{num} *{offset})" .format(attr = self.VolumeAttrExpDic["VolumeExpVar"] , num = str(i), offset = self.VolumeOffsetAttrExpDic["VolumeOffsetExpVar"])
+                        if self.IsFold:
+                            FuncStringExp += "* {};\n".format(self.FoldFuncExpItemDic["FoldItem"][i] )
+                        else:
+                            FuncStringExp += ";\n"
+
+                        if self.IsFold:
+                            FuncStringExp += "{jt}.scale{ax} = {func};\n".format(jt = self.Jntlst[i] ,ax = self.AxisDic["Axis"] ,func = self.FoldFuncExpItemDic["FoldItem"][i])
+
+                        
+
+                    if i == (len(DisTanceNodes)-1):
+                        if self.IsFold:
+                            for Ax in "XYZ":
+                               FuncStringExp += "{jt}.scale{ax} = {func};\n".format(jt = self.Jntlst[i] , ax = Ax , func = self.FoldFuncExpItemDic["FoldItem"][i])
+                        
+                        
                     self.VolumeFuncExpDic["VolumeExpFunc"].append(FuncStringExp)
 
                 for String in [ "DivPowerExpVar" , "VolumeExpFunc" ]:
@@ -339,19 +406,28 @@ class IKspline:
 
             
 
-
-
-
-sel = cmds.ls(sl =1)
-
-JntSpline = IKspline(sel , "rope")
-JntSpline.setAxis("Z")
-JntSpline.createCrv()
-JntSpline.setStretch("Stretch")
-JntSpline.setVolume("Volume")
-JntSpline.setIKBuild()
-
             
+
+
+
+
+
+try:
+    cmds.undoInfo(openChunk=True)
+    sel = cmds.ls(sl =1)
+    
+    JntSpline = IKspline(sel , "rope")
+    JntSpline.setAxis("Z")
+    JntSpline.createCrv()
+    JntSpline.setStretch("Stretch")
+    JntSpline.setVolume("Volume")
+    JntSpline.setFold("Fold")
+    JntSpline.setIKBuild()
+finally:        
+    cmds.undoInfo(closeChunk=True)
+
+
+
 
 
 

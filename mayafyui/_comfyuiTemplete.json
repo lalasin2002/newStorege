@@ -12,6 +12,7 @@
     "inputs": {
       "seed": 45541793150233,
       "steps": 20,
+<<<<<<< HEAD
       "cfg": 8,
       "sampler_name": "euler",
       "scheduler": "simple",
@@ -36,11 +37,26 @@
     "class_type": "KSampler",
     "_meta": {
       "title": "KSampler"
+=======
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.65,
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["10", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler (1st Pass)"
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     }
   },
   "3": {
     "inputs": {
       "text": "",
+<<<<<<< HEAD
       "clip": [
         "1",
         1
@@ -49,11 +65,19 @@
     "class_type": "CLIPTextEncode",
     "_meta": {
       "title": "CLIP Text Encode (Prompt)"
+=======
+      "clip": ["1", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Positive)"
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     }
   },
   "4": {
     "inputs": {
       "text": "",
+<<<<<<< HEAD
       "clip": [
         "1",
         1
@@ -62,10 +86,18 @@
     "class_type": "CLIPTextEncode",
     "_meta": {
       "title": "CLIP Text Encode (Prompt)"
+=======
+      "clip": ["1", 1]
+    },
+    "class_type": "CLIPTextEncode",
+    "_meta": {
+      "title": "CLIP Text Encode (Negative)"
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     }
   },
   "6": {
     "inputs": {
+<<<<<<< HEAD
       "samples": [
         "2",
         0
@@ -74,6 +106,10 @@
         "1",
         2
       ]
+=======
+      "samples": ["17", 0],
+      "vae": ["1", 2]
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     },
     "class_type": "VAEDecode",
     "_meta": {
@@ -83,10 +119,14 @@
   "7": {
     "inputs": {
       "filename_prefix": "ComfyUI",
+<<<<<<< HEAD
       "images": [
         "14",
         0
       ]
+=======
+      "images": ["6", 0]
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     },
     "class_type": "SaveImage",
     "_meta": {
@@ -104,6 +144,7 @@
   },
   "10": {
     "inputs": {
+<<<<<<< HEAD
       "pixels": [
         "9",
         0
@@ -112,12 +153,17 @@
         "1",
         2
       ]
+=======
+      "pixels": ["15", 0],
+      "vae": ["1", 2]
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     },
     "class_type": "VAEEncode",
     "_meta": {
       "title": "VAE Encode"
     }
   },
+<<<<<<< HEAD
   "14": {
     "inputs": {
       "upscale_method": "bicubic",
@@ -132,6 +178,48 @@
     "class_type": "ImageScale",
     "_meta": {
       "title": "Upscale Image"
+=======
+  "15": {
+    "inputs": {
+      "upscale_method": "bicubic",
+      "width": 768,
+      "height": 432,
+      "crop": "disabled",
+      "image": ["9", 0]
+    },
+    "class_type": "ImageScale",
+    "_meta": {
+      "title": "Resize Input"
+    }
+  },
+  "16": {
+    "inputs": {
+      "upscale_method": "nearest-exact",
+      "scale_by": 1.0,
+      "samples": ["2", 0]
+    },
+    "class_type": "LatentUpscaleBy",
+    "_meta": {
+      "title": "Latent Upscale (Hires)"
+    }
+  },
+  "17": {
+    "inputs": {
+      "seed": 45541793150233,
+      "steps": 15,
+      "cfg": 7.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 0.4,
+      "model": ["1", 0],
+      "positive": ["3", 0],
+      "negative": ["4", 0],
+      "latent_image": ["16", 0]
+    },
+    "class_type": "KSampler",
+    "_meta": {
+      "title": "KSampler (2nd Pass - Hires Fix)"
+>>>>>>> da3b3a43010526c4da2e5e5e3159875a316c7bdd
     }
   }
 }

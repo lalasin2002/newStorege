@@ -225,7 +225,7 @@ class DesignerUI(QtWidgets.QWidget):
         #self.ui.reloadCreateImage_Btn.clicked.connect(self.load_select_comfyuiImageFolderData)
 
 
-        
+        self.ui.manual_Btn.clicked.connect(self.openManual)
 
 
         ## select Cbb Directory
@@ -256,6 +256,11 @@ class DesignerUI(QtWidgets.QWidget):
         self.ui.createImage_Btn.clicked.connect(self.create_image)
         self.ui.createImage_Btn.clicked.connect(self.load_select_comfyuiImageFolderData)
 
+
+    def openManual(self):
+        path = os.path.join(currentPath , "readMe" , "readMe.html")
+        if os.path.exists(path):
+            os.startfile(path)
 
     def _setup_log(self):
         
@@ -554,6 +559,7 @@ Output: worst quality, low quality, normal quality, lowres, watermark, signature
 
         try:
             ## 체크포인트
+            # 3. 체크포인트 / 샘플러
             ckpt = self.ui.selectCheckPoint_Cbb.currentText()
             sampler = self.ui.selectSampler_Cbb.currentText()
 
@@ -561,31 +567,39 @@ Output: worst quality, low quality, normal quality, lowres, watermark, signature
                 templeteData["1"]["inputs"]["ckpt_name"] = ckpt
             if "select" not in sampler.lower():
                 templeteData["2"]["inputs"]["sampler_name"] = sampler
+                templeteData["17"]["inputs"]["sampler_name"] = sampler  # ★ 2차도 동일 샘플러
 
-            ##시드
+            # 4. KSampler 옵션 (1차)
             ui_seed = int(self.ui.setSeed_Sb.value())
             if ui_seed == -1:
                 final_seed = random.randint(1, 1125899906842624)
             else:
                 final_seed = ui_seed
+            
             templeteData["2"]["inputs"]["seed"] = final_seed
-
-
-            ## 프롬프트 설정
-            templeteData["3"]["inputs"]["text"] = self.ui.positivePrompt_Pte.toPlainText()
-            templeteData["4"]["inputs"]["text"] = self.ui.negativePrompt_Pte.toPlainText()
-
-            ## 상세 설정
             templeteData["2"]["inputs"]["steps"] = int(self.ui.setStep_Sb.value())
             templeteData["2"]["inputs"]["cfg"] = float(self.ui.setCFG_Dsb.value())
             templeteData["2"]["inputs"]["denoise"] = float(self.ui.setDenoise_Dsb.value())
 
-            ## 업스케일
-            templeteData["14"]["inputs"]["width"] = int(self.ui.setWidth_Sb.value())
-            templeteData["14"]["inputs"]["height"] = int(self.ui.setHeight_Sb.value())
+            # ★ KSampler (2차, Hires Fix) 동기화
+            templeteData["17"]["inputs"]["seed"] = final_seed  # 같은 시드 → 일관성 유지
+            templeteData["17"]["inputs"]["cfg"] = float(self.ui.setCFG_Dsb.value())
+            # steps와 denoise는 2차용 고정 (15 steps, 0.4 denoise)
+            # 이건 워크플로우 JSON 기본값 그대로 사용
 
-            ## 업로드 이미지(이름만)
+            # 5. 프롬프트
+            positive_text = self._positive_prompt or self.ui.positivePrompt_Pte.toPlainText()
+            negative_text = self._negative_prompt or self.ui.negativePrompt_Pte.toPlainText()
+            templeteData["3"]["inputs"]["text"] = positive_text
+            templeteData["4"]["inputs"]["text"] = negative_text
+
+            # 6. 입력 이미지 (LoadImage 노드 9)
             templeteData["9"]["inputs"]["image"] = self._uploadImageName
+
+            # 7. ★ 입력 리사이즈 (ImageScale 노드 15) - UI의 width/height 적용
+            templeteData["15"]["inputs"]["width"] = int(self.ui.setWidth_Sb.value())
+            templeteData["15"]["inputs"]["height"] = int(self.ui.setHeight_Sb.value())
+            # ※ 출력 해상도는 자동으로 1.5배가 됩니다 (LatentUpscaleBy 노드 16)
             pprint.pprint(self._comfyuiRequestData)
 
 
