@@ -89,7 +89,7 @@ try:
 
         if search:
             nameSet = search.group()
-            scale = getSize(x)
+            scale = getSizeOnLattice(x)
 
             Ctrl = cmds.curve( n = nameSet + "_Ctrl" ,d=1, p=[(1, 1, 1), (1, 1, -1), (-1, 1, -1), (-1, 1, 1), (1, 1, 1), (1, -1, 1),
                                             (1, -1, -1), (1, 1, -1), (-1, 1, -1), (-1, -1, -1), (1, -1, -1),

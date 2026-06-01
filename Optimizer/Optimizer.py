@@ -11,10 +11,10 @@ else:
     from shiboken2 import wrapInstance
 
 
-if sys.version_info[0] >= 3:
+try:
     from PySide6.QtWidgets import QApplication, QFileDialog
     from PySide6 import QtCore, QtWidgets, QtUiTools, QtGui 
-else:
+except:
     from PySide2.QtWidgets import QApplication, QFileDialog
     from PySide2 import QtCore, QtWidgets, QtUiTools, QtGui 
 

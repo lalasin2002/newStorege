@@ -1,0 +1,1217 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>main</class>
+ <widget class="QWidget" name="main">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>548</width>
+    <height>962</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true">/* ==========================================================
+   Resize Image Manager  —  Dark Theme (VSCode-inspired)
+   ========================================================== */
+
+/* ---- Base ------------------------------------------------ */
+QWidget {
+    background-color: #1E1E1E;
+    color: #D4D4D4;
+    font-size: 10pt;
+    font-family: &quot;Segoe UI&quot;, &quot;Pretendard&quot;, sans-serif;
+}
+
+/* ---- Frame / Panel --------------------------------------- */
+QFrame {
+    background-color: #252526; /* 베이스 패널 색상 */
+    border: none;
+    border-radius: 5px;
+}
+
+/* ---- GroupBox (영역 구분이 확실해지도록 수정) ---------------- */
+QGroupBox {
+    background-color: #2A2A2B; /* 베이스 패널보다 살짝 밝게 띄움 */
+    border: 1px solid #4D4D50; /* 테두리를 주어 영역을 확실히 분리 */
+    border-radius: 6px;
+    margin-top: 14px;
+    padding: 10px 6px 6px 6px;
+    font-weight: bold;
+    color: #9CDCFE;
+}
+
+QGroupBox::title {
+    subcontrol-origin: margin;
+    subcontrol-position: top left;
+    left: 10px;
+    padding: 0 6px;
+    background-color: #2A2A2B; /* 타이틀 배경도 동일하게 맞춤 */
+    color: #9CDCFE;
+}
+
+/* ---- Label ----------------------------------------------- */
+QLabel {
+    background-color: transparent;
+    border: none;
+    color: #CCCCCC;
+}
+
+/* ---- LineEdit / TextEdit --------------------------------- */
+QLineEdit, QPlainTextEdit, QTextEdit {
+    background-color: #181818;
+    border: 1px solid #3C3C3C;
+    border-radius: 4px;
+    padding: 5px;
+    color: #D4D4D4;
+    selection-background-color: #007ACC;
+}
+
+QLineEdit:focus, QPlainTextEdit:focus, QTextEdit:focus {
+    border: 1px solid #007ACC;
+}
+
+QLineEdit:disabled, QPlainTextEdit:disabled {
+    background-color: #1A1A1A;
+    color: #5A5A5A;
+    border: 1px solid #2A2A2A;
+}
+
+/* ---- Button ---------------------------------------------- */
+QPushButton {
+    background-color: #007ACC;
+    color: #FFFFFF;
+    border: 1px solid #1C97EA;
+    border-radius: 4px;
+    padding: 6px 12px;
+    font-weight: bold;
+}
+
+QPushButton:hover {
+    background-color: #1F8AD2;
+    border: 1px solid #3AB0FF;
+}
+
+QPushButton:pressed {
+    background-color: #005C99;
+}
+
+QPushButton:disabled {
+    background-color: #2A2A2A;
+    color: #5A5A5A;
+    border: 1px solid #3C3C3C;
+}
+
+/* primary action button — 실행 버튼 */
+QPushButton#build_Btn {
+    background-color: #2EA043;
+    border: 1px solid #3FB950;
+    font-size: 11pt;
+    font-weight: bold;
+    padding: 10px 16px;
+}
+
+QPushButton#build_Btn:hover {
+    background-color: #3FB950;
+    border: 1px solid #56D364;
+}
+
+QPushButton#build_Btn:pressed {
+    background-color: #238636;
+}
+
+/* tool / icon-only button — 아이콘 버튼들 */
+QPushButton#info_Btn,
+QPushButton#reload_organizeData_Btn,
+QPushButton#clean_organizeData_Btn,
+QPushButton#setFolderPath_Btn,
+QPushButton#openLogPte_Btn,
+QPushButton#clearLogPte_Btn {
+    background-color: #4D4D50; 
+    border: 1px solid #5A5A5C;
+    color: #FFFFFF;
+    padding: 4px 8px;
+    min-width: 24px;
+}
+
+QPushButton#info_Btn:hover,
+QPushButton#reload_organizeData_Btn:hover,
+QPushButton#clean_organizeData_Btn:hover,
+QPushButton#setFolderPath_Btn:hover,
+QPushButton#openLogPte_Btn:hover,
+QPushButton#clearLogPte_Btn:hover {
+    background-color: #626266;
+    border: 1px solid #7B7B7F;
+}
+
+/* ---- SpinBox --------------------------------------------- */
+QSpinBox {
+    background-color: #181818;
+    border: 1px solid #3C3C3C;
+    border-radius: 4px;
+    padding: 3px 6px;
+    color: #D4D4D4;
+    selection-background-color: #007ACC;
+}
+
+QSpinBox:focus {
+    border: 1px solid #007ACC;
+}
+
+QSpinBox:disabled {
+    background-color: #1A1A1A;
+    color: #5A5A5A;
+}
+
+QSpinBox::up-button {
+    background-color: #3C3C3C;
+    border: none;
+    border-top-right-radius: 3px;
+    width: 16px;
+}
+
+QSpinBox::down-button {
+    background-color: #3C3C3C;
+    border: none;
+    border-bottom-right-radius: 3px;
+    width: 16px;
+}
+
+QSpinBox::up-button:hover, QSpinBox::down-button:hover {
+    background-color: #4D4D50;
+}
+
+QSpinBox::up-arrow {
+    image: none;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-bottom: 4px solid #FFFFFF;
+    width: 0;
+    height: 0;
+}
+
+QSpinBox::down-arrow {
+    image: none;
+    border-left: 3px solid transparent;
+    border-right: 3px solid transparent;
+    border-top: 4px solid #FFFFFF;
+    width: 0;
+    height: 0;
+}
+
+/* ---- ListWidget ------------------------------------------ */
+QListWidget {
+    background-color: #181818;
+    border: 1px solid #3C3C3C;
+    border-radius: 4px;
+    padding: 4px;
+    color: #D4D4D4;
+    outline: none;
+}
+
+QListWidget::item {
+    background-color: #252526;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    padding: 4px;
+    margin: 2px;
+    color: #CCCCCC;
+}
+
+QListWidget::item:hover {
+    background-color: #2D2D30;
+    border: 1px solid #4D4D50;
+}
+
+QListWidget::item:selected {
+    background-color: #007ACC;
+    border: 1px solid #1C97EA;
+    color: #FFFFFF;
+}
+
+/* ---- TableWidget ----------------------------------------- */
+QTableWidget {
+    background-color: #181818;
+    border: 1px solid #3C3C3C;
+    border-radius: 4px;
+    color: #D4D4D4;
+    gridline-color: #4D4D50;
+    outline: none;
+}
+
+QTableWidget::item {
+    padding: 4px;
+    border-bottom: 1px solid #2D2D30;
+}
+
+QTableWidget::item:selected {
+    background-color: #007ACC;
+    color: #FFFFFF;
+}
+
+QHeaderView::section {
+    background-color: #2D2D30;
+    color: #9CDCFE;
+    padding: 4px;
+    border: 1px solid #3C3C3C;
+    border-top: none;
+    border-left: none;
+    font-weight: bold;
+}
+
+QTableCornerButton::section {
+    background-color: #2D2D30;
+    border: 1px solid #3C3C3C;
+}
+
+/* ---- ProgressBar ----------------------------------------- */
+QProgressBar {
+    background-color: #181818;
+    border: 1px solid #3C3C3C;
+    border-radius: 4px;
+    text-align: center;
+    color: #FFFFFF;
+    font-weight: bold;
+    min-height: 18px;
+}
+
+QProgressBar::chunk {
+    background-color: #007ACC;
+    border-radius: 3px;
+}
+
+/* ---- ScrollBar ------------------------------------------- */
+QScrollBar:vertical {
+    background-color: #1E1E1E;
+    width: 12px;
+    margin: 0;
+    border: none;
+}
+
+QScrollBar::handle:vertical {
+    background-color: #4D4D50;
+    border-radius: 5px;
+    min-height: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:vertical:hover {
+    background-color: #626266;
+}
+
+QScrollBar::add-line:vertical, QScrollBar::sub-line:vertical {
+    height: 0;
+    border: none;
+}
+
+QScrollBar::add-page:vertical, QScrollBar::sub-page:vertical {
+    background: none;
+}
+
+QScrollBar:horizontal {
+    background-color: #1E1E1E;
+    height: 12px;
+    margin: 0;
+    border: none;
+}
+
+QScrollBar::handle:horizontal {
+    background-color: #4D4D50;
+    border-radius: 5px;
+    min-width: 30px;
+    margin: 2px;
+}
+
+QScrollBar::handle:horizontal:hover {
+    background-color: #626266;
+}
+
+QScrollBar::add-line:horizontal, QScrollBar::sub-line:horizontal {
+    width: 0;
+    border: none;
+}
+
+QScrollBar::add-page:horizontal, QScrollBar::sub-page:horizontal {
+    background: none;
+}</string>
+  </property>
+  <layout class="QVBoxLayout" name="verticalLayout_7">
+   <item>
+    <widget class="QFrame" name="frame">
+     <property name="minimumSize">
+      <size>
+       <width>400</width>
+       <height>0</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Shape::StyledPanel</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Shadow::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_5">
+      <property name="spacing">
+       <number>3</number>
+      </property>
+      <property name="leftMargin">
+       <number>9</number>
+      </property>
+      <property name="topMargin">
+       <number>9</number>
+      </property>
+      <property name="rightMargin">
+       <number>9</number>
+      </property>
+      <property name="bottomMargin">
+       <number>9</number>
+      </property>
+      <item>
+       <layout class="QHBoxLayout" name="info_H">
+        <property name="spacing">
+         <number>3</number>
+        </property>
+       </layout>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="state_Gb">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>100</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>State</string>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout" stretch="1,3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="verticalLayout">
+           <item>
+            <layout class="QHBoxLayout" name="mayaPort_H">
+             <item>
+              <widget class="QLabel" name="mayaPort_Lb">
+               <property name="minimumSize">
+                <size>
+                 <width>75</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>75</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>mayaPort :: </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QSpinBox" name="mayaPort_Sb">
+               <property name="minimumSize">
+                <size>
+                 <width>75</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>75</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="buttonSymbols">
+                <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+               </property>
+               <property name="maximum">
+                <number>1000000000</number>
+               </property>
+               <property name="value">
+                <number>7772</number>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <spacer name="verticalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Vertical</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>20</width>
+               <height>40</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QVBoxLayout" name="stateBtn_V">
+           <property name="spacing">
+            <number>3</number>
+           </property>
+           <item>
+            <widget class="QPushButton" name="makeConnectCode_Btn">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>make connect code</string>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="connectMayaPort_Btn">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>30</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>connect</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <layout class="QHBoxLayout" name="organizeDataBtn_H">
+        <item>
+         <spacer name="horizontalSpacer_2">
+          <property name="orientation">
+           <enum>Qt::Orientation::Horizontal</enum>
+          </property>
+          <property name="sizeHint" stdset="0">
+           <size>
+            <width>40</width>
+            <height>20</height>
+           </size>
+          </property>
+         </spacer>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="organizeDataBtn_subH">
+          <property name="spacing">
+           <number>3</number>
+          </property>
+          <item>
+           <widget class="QPushButton" name="reload_organizeData_Btn">
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="sizeIncrement">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset theme="QIcon::ThemeIcon::SystemReboot"/>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clean_organizeData_Btn">
+            <property name="maximumSize">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="sizeIncrement">
+             <size>
+              <width>25</width>
+              <height>25</height>
+             </size>
+            </property>
+            <property name="text">
+             <string/>
+            </property>
+            <property name="icon">
+             <iconset theme="QIcon::ThemeIcon::EditDelete"/>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="organizeData_Gb">
+        <property name="enabled">
+         <bool>true</bool>
+        </property>
+        <property name="title">
+         <string>organize data</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_4">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QTableWidget" name="organizeData_Tb">
+           <property name="editTriggers">
+            <set>QAbstractItemView::EditTrigger::NoEditTriggers</set>
+           </property>
+           <property name="dragEnabled">
+            <bool>false</bool>
+           </property>
+           <property name="selectionMode">
+            <enum>QAbstractItemView::SelectionMode::MultiSelection</enum>
+           </property>
+           <attribute name="horizontalHeaderCascadingSectionResizes">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="horizontalHeaderMinimumSectionSize">
+            <number>50</number>
+           </attribute>
+           <attribute name="horizontalHeaderDefaultSectionSize">
+            <number>100</number>
+           </attribute>
+           <attribute name="horizontalHeaderShowSortIndicator" stdset="0">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="horizontalHeaderStretchLastSection">
+            <bool>true</bool>
+           </attribute>
+           <attribute name="verticalHeaderMinimumSectionSize">
+            <number>30</number>
+           </attribute>
+           <attribute name="verticalHeaderDefaultSectionSize">
+            <number>30</number>
+           </attribute>
+           <column>
+            <property name="text">
+             <string>object</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>shaderEngine</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>fileNode</string>
+            </property>
+           </column>
+           <column>
+            <property name="text">
+             <string>imageName</string>
+            </property>
+           </column>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="setting_Gb">
+        <property name="title">
+         <string>setting</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_6">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <layout class="QVBoxLayout" name="savePath_V">
+           <property name="leftMargin">
+            <number>3</number>
+           </property>
+           <property name="topMargin">
+            <number>3</number>
+           </property>
+           <property name="rightMargin">
+            <number>3</number>
+           </property>
+           <property name="bottomMargin">
+            <number>3</number>
+           </property>
+           <item>
+            <layout class="QHBoxLayout" name="fileName_H">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="saveName_Lb">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>save name :: </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="saveName_Le">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>resize_{name}.jpg</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="folderPath_H">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="folderPath_Lb">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>folder path :: </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="folderPath_Le">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>30</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QPushButton" name="setFolderPath_Btn">
+               <property name="minimumSize">
+                <size>
+                 <width>42</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="sizeIncrement">
+                <size>
+                 <width>25</width>
+                 <height>25</height>
+                </size>
+               </property>
+               <property name="text">
+                <string/>
+               </property>
+               <property name="icon">
+                <iconset theme="QIcon::ThemeIcon::FolderOpen"/>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="fileNamePattern_H">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="fileNamePattern_Lb">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>file Pattern :: </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QLineEdit" name="fileNamePattern_Le">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>(.+)(_dif)(/.jpg)</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QHBoxLayout" name="nodeType_H">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <widget class="QLabel" name="nodeType_Lb">
+               <property name="minimumSize">
+                <size>
+                 <width>100</width>
+                 <height>0</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>100</width>
+                 <height>16777215</height>
+                </size>
+               </property>
+               <property name="text">
+                <string>shader type :: </string>
+               </property>
+               <property name="alignment">
+                <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <widget class="QComboBox" name="nodeType_Cbb">
+               <property name="minimumSize">
+                <size>
+                 <width>0</width>
+                 <height>30</height>
+                </size>
+               </property>
+               <property name="maximumSize">
+                <size>
+                 <width>16777215</width>
+                 <height>30</height>
+                </size>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="setting_V" stretch="1,1,5">
+           <item>
+            <layout class="QVBoxLayout" name="resizeWidthHeight_H">
+             <property name="spacing">
+              <number>0</number>
+             </property>
+             <item>
+              <layout class="QHBoxLayout" name="resizeWidth_H">
+               <item>
+                <widget class="QLabel" name="resizeWidth_Lb">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>width :: </string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="resizeWidth_Sb">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>1000000000</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="resizeHeight_H">
+               <item>
+                <widget class="QLabel" name="resizeHeight_Lb">
+                 <property name="minimumSize">
+                  <size>
+                   <width>50</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>50</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="text">
+                  <string>height :: </string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QSpinBox" name="resizeHeight_Sb">
+                 <property name="minimumSize">
+                  <size>
+                   <width>75</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>75</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="buttonSymbols">
+                  <enum>QAbstractSpinBox::ButtonSymbols::NoButtons</enum>
+                 </property>
+                 <property name="correctionMode">
+                  <enum>QAbstractSpinBox::CorrectionMode::CorrectToPreviousValue</enum>
+                 </property>
+                 <property name="maximum">
+                  <number>1000000000</number>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <layout class="QVBoxLayout" name="openFolder_V">
+             <item>
+              <widget class="QCheckBox" name="openFolder_Chb">
+               <property name="text">
+                <string>open folder</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </item>
+           <item>
+            <widget class="QPushButton" name="build_Btn">
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>50</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>bulid</string>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QProgressBar" name="execProcess_Pb">
+        <property name="value">
+         <number>0</number>
+        </property>
+        <property name="alignment">
+         <set>Qt::AlignmentFlag::AlignJustify|Qt::AlignmentFlag::AlignVCenter</set>
+        </property>
+        <property name="textVisible">
+         <bool>true</bool>
+        </property>
+        <property name="orientation">
+         <enum>Qt::Orientation::Horizontal</enum>
+        </property>
+        <property name="invertedAppearance">
+         <bool>false</bool>
+        </property>
+        <property name="textDirection">
+         <enum>QProgressBar::Direction::TopToBottom</enum>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QGroupBox" name="log_Gb">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>125</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>125</height>
+         </size>
+        </property>
+        <property name="title">
+         <string>log</string>
+        </property>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QPlainTextEdit" name="log_Pte">
+           <property name="readOnly">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="clearLogPte_Gb">
+           <property name="spacing">
+            <number>3</number>
+           </property>
+           <item>
+            <spacer name="horizontalSpacer">
+             <property name="orientation">
+              <enum>Qt::Orientation::Horizontal</enum>
+             </property>
+             <property name="sizeHint" stdset="0">
+              <size>
+               <width>40</width>
+               <height>20</height>
+              </size>
+             </property>
+            </spacer>
+           </item>
+           <item>
+            <widget class="QPushButton" name="openLogPte_Btn">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="sizeIncrement">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="QIcon::ThemeIcon::AppointmentNew"/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="clearLogPte_Btn">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="sizeIncrement">
+              <size>
+               <width>50</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="QIcon::ThemeIcon::EditDelete"/>
+             </property>
+            </widget>
+           </item>
+           <item>
+            <widget class="QPushButton" name="info_Btn">
+             <property name="minimumSize">
+              <size>
+               <width>42</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="maximumSize">
+              <size>
+               <width>25</width>
+               <height>25</height>
+              </size>
+             </property>
+             <property name="sizeIncrement">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string/>
+             </property>
+             <property name="icon">
+              <iconset theme="QIcon::ThemeIcon::HelpFaq"/>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

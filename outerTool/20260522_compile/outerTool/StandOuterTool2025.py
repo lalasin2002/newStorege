@@ -678,7 +678,7 @@ class DesignerUI(QtWidgets.QDialog):
                     f.writelines(new_lines)
                 log = u""
                 log += u">> [clene userSetUp] : 문제되는 코드제거 완료 \n"
-            count +=1
+                count +=1
         except Exception as e:
             errorlog = u""
             errorlog += ">> [clene userSetUp] : !! 제거 실패 !! \n"

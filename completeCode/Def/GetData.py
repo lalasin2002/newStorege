@@ -435,6 +435,42 @@ def getNode_From_MeshShaderEngine(Object , Types = ["blendColors" , "RedshiftMat
     
 
 
+def isDag(node):
+    return cmds.objectType(node, isAType='dagNode')
+
+def getShaderEngine(obj):
+    work_item = obj
+    
+    if cmds.objectType(obj) == "transform":
+        shapes = cmds.listRelatives(work_item, shapes=True, fullPath=True) or []
+        if shapes:
+            work_item = shapes[0]
+    shaderEngine = cmds.listConnections(work_item, type="shadingEngine") or []
+    if shaderEngine: 
+        return shaderEngine[0]
+    return None
+
+def getShaderNodes(shaderEngine , types = ["RedshiftMaterial"]):
+    if not shaderEngine or not cmds.objExists(shaderEngine):
+        return None
+    if not cmds.objectType(shaderEngine) == "shadingEngine":
+        return None
+
+    shaderNodes = cmds.listConnections(shaderEngine , s= 1 , d =0 ) or []
+    if shaderNodes:
+        shaderNodes = [x for x in shaderNodes if not isDag(x) and not cmds.objectType(x) == "groupId"] or []
+    if types and shaderNodes:
+        shaderNodes = [x for x in shaderNodes if cmds.objectType(x) in types] or []
+
+    return shaderNodes 
+
+def getConnectedNode(node , typeNode = "file" ,plug =False , connection = True ):
+    if not cmds.objExists(node):
+        return
+    
+    unpack = { "s" : True , "d" : False , "t" : typeNode , "p" : plug , "c" : connection   }
+    return cmds.listConnections(node , **unpack ) or []
+
 
 #-------------------------------------------------------------------Cal
 def getDistance(StartObj, EndObj ):
