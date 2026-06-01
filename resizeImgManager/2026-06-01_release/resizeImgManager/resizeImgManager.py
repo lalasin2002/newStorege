@@ -457,7 +457,9 @@ else:
     
         makeCode.makeCodeFile(filePath ,code )
         if openFolder:
-            os.startfile(currentPath)
+            real_dir = os.path.dirname(filePath) 
+            os.startfile(real_dir)
+            
 
     #----------------------------------------------------------------------checkPort
 
