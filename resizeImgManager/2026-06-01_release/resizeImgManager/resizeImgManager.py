@@ -67,22 +67,36 @@ class DesignerUI(QtWidgets.QWidget):
         self._prevJsonPath = writable_path( "_prev.json")
         # (key, widget_name, getter, setter, default)
         self._prevMap =[
-            ("port",      "mayaPort_Sb",       "value",        "setValue",        7772),
-            ("width",     "resizeWidth_Sb",    "value",        "setValue",        512),
-            ("height",    "resizeHeight_Sb",   "value",        "setValue",        512),
-            ("saveName",  "saveName_Le",       "text",         "setText" ,        "resize_{name}.jpg"),
-            ("nodeType",  "nodeType_Cbb",      "currentText",  "setCurrentText" , ""),
-            ("pattern" ,  "fileNamePattern_Le","text",         "setText" ,        "(.+)(_dif)(\.jpg)"),
-            ("openFolder","openFolder_Chb",    "isChecked",    "setChecked",       True)
+            ("port",          "mayaPort_Sb",       "value",        "setValue",        7772),
+            ("width",         "resizeWidth_Sb",    "value",        "setValue",        512),
+            ("height",        "resizeHeight_Sb",   "value",        "setValue",        512),
+            ("saveName",      "saveName_Le",       "text",         "setText" ,        "resize_{name}.jpg"),
+            ("pattern" ,      "fileNamePattern_Le","text",         "setText" ,        "(.+)(_dif)(\.jpg)"),
+            ("createNodeName","createNodeName_Le", "text",         "setText" ,        "{resizeImgName}"),
+
+            ("openFolder",    "openFolder_Chb",    "isChecked",    "setChecked",       True),
+            ("checkMakeNode", "makeNode_Chb",      "isChecked",    "setChecked",       False),
+            ("nodeType",      "nodeType_Cbb",      "currentText",  "setCurrentText" , ""),
+            ("createNodeType","createNodeType_Cbb","currentText",  "setCurrentText" , "")
         ]
 
         self._isPrevShader = None
         self._shaderData = {}
-        self._shaderBasicData = {"RedshiftMaterial" : ".diffuse_color"}
+        self._shaderBasicData = {
+                                    "shaderAttr": {
+                                        "RedshiftMaterial": ".diffuse_color"
+                                    },
+                                    "createShadingNodes" : ["lambert" , "blinn"]
+
+                                }
         self._shaderJsonPath = writable_path("_shaderData.json")
         #--------------------------
         self._isMayaPort = False
         self._is_log_expanded =False
+        self._is_table_expanded = False
+        self._toggleForTable = False
+        self._prev_main_size = None
+
 
     def _load_shaderAttr_json(self):
         
@@ -97,7 +111,7 @@ class DesignerUI(QtWidgets.QWidget):
 
         if data:
             self._shaderData.update(data)
-            keys = self._shaderBasicData.keys()
+            keys = self._shaderBasicData["shaderAttr"].keys()
             #keys.sort()
             self.ui.nodeType_Cbb.clear()
             self.ui.nodeType_Cbb.addItems(keys)
@@ -105,7 +119,7 @@ class DesignerUI(QtWidgets.QWidget):
     def _save_shaderAttr_json(self):
         pass
         if not self._shaderData:
-            self._shaderData =  self._shaderBasicData
+            self._shaderData =  self._shaderBasicData["shaderAttr"]
         upData ={}
         if os.path.exists(self._shaderJsonPath):
             try:
@@ -127,6 +141,20 @@ class DesignerUI(QtWidgets.QWidget):
         except Exception as e:
             print(u">> 에러 : _shaderData.json 저장 중 오류 발생: {}".format(e))
 
+    def _load_createNodeType_json(self):
+        self._isPrevShader = os.path.exists(self._shaderJsonPath)
+        data = None
+        if self._isPrevShader:
+            try:
+                with io.open(self._shaderJsonPath) as f:
+                    data = json.load(f)
+            except Exception:
+                    print(u">> 에러 : _shaderData.json 데이터 읽기 실패")
+        if data:
+            self._shaderData.update(data)
+            nodes = self._shaderBasicData["createShadingNodes"]
+            self.ui.createNodeType_Cbb.clear()
+            self.ui.createNodeType_Cbb.addItems(nodes)
 
     #----------------------------------------------------------------------load Ui
     def init_ui(self, path):
@@ -164,6 +192,7 @@ class DesignerUI(QtWidgets.QWidget):
         self._setup_icon()
         self._loadPrev()
         self._load_shaderAttr_json()
+        self._load_createNodeType_json()
         self._connect_widget()
         self._check_mayaProt()
 
@@ -177,12 +206,17 @@ class DesignerUI(QtWidgets.QWidget):
 
         #find data
         self.ui.reload_organizeData_Btn.clicked.connect(self.get_mayaSelectedShaderData)
+        self.ui.reload_organizeData_Btn.clicked.connect(self.select_all_tableItems)
         self.ui.clean_organizeData_Btn.clicked.connect(lambda : self.ui.organizeData_Tb.clearContents())
         self.ui.clean_organizeData_Btn.clicked.connect(lambda : self.ui.organizeData_Tb.setRowCount(0))
+        self.ui.organizeData_Btn.clicked.connect(self.filter_noneItem)
+
+        self.ui.open_organizeData_Btn.clicked.connect(self.expend_tableLayout)
+
+        self.ui.selectAll_organizeData_Btn.clicked.connect(self.select_all_tableItems)
 
         #clear data
         self.ui.setFolderPath_Btn.clicked.connect(lambda : self.set_directoryPath(self.ui.folderPath_Le))
-        
         self.ui.setFolderPath_Btn.clicked.connect(lambda : print (u">> 디렉토리 설정됨 : {}".format(self.ui.folderPath_Le.text())))
 
 
@@ -191,17 +225,133 @@ class DesignerUI(QtWidgets.QWidget):
         self.ui.clearLogPte_Btn.clicked.connect(lambda : self.ui.log_Pte.clear())
 
         self.ui.log_Pte.installEventFilter(self)
-
+        self.ui.organizeData_Tb.installEventFilter(self)
         #build 
         self.ui.build_Btn.clicked.connect( self.build)
 
         #manual
         self.ui.info_Btn.clicked.connect( self.open_Manual)
     #----------------------------------------------------------------------Function
+    def select_all_tableItems(self):
+        if self._toggleForTable == False:
+            self.ui.organizeData_Tb.selectAll()
+            self._toggleForTable = True
+        else:
+            self.ui.organizeData_Tb.clearSelection()
+            self._toggleForTable = False
+
     def open_Manual(self):
         manualPath = resource_path("manual.html") 
         if os.path.exists(manualPath):
             os.startfile(manualPath)
+
+    def make_node_for_resize(self , success_data):
+        nodeNameTemplete = self.ui.createNodeName_Le.text()
+        nodeType = self.ui.createNodeType_Cbb.currentText()
+        if not "{resizeImgName}" in nodeNameTemplete:
+            print(">> 에러 : node name 에 '{resizeImgName}'이 없습니다.")
+            return
+        
+        print(">> 마야로 노드 생성 코드를 일괄 조립합니다...")
+
+        headCode_master = ""
+        bodyCode_master = ""
+
+        ''' 참고
+        data = {
+        "shaderEngine": engine,
+        "fileNode": final_fileNode,
+        "shaderNode": final_shaderPlug if final_shaderPlug else (shaders[0] if shaders else None),
+        "imgName": imgName,
+        "imgPath": imgPath,
+        "imgDirPath": imgDirPath,
+        "cnted_rsshader" : cnted_rsshader,
+        "cnted_shader" : cnted_shader
+        }'''
+
+
+        for item in success_data: # _resize_workerThead >> _on_build_finished >> 에서 가져온 데이터
+
+            disconnect_code =""
+            connect_code =""
+            
+
+
+            orig_data = item["orig_data"]
+            resizeImg_path = item["resize_path"]
+            shader_engine = orig_data.get("shaderEngine")
+
+
+
+            imgName, _ = os.path.splitext(orig_data.get("imgName", "unknown"))
+            new_shader_name = nodeNameTemplete.format(resizeImgName=imgName + "_{}".format(nodeType.capitalize()))
+            new_file_name = nodeNameTemplete.format(resizeImgName=imgName + "_File")
+            new_p2t_name = nodeNameTemplete.format(resizeImgName=imgName + "_P2t")
+
+            #----------------------------------------------------------------------헤더 및 newShader
+            HeaderCode , create_shadingBodyCode = mayaCommend.create_shadingNode(
+                new_shader_name , new_file_name , new_p2t_name , nodeType
+                )
+            
+            headCode_master = HeaderCode 
+            bodyCode_master += create_shadingBodyCode
+            #----------------------------------------------------------------------newFile 경로 삽입
+            _ , setAttr_BodyCode = mayaCommend.setAttrData(
+                new_file_name + ".fileTextureName" , resizeImg_path ,{"type":"string"}
+                )
+            
+            bodyCode_master += setAttr_BodyCode
+
+            #----------------------------------------------------------------------disconnect 
+            if orig_data.get("cnted_rsshader"):
+                _ , disconnect_rsBodyCode = mayaCommend.disconnect_nodes(
+                    orig_data.get("cnted_rsshader")[0] , orig_data.get("cnted_rsshader")[1]
+                    )
+                disconnect_code += disconnect_rsBodyCode
+
+            if orig_data.get("cnted_shader"):
+                _ , disconnect_BodyCode = mayaCommend.disconnect_nodes(
+                    orig_data.get("cnted_shader")[0] , orig_data.get("cnted_shader")[1]
+                    )
+                disconnect_code += disconnect_BodyCode
+
+            #----------------------------------------------------------------------connect 
+            if shader_engine:
+                old_shader_out = None
+                if orig_data.get("cnted_rsshader"):
+                    old_shader_out = orig_data.get("cnted_rsshader")[0]
+                elif orig_data.get("cnted_shader"):
+                    old_shader_out = orig_data.get("cnted_shader")[0]
+
+                # 2. 찾은 기존 쉐이더를 렌더링용(rsSurfaceShader)으로 강제 이사시킵니다.
+                if old_shader_out:
+                    _ , connect_rsShader_to_RsSurfaceShader_BodyCode = mayaCommend.connect_nodes(
+                        old_shader_out , shader_engine + ".rsSurfaceShader"
+                    )
+                    connect_code += connect_rsShader_to_RsSurfaceShader_BodyCode
+
+                # 3. 빈 자리(surfaceShader)에 리사이즈 텍스처를 문 새로운 쉐이더를 꽂아 뷰포트를 최적화합니다.
+                _ , connect_newShader_to_SurfaceShader_BodyCode = mayaCommend.connect_nodes(
+                    new_shader_name + ".outColor" , shader_engine + ".surfaceShader"
+                )
+                connect_code += connect_newShader_to_SurfaceShader_BodyCode
+
+            bodyCode_master += disconnect_code + connect_code
+
+        final_maya_code = headCode_master + "\n" + bodyCode_master
+        dummy_json_path = os.path.join(tempfile.gettempdir(), "dummy.json").replace("\\", "/") # 임시파일로 
+        success, data = connectMayaSocket.send_to_maya_for_jsonFile(
+            final_maya_code, 
+            dummy_json_path, 
+            "127.0.0.1", 
+            self.ui.mayaPort_Sb.value())
+        
+
+
+        if success:
+            print(">> 마야 노드 생성 및 연결 작업이 완료되었습니다!")
+        else:
+            print(">> 에러 : 마야 노드 생성 통신 실패: {}".format(data))
 
 
 
@@ -272,8 +422,8 @@ class DesignerUI(QtWidgets.QWidget):
             if main_item :
                 objName = main_item.data(QtCore.Qt.UserRole)
                 objData = main_item.data(QtCore.Qt.UserRole + 1)
-
-
+                ## 테이블 위젯의 QtCore.Qt.UserRole데이서 >>  Json(딕셔너리) 데이터로
+                objData["ui_row_index"] = row #ui업데이트 및 노드만들기
                 result_data.append(objData)
                 
                 st += ">> [선택됨] row {} : {}\n".format(row, objName)
@@ -282,19 +432,46 @@ class DesignerUI(QtWidgets.QWidget):
         return result_data
 
 
+    def expend_tableLayout(self):
+        if not self._is_table_expanded:
+            
+            self.ui.organizeData_Tb.setWindowFlags(QtCore.Qt.Window)
+            self.ui.organizeData_Tb.setWindowTitle("Item Table")
+            self.ui.organizeData_Tb.resize(1300, 400)
+            self.ui.organizeData_Tb.show()
+            self.ui.organizeData_Gb.setMinimumHeight(0)
+            self.ui.organizeData_Gb.setMaximumHeight(0)
+            self.ui.organizeData_Gb.setVisible(False)
+            self._is_table_expanded = True
+            #QApplication.processEvents()
+            QApplication.processEvents()
+            self.resize(self.width(), 0)
+        else:
+            self.ui.organizeData_Tb.setWindowFlags(QtCore.Qt.Widget)
+            if self.ui.organizeData_Gb.layout() is not None:
+                self.ui.organizeData_Gb.layout().insertWidget(0, self.ui.organizeData_Tb)
+            else:
+                print(">> 에러: organizeData_Gb에 레이아웃이 설정되어 있지 않습니다.")
+            self.ui.organizeData_Tb.show()
+            self.ui.organizeData_Gb.setMinimumHeight(0)
+            self.ui.organizeData_Gb.setMaximumHeight(16777215)
+            self.ui.organizeData_Gb.setVisible(True)
+            self._is_table_expanded = False
+
 
     def expend_logLayout(self):
         if not self._is_log_expanded:
+            
             # 플래그를 Window로 변경하여 레이아웃에서 완전히 분리 (팝업)
             self.ui.log_Pte.setWindowFlags(QtCore.Qt.Window)
-
-
             self.ui.log_Pte.setWindowTitle("Log Viewer")
             self.ui.log_Pte.resize(600, 400)
             self.ui.log_Pte.show()
             self.ui.log_Gb.setMinimumHeight(60)
             self.ui.log_Gb.setMaximumHeight(60)
             self._is_log_expanded = True
+            QApplication.processEvents()
+            self.resize(self.width(), 0)
             
         else:
             # 팝업 상태 해제 (Widget으로 복귀)
@@ -309,10 +486,20 @@ class DesignerUI(QtWidgets.QWidget):
             self.ui.log_Gb.setMaximumHeight(125)
             self._is_log_expanded = False
 
+
+
     def set_directoryPath(self, target_widget):
         path = pysideHelper.set_existingDirectoryPath(self.ui , target_widget.text())
         if path:
             target_widget.setText(path)
+
+    def filter_noneItem(self):
+        #range(4 = start, -1 = end, -1 = + (-1씩)) ==> 4, 3, 2, 1, 0
+        for row in range(self.ui.organizeData_Tb.rowCount() - 1, -1, -1):
+            img_item = self.ui.organizeData_Tb.item(row, 1)
+            if img_item is None or img_item.text() == "None":
+                self.ui.organizeData_Tb.removeRow(row)
+
 
     def get_mayaSelectedShaderData(self):
         #print (self._shaderData)
@@ -326,8 +513,9 @@ class DesignerUI(QtWidgets.QWidget):
         tempPath = os.path.join(tempfile.gettempdir() , "selectedShaderData.json").replace("\\", "/")
         code = ""
         prefixCode , exportJsonCode = mayaCommend.set_JsonPath( tempPath , "jsonData")
-        sentToMayaCode = mayaCommend.get_selectedMayaShaderData(currentSelectShader , pattern)
-
+        print (">>> currentSelectShader" , currentSelectShader)
+        headCode , bodyCode = mayaCommend.get_selectedMayaShaderData(currentSelectShader , pattern)
+        sentToMayaCode = headCode + bodyCode
         code += prefixCode
         code += sentToMayaCode
         code += exportJsonCode
@@ -347,52 +535,68 @@ class DesignerUI(QtWidgets.QWidget):
             return
         dirPath = None
         try:
-            rowCount = len(data.keys())
+            #  마야에서 넘어온 원본 data에서 중복되는 쉐이더 엔진을 걸러냅니다!
+            filtered_data = {}
+            for objects, objData in data.items():
+                engine = objData.get("shaderEngine")
+                
+                
+                if engine:
+                    if engine not in filtered_data:
+                        filtered_data[engine] = (objects, objData)
+                else:
+                    # 만약 엔진 정보가 없는 불량 노드라면
+                    print(">> [스킵] 쉐이딩 그룹이 없는 불량 노드: {}".format(objects))
+                    continue
+            # 이제 테이블은 중복이 완벽하게 제거된 filtered_data의 개수만큼만 생성됩니다.
+            rowCount = len(filtered_data)
             self.ui.organizeData_Tb.clearContents()
             self.ui.organizeData_Tb.setRowCount(rowCount)
-            rowCount = 0
-            for objects , objData in data.items():
-
+            
+            row_idx = 0 # rowCount 대신 테이블 줄 번호를 추적할 안전한 변수
+            
+            # data.items() 대신, 필터링이 끝난 filtered_data.values()에서 꺼내옵니다.
+            for engine_key, (objects, objData) in filtered_data.items():
 
                 if dirPath is None:
                     img_dir = objData.get("imgDirPath")
                     if img_dir and os.path.exists(img_dir):
                         dirPath = img_dir
                     
-
-                reNaming= objects
+                reNaming = objects
                 if "|" in objects:
                     splitObjects = objects.split("|")
                     reNaming = "...|{}".format(splitObjects[-1])
+                    
+                # (옵션) UI에서 작업자가 헷갈리지 않도록 이름 뒤에 엔진 이름을 붙여주면 아주 직관적입니다!
+                reNaming = "{} [{}]".format(reNaming, engine_key)
 
                 item = QtWidgets.QTableWidgetItem(reNaming)
 
+                item.setData(QtCore.Qt.UserRole, objects)  
+                item.setData(QtCore.Qt.UserRole + 1, objData)  
 
-                item.setData(QtCore.Qt.UserRole , objects)  
-                item.setData(QtCore.Qt.UserRole +1, objData)  
+                self.ui.organizeData_Tb.setItem(row_idx, 0, item)
+                
+                item_img = QtWidgets.QTableWidgetItem(str(objData.get("imgName", None)))
+                self.ui.organizeData_Tb.setItem(row_idx, 1, item_img)
 
+                cnted_shader = QtWidgets.QTableWidgetItem(str(objData.get("cnted_shader", None)))
+                self.ui.organizeData_Tb.setItem(row_idx, 2, cnted_shader)
 
-                self.ui.organizeData_Tb.setItem(rowCount, 0, item)
+                cnted_rsshader = QtWidgets.QTableWidgetItem(str(objData.get("cnted_rsshader", None)))
+                self.ui.organizeData_Tb.setItem(row_idx, 3, cnted_rsshader)
+                
+                row_idx += 1
 
-                #각 데이터 QTableWidgetItem 객체화
-                item_engine = QtWidgets.QTableWidgetItem(str(objData.get("shaderEngine",None)))
-                self.ui.organizeData_Tb.setItem(rowCount, 1, item_engine)
-
-                item_file = QtWidgets.QTableWidgetItem(str( objData.get("fileNode",None)))
-                self.ui.organizeData_Tb.setItem(rowCount, 2, item_file)
-
-                item_img = QtWidgets.QTableWidgetItem(str( objData.get("imgName",None)))
-                self.ui.organizeData_Tb.setItem(rowCount, 3, item_img)
-                rowCount+=1
-
-            print (u">> mayaShaderData 가져옴 : ")
-            pprint.pprint(data)
+            print(u">> mayaShaderData 가져옴 (중복 제거 완료!): 총 {}개".format(rowCount))
 
         except Exception as e:
-            print (u">> 에러 : shaderData 가져오기 실패\n {}".format(e))
+            print(u">> 에러 : shaderData 가져오기 실패\n {}".format(e))
+            
         if dirPath:
             self.ui.folderPath_Le.setText(dirPath)
-            print (u">> 디렉토리 설정됨 : {}".format(dirPath))
+            print(u">> 디렉토리 설정됨 : {}".format(dirPath))
 
 
     def make_connectMayaCode(self ,openFolder = False):
@@ -482,6 +686,11 @@ else:
             # 2. 우리가 만든 복귀 함수를 강제로 실행시킵니다.
             self.expend_logLayout()
             return True
+        if obj == self.ui.organizeData_Tb and event.type() == QtCore.QEvent.Close:
+            event.ignore()
+            self.expend_tableLayout()
+            return True
+
             
         return super(DesignerUI, self).eventFilter(obj, event)
 
@@ -527,16 +736,18 @@ else:
     def _resize_workerThead(self,workData, dirPath, renamefile, resizeWidth, resizeHeight, progress_callback=None, is_running_check=None):
 
         workTotal = len(workData)
-        
+        result_list = [] #반환할거
+
+
         for idx, data in enumerate(workData):
             # 사용자가 취소 버튼을 눌렀는지 체크
             if is_running_check and not is_running_check():
-                return ">> 작업이 취소되었습니다."
+                return {"status": "cancel", "msg": ">> 작업이 취소되었습니다.", "result_data": []}
 
             if data.get("imgPath"):
                 imgName, ext = os.path.splitext(data.get("imgName"))
                 renameSaveimg = renamefile.format(name=imgName)
-                resultSavePath = os.path.join(dirPath, renameSaveimg)
+                resultSavePath = os.path.join(dirPath, renameSaveimg).replace("\\", "/")
 
                 resizeWork = controlImage.resizeImage(data.get("imgPath"), resizeWidth, resizeHeight)
                 
@@ -547,18 +758,77 @@ else:
                     if saveResize:
                         print(">> 리사이즈 저장완료 :\n    - {}".format(resultSavePath))
 
+                        result_list.append({"is_success": True,
+                                            "orig_data": data,
+                                            "resize_path" : resultSavePath,
+                                            "error_msg": None
+                                            })
+                    else: #저장이 안될경우
+                        result_list.append({
+                            "is_success": False,
+                            "orig_data": data,
+                            "resize_path": None,
+                            "error_msg": u"이미지 저장 실패 (경로/권한 문제)"
+                        })
+                else: #resizeWork이 안될경우
+                    result_list.append({
+                        "is_success": False,
+                        "orig_data": data,
+                        "resize_path": None,
+                        "error_msg": u"이미지 리사이즈 실패 (손상된 원본)"
+                    })
+
+
+
             #
             if progress_callback:
                 percent = int(((idx + 1) / float(workTotal)) * 100)
                 progress_callback(percent)
 
-        return ">> 모든 리사이즈 작업이 완료되었습니다!"
+        return {"status": "done", "msg": ">> 모든 리사이즈 작업이 완료되었습니다!", "result_data": result_list}
+    
 
-    def _on_build_finished(self, result_msg):
+
+    def _on_build_finished(self, result_dict):
         """스레드가 모든 작업을 끝내면 자동으로 실행됩니다."""
         self._toggle_ui_lock(is_locked=False)
-        print(result_msg)
-        
+
+        #print(result_msg) #old
+
+        status = result_dict.get("status")
+        msg = result_dict.get("msg")
+        result_list = result_dict.get("result_data", [])
+
+
+        if status == "done" and result_list: #_resize_workerThead에서 패키징한거
+            print(">> UI 데이터 업데이트를 시작합니다...")
+
+            success_data = [] #마야 노드생성을 위한 데이터
+
+            for item in result_list:
+                orig_data = item["orig_data"]
+                is_success = item["is_success"]
+                resizeImg_path = item["resize_path"]
+                error_msg = item["error_msg"]
+
+                target_row = orig_data.get("ui_row_index")
+
+                if target_row is not None:
+                    main_item = self.ui.organizeData_Tb.item(target_row, 0)
+
+                    if is_success:
+                        newData = {"new_imgPath": resizeImg_path} ## 딕셔너리 이유는 나중을 위해서라도...
+                        main_item.setData(QtCore.Qt.UserRole + 2, newData) 
+
+                        main_item.setBackground(QtGui.QColor(46, 160, 67, 50))
+                        success_data.append(item) ## 잊지 말자 item은 딕셔너리다 
+
+                    else:
+                        main_item.setBackground(QtGui.QColor(205, 92, 92, 50))
+                        print(">> [실패] row {}: {}".format(target_row, error_msg))
+
+            if success_data and self.ui.makeNode_Chb.isChecked():
+                self.make_node_for_resize(success_data)
         if self.ui.openFolder_Chb.isChecked():
             os.startfile(self.ui.folderPath_Le.text())
 
@@ -660,21 +930,25 @@ else:
 
     def _setup_icon(self):
         style = QApplication.style() 
+
+        find_inco = style.standardIcon(QtWidgets.QStyle.SP_FileDialogContentsView)
         refresh_icon = style.standardIcon(QtWidgets.QStyle.SP_BrowserReload)
         openFolder_icon = style.standardIcon(QtWidgets.QStyle.SP_DirOpenIcon)
         connect_icon = style.standardIcon(QtWidgets.QStyle.SP_DriveNetIcon)
         help_icon = style.standardIcon(QtWidgets.QStyle.SP_MessageBoxQuestion)
         trash_icon = style.standardIcon(QtWidgets.QStyle.SP_TrashIcon)
-        openLayout_icon = style.standardIcon(QtWidgets.QStyle.SP_TitleBarShadeButton)
+        openLayout_icon = style.standardIcon(QtWidgets.QStyle.SP_TitleBarMaxButton)
 
         iconMapTasks = [
             ("info_Btn"                 ,help_icon      ),
             ("connectMayaPort_Btn"      ,connect_icon   ),
-            ("reload_organizeData_Btn"  ,refresh_icon   ),
+            ("reload_organizeData_Btn"  ,find_inco   ),
             ("clean_organizeData_Btn"   ,trash_icon     ),
             ("setFolderPath_Btn"        ,openFolder_icon),
             ("openLogPte_Btn"           ,openLayout_icon),
-            ("clearLogPte_Btn"          ,trash_icon     )
+            ("open_organizeData_Btn"    ,openLayout_icon),
+            ("clearLogPte_Btn"          ,trash_icon     ),
+            ("organizeData_Btn"         ,refresh_icon  )
 
         ]
 

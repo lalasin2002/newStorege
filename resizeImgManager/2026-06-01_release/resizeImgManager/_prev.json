@@ -6,5 +6,8 @@
     "nodeType": "RedshiftMaterial",
     "saveName": "resize_{name}.jpg",
     "pattern": "(.+)(_dif)(\\.jpg)",
-    "openFolder": true
+    "openFolder": false,
+    "createNodeName": "{resizeImgName}",
+    "checkMakeNode": true,
+    "createNodeType": "lambert"
 }

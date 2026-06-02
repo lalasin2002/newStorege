@@ -59,7 +59,7 @@ def uniqueName(Name , maxLoop = 100 ):
     return returnName
 
 
-def Create_Node(name, nodeTyp='transform'):
+def create_node(name, nodeTyp='transform'):
     """
     지정된 이름과 타입으로 Maya 노드를 생성합니다.
 
@@ -74,7 +74,7 @@ def Create_Node(name, nodeTyp='transform'):
     return node
 
 
-def Create_BlendcolorNode(Name):
+def create_blendColor(Name):
     """
     'blendColors' 노드를 생성하고, 초기 color1 및 color2 속성의 R, G, B 값을 0으로 설정합니다.
 
@@ -91,7 +91,7 @@ def Create_BlendcolorNode(Name):
     return node
 
 
-def Create_SetrangeNode(Name):
+def create_setRange(Name):
     """
     'setRange' 노드를 생성합니다.
 
@@ -105,7 +105,7 @@ def Create_SetrangeNode(Name):
     return node
 
 
-def Create_MdNode(Name, operation=1):
+def create_md(Name, operation=1):
     """
     'multiplyDivide' 노드를 생성하고, 지정된 연산으로 설정합니다.
 
@@ -121,7 +121,7 @@ def Create_MdNode(Name, operation=1):
     return node
 
 
-def Create_MdlNode(Name, Input_Value=0):
+def create_mdl(Name, Input_Value=0):
     """
     'multDoubleLinear' 노드를 생성하고, input2 속성에 초기 값을 설정합니다.
 
@@ -137,7 +137,7 @@ def Create_MdlNode(Name, Input_Value=0):
     return node
 
 
-def Create_AdlNode(Name, Input_Value=0):
+def create_adl(Name, Input_Value=0):
     """
     'addDoubleLinear' 노드를 생성하고, input2 속성에 초기 값을 설정합니다.
 
@@ -153,7 +153,7 @@ def Create_AdlNode(Name, Input_Value=0):
     return node
 
 
-def Create_DmNode(Name, Target, input='inputMatrix'):
+def create_dm(Name, Target, input='inputMatrix'):
     """
     'decomposeMatrix' 노드를 생성하고, 대상 오브젝트의 worldMatrix를 연결합니다.
 
@@ -170,7 +170,7 @@ def Create_DmNode(Name, Target, input='inputMatrix'):
     return node
 
 
-def Create_ConditionNode(Name, operation=0):
+def create_condition(Name, operation=0):
     """
     'condition' 노드를 생성하고, 지정된 연산으로 설정합니다.
 
@@ -186,7 +186,7 @@ def Create_ConditionNode(Name, operation=0):
     return node
 
 
-def Create_CrvinfoNode(Name, Crv=None):
+def create_crvInfo(Name, Crv=None):
     """
     'curveInfo' 노드를 생성하고, 선택적으로 주어진 커브에 연결합니다.
 
@@ -206,7 +206,7 @@ def Create_CrvinfoNode(Name, Crv=None):
     return node
 
 
-def Create_PocifNode(Name, CrvName="", Parameter=0, TurnOnPercentage=True):
+def create_pocif(Name, CrvName="", Parameter=0, TurnOnPercentage=True):
     """
     'pointOnCurveInfo' 노드를 생성하고, 매개변수 및 백분율 모드를 설정합니다.
     선택적으로 주어진 커브에 연결합니다.
@@ -230,7 +230,7 @@ def Create_PocifNode(Name, CrvName="", Parameter=0, TurnOnPercentage=True):
     return POCIF
 
 
-def Create_NpocNode(Name, CrvName="", inPositionTGT="", inPositionAttrName="translate"):
+def create_npoc(Name, CrvName="", inPositionTGT="", inPositionAttrName="translate"):
     """
     'nearestPointOnCurve' 노드를 생성하고, 선택적으로 커브와 입력 위치 타겟에 연결합니다.
 
@@ -258,7 +258,7 @@ def Create_NpocNode(Name, CrvName="", inPositionTGT="", inPositionAttrName="tran
 
     return NPOC
 
-def Create_Loc(Name , ShpScale =1 , NolistBool = True):
+def create_Loc(Name , ShpScale =1 , NolistBool = True):
     """
     Maya 로케이터를 생성하고, 스케일을 설정하며, 반환 타입을 제어합니다.
 
@@ -284,7 +284,7 @@ def Create_Loc(Name , ShpScale =1 , NolistBool = True):
     return ReturnTgt
 
 
-def Create_Jnt(Name , CP_Target = None):
+def create_jnt(Name , CP_Target = None):
     """
     Maya 조인트를 생성하고, 선택적으로 대상 오브젝트의 위치에 맞춥니다.
 
@@ -308,7 +308,7 @@ def Create_Jnt(Name , CP_Target = None):
 
     return Jnt
 
-def Create_Crv(Name , Poslist , degree =1 ):
+def create_crv(Name , Poslist , degree =1 ):
     """
     NURBS 커브를 생성하고, 주어진 위치 목록과 차수를 사용하여 재구축합니다.
 
@@ -327,7 +327,7 @@ def Create_Crv(Name , Poslist , degree =1 ):
     return reCrv
 
 
-def Create_ANT(Name , CP_Target = None , Cnt_Target  = None , NonSelect = True ):
+def create_Ant(Name , CP_Target = None , Cnt_Target  = None , NonSelect = True ):
     """
     Maya 주석 노드를 생성하고, 선택적으로 위치 제약 조건 및 매트릭스 연결을 설정합니다.
     주석의 선택 가능 여부를 제어합니다.
@@ -360,7 +360,7 @@ def Create_ANT(Name , CP_Target = None , Cnt_Target  = None , NonSelect = True )
     return ReTurn_lst
 
 
-def Create_TextCrv(Name , TextString ,CenterPivotBool = True , FontSizePt = 27.8 , Font = "Lucida Sans Unicode"):
+def create_textCrv(Name , TextString ,CenterPivotBool = True , FontSizePt = 27.8 , Font = "Lucida Sans Unicode"):
     """
     주어진 텍스트 문자열을 기반으로 Maya 텍스트 커브를 생성합니다.
     선택적으로 피벗을 중앙으로 이동하고, 글꼴 크기 및 글꼴을 설정합니다.
@@ -403,7 +403,7 @@ def Create_TextCrv(Name , TextString ,CenterPivotBool = True , FontSizePt = 27.8
     return DulicateText
 
 
-def CreateOrGet_Loc(obj_or_pos , Name  = "locator" , MaxWhileCount =100): #2025-06-13 추가
+def create_or_get_Loc(obj_or_pos , Name  = "locator" , MaxWhileCount =100): #2025-06-13 추가
     """
     주어진 오브젝트나 위치값을 기반으로 로케이터를 생성하거나,
     이미 로케이터일 경우 해당 로케이터 정보를 가져옵니다.
@@ -463,14 +463,14 @@ def CreateOrGet_Loc(obj_or_pos , Name  = "locator" , MaxWhileCount =100): #2025-
 
 
 
-def Create_Distance(startObj_or_pos , endObj_or_pos , Names = ["startlocator" , "endlocator"  , "Distance"] ):
+def create_distance(startObj_or_pos , endObj_or_pos , Names = ["startlocator" , "endlocator"  , "Distance"] ):
     """
-    CreateOrGet_Loc 함수 사용
+    createOrGet_Loc 함수 사용
     두 지점 사이에 동적인 거리 측정 노드를 생성합니다.
 
     이 함수는 시작점과 끝점에 로케이터를 생성하거나 찾고,
     이 두 로케이터 사이의 거리를 실시간으로 측정하는 `distanceDimension` 노드를
-    생성하여 연결합니다. 이 모든 과정은 이전에 정의한 `CreateOrGet_Loc` 함수를
+    생성하여 연결합니다. 이 모든 과정은 이전에 정의한 `createOrGet_Loc` 함수를
     활용하여 수행됩니다.
 
     Args:
@@ -512,8 +512,8 @@ def Create_Distance(startObj_or_pos , endObj_or_pos , Names = ["startlocator" , 
     DistanceCount = 0
     returnDic = None
 
-    startLocs = CreateOrGet_Loc(startObj_or_pos , Names[0])
-    endLocs = CreateOrGet_Loc(endObj_or_pos , Names[1])
+    startLocs = create_or_get_Loc(startObj_or_pos , Names[0])
+    endLocs = create_or_get_Loc(endObj_or_pos , Names[1])
 
     if startLocs and endLocs:
         startLoc = startLocs[0]
@@ -544,7 +544,7 @@ def Create_Distance(startObj_or_pos , endObj_or_pos , Names = ["startlocator" , 
 
     return returnDic
 
-def Create_CurveFromMeshEdge(Edge , Name = "" ): #2025-06-13 추가
+def create_crv_from_meshEdge(Edge , Name = "" ): #2025-06-13 추가
     """
     선택한 메쉬의 특정 엣지(Edge)로부터 커브를 생성하는 유틸리티 노드를 만듭니다.
 
@@ -592,11 +592,11 @@ def Create_CurveFromMeshEdge(Edge , Name = "" ): #2025-06-13 추가
     return Node
 
 
-def Create_Pocif_FromMeshEdge(Edge, Parameter =0.5, Names = ["curveFromMeshEdge" , "pointOnCurveInfo" , ""] ):
+def createPocif_from_meshEdge(Edge, Parameter =0.5, Names = ["curveFromMeshEdge" , "pointOnCurveInfo" , ""] ):
     """
     메쉬의 특정 엣지(Edge) 위 한 지점의 정보를 읽는 노드 네트워크를 생성합니다.
 
-    이 함수는 먼저 'Create_CurveFromMeshEdge'를 호출하여 엣지로부터 동적인 커브를
+    이 함수는 먼저 'create_CurveFromMeshEdge'를 호출하여 엣지로부터 동적인 커브를
     생성합니다. 그 다음, 'pointOnCurveInfo' 노드를 만들어 해당 커브 위의 특정 지점
     (Parameter)에 대한 위치 정보를 실시간으로 읽어옵니다.
     선택적으로, 이 위치에 로케이터를 생성하고 연결하여 시각적으로 표시할 수 있습니다.
@@ -630,7 +630,7 @@ def Create_Pocif_FromMeshEdge(Edge, Parameter =0.5, Names = ["curveFromMeshEdge"
     returnDic = {}
     Loc = None
     LocShape = None
-    CFME = Create_CurveFromMeshEdge(Edge , Names[0])
+    CFME = create_crv_from_meshEdge(Edge , Names[0])
     PocifName = uniqueName(Names[1])
     Pocif = cmds.createNode("pointOnCurveInfo" , n = PocifName)
     cmds.setAttr(Pocif + ".turnOnPercentage" ,1)
@@ -654,7 +654,7 @@ def Create_Pocif_FromMeshEdge(Edge, Parameter =0.5, Names = ["curveFromMeshEdge"
 
     return returnDic
 
-def Create_PointOnSurface_FromMeshEdge(startEdge , endEdge  , Names = ["start_curveFromMeshEdge" , "end_curveFromMeshEdge" , "startEnd_loft" , "startEnd_surFace"] ):
+def create_pointOnSurface_from_meshEdge(startEdge , endEdge  , Names = ["start_curveFromMeshEdge" , "end_curveFromMeshEdge" , "startEnd_loft" , "startEnd_surFace"] ):
     """
     두 메쉬 엣지(startEdge, endEdge)를 기반으로 Loft(로프트)된 서피스를 생성하고,
     해당 서피스 위의 특정 지점 정보를 읽는 노드 네트워크를 구성합니다.
@@ -686,8 +686,8 @@ def Create_PointOnSurface_FromMeshEdge(startEdge , endEdge  , Names = ["start_cu
                 "posif": (str) 생성된 pointOnSurfaceInfo 노드
             }
     """
-    startCFME = Create_CurveFromMeshEdge(startEdge,  Names[0] )
-    endCFME = Create_CurveFromMeshEdge(endEdge, Names[1] )
+    startCFME = create_crv_from_meshEdge(startEdge,  Names[0] )
+    endCFME = create_crv_from_meshEdge(endEdge, Names[1] )
     LoftName = uniqueName(Names[2])
     SurFaceName = None
     SurFaceInfo = None
@@ -797,7 +797,7 @@ def d_MeshFeatureEdge_Ctrl(MeshItem, Name, angle_threshold=30, size=1, Position=
     return Ctrl
 
 
-def Create_Foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
+def create_foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
     """
     지오메트리(메쉬 또는 NURBS 서피스)에 부착되는 폴리클(Follicle) 노드를 생성합니다.
 
@@ -851,7 +851,7 @@ def Create_Foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
     return returnList
 
 
-def Create_TextCrv_Fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8, Font="Lucida Sans Unicode", selected=True):
+def create_textCrv_fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8, Font="Lucida Sans Unicode", selected=True):
     """
     텍스트 커브 생성 및 히스토리 강제 삭제
     Args:
@@ -910,3 +910,45 @@ def Create_TextCrv_Fixed(Name, TextString, CenterPivotBool=True, FontSizePt=27.8
     
     
     
+def create_shadingNode(nodeName, nodeType = "lambert", cntfile = []):
+    # ex ) cntfile :
+    #["{}.outColor".format(fileName) , "{}.color".format(lambertName)]
+    shadingNode = cmds.shadingNode(nodeType, asShader=True, name=nodeName)
+
+    if cntfile and len(cntfile)>1:
+        isSource = cmds.objExists(cntfile[0])
+        isDestination = cmds.objExists(cntfile[1])
+        if isSource  and isDestination:
+            cmds.connectAttr(cntfile[0] , cntfile[1] , f=1)
+
+    return shadingNode
+        
+def create_file(nodeName , p2tName = None):
+    fileNode = cmds.shadingNode("file", asTexture=True, isColorManaged=True, name=nodeName)
+    p2t = None
+    if p2tName:
+        p2t = cmds.shadingNode("place2dTexture",n= p2tName, asUtility=True)
+        tasks = [
+                ("{}.coverage", "{}.coverage"),
+                ("{}.translateFrame", "{}.translateFrame"),
+                ("{}.rotateFrame", "{}.rotateFrame"),
+                ("{}.mirrorU", "{}.mirrorU"),
+                ("{}.mirrorV", "{}.mirrorV"),
+                ("{}.stagger", "{}.stagger"),
+                ("{}.wrapU", "{}.wrapU"),
+                ("{}.wrapV", "{}.wrapV"),
+                ("{}.repeatUV", "{}.repeatUV"),
+                ("{}.offset", "{}.offset"),
+                ("{}.rotateUV", "{}.rotateUV"),
+                ("{}.noiseUV", "{}.noiseUV"),
+                ("{}.vertexUvOne", "{}.vertexUvOne"),
+                ("{}.vertexUvTwo", "{}.vertexUvTwo"),
+                ("{}.vertexUvThree", "{}.vertexUvThree"),
+                ("{}.vertexCameraOne", "{}.vertexCameraOne"),
+                ("{}.outUV", "{}.uv"),
+                ("{}.outUvFilterSize", "{}.uvFilterSize")
+                ]
+        for source , destination in tasks:
+            cmds.connectAttr(source.format(p2t) , destination.format(fileNode),f =1)
+
+    return fileNode , p2t

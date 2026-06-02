@@ -1,5 +1,9 @@
 {
     "shaderAttr": {
         "RedshiftMaterial": ".diffuse_color"
-    }
+    },
+    "createShadingNodes": [
+        "lambert",
+        "blinn"
+    ]
 }

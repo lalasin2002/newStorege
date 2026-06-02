@@ -471,6 +471,17 @@ def getConnectedNode(node , typeNode = "file" ,plug =False , connection = True )
     unpack = { "s" : True , "d" : False , "t" : typeNode , "p" : plug , "c" : connection   }
     return cmds.listConnections(node , **unpack ) or []
 
+def getCntedNodeFromShaderEngine(engineNdoe , cnted = True  , plug = True ):
+    if not cmds.objectType(engineNdoe) == "shadingEngine":
+        return []
+    unpack = { "s" : True , "d" : False  , "p" : plug , "c" :cnted   }
+    
+    searchTarget = "{}{}".format(engineNdoe)
+    cntItmes = cmds.listConnections(searchTarget , **unpack ) or []
+    return cntItmes
+
+
+
 
 #-------------------------------------------------------------------Cal
 def getDistance(StartObj, EndObj ):

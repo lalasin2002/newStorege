@@ -67,7 +67,7 @@ class EmittingStream(QtCore.QObject):
 
 class thread(QtCore.QThread):
     progress_signal = QtCore.Signal(int)
-    finished_signal = QtCore.Signal(str)
+    finished_signal = QtCore.Signal(object)
     error_signal = QtCore.Signal(str)
     def __init__(self, target_func, *args, **kwargs):
         """
