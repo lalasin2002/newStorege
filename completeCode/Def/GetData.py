@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import maya.cmds as cmds
 import maya.mel as mel
-import maya.OpenMaya as om
+try:
+    import maya.api.OpenMaya as om2
+except:
+    import maya.OpenMaya as om
 import re
 
 def get_pararmeterCurve(obj_or_pos , Curve ):
@@ -69,6 +72,34 @@ def get_pararmeterCurve(obj_or_pos , Curve ):
         return Parameter
 
 
+
+def get_pocif_translate(crv , parameter , turnOffPecentage = True):
+
+    data = []
+    CrvShp = None
+    if cmds.objExists(crv):
+        CurveType = cmds.objectType(crv)
+
+        if CurveType == "transform":
+            IsShp = cmds.listRelatives(crv , s =1  ,type = "nurbsCurve")
+            if IsShp:
+                CrvShp = IsShp[0]
+        if CurveType == "nurbsCurve":
+            CrvShp = crv
+    else:
+        raise TypeError (">> Invaild input. Expected a Curve")
+    
+
+    pocif = cmds.createNode("pointOnCurveInfo")
+    cmds.connectAttr(CrvShp + ".worldSpace[0]" , pocif + ".inputCurve" ,f =1)
+    cmds.setAttr("{}.turnOnPercentage".format(pocif) , turnOffPecentage)
+    cmds.setAttr("{}.parameter".format(pocif)  , parameter)
+
+    for ax in "XYZ":
+        getValue = cmds.getAttr("{}.position{}".format(pocif , ax))
+
+        data.append(getValue)
+    return data
 
 
 def getMeshVtx_SequencePos(FirstVtxs, ConversionTuple=True, MaxLoop=1000):
@@ -209,6 +240,57 @@ def getSizeOnLattice(targetObject):
     
     cmds.delete(Lattice)
     return getSize
+
+
+
+def getJntAxis(startJnt, endJnt):
+    if not all(cmds.objectType(x) == "joint" for x in [startJnt , endJnt]):
+        return None
+    axis = "XYZ"
+    try:
+        startPos = om2.MVector(cmds.xform(startJnt, q=True, ws=True, t=True))
+        endPos = om2.MVector(cmds.xform(endJnt, q=True, ws=True, t=True))
+
+        diffV = endPos - startPos
+        startMatrix = om2.MMatrix(cmds.xform(startJnt, q=True, ws=True, m=True))
+        #첫번째 줄 : X의 방향
+        #두 번째줄 : Y의 방향
+        #세번째 줄 : Z의 방향
+        #네번째 줄 : xyz translate
+        startInvMatrix = startMatrix.inverse()
+        # 그대로 곱하면 우주 미아가 되므로, 내 변환을 '취소'하기 위해 거꾸로 뒤집음
+        # parent 원리 , 자식 행렬을 그대로 곱하면 더 멀리 감으로 역행
+
+        aimV = diffV * startInvMatrix
+        # 4. 가짜 Parent 실행
+    except:
+        startPosList = cmds.xform(startJnt, q=True, ws=True, t=True)
+        endPosList = cmds.xform(endJnt, q=True, ws=True, t=True)
+        
+        startPos = om.MVector(startPosList[0], startPosList[1], startPosList[2])
+        endPos = om.MVector(endPosList[0], endPosList[1], endPosList[2])
+
+        diffV = endPos - startPos
+
+        sel = om.MSelectionList()
+        sel.add(startJnt)
+        dagPath = om.MDagPath()
+        sel.getDagPath(0, dagPath)
+        
+        # inclusiveMatrix()가 바로 xform(m=True)와 같은 월드 매트릭스
+        startMatrix = dagPath.inclusiveMatrix()
+        
+        # 역행렬
+        startInvMatrix = startMatrix.inverse()
+
+        #  가짜 Parent 실행
+        aimV = diffV * startInvMatrix
+
+    absV = [abs(aimV.x) , abs(aimV.y) , abs(aimV.z)]
+    maxValue = max(absV)
+    maxIndex = absV.index(maxValue)
+
+    return axis[maxIndex]
 
 
 

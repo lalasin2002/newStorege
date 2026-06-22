@@ -1043,7 +1043,7 @@ def d_Set_ColorShp(Target, ColorNumber):
     Blue : #0000FF : (0,0,1) : 6
     Crusoe : #004619 : (0, 0.065 , 0.001) : 7
     Tolopea : #260043 : (0.149 , 0 ,0.263)  : 8
-    Purple Pizzazz : #C800C8 : (0.784, 0 ,0.784) : 9
+    PurplePizzazz : #C800C8 : (0.784, 0 ,0.784) : 9
     MuleFawn : #8A4833 : (0.541 , 0.282 ,0.2) : 10
     Jon : #3F231F : (0.247 , 0.137 , 0.122) : 11
     TotemPole : #992600 : (0.6 , 0.149 ,0) : 12
@@ -1053,7 +1053,7 @@ def d_Set_ColorShp(Target, ColorNumber):
     White : #FFFFFF : (1,1,1) : 16
     Yellow : #FFFF00 : (1,1,0) : 17
     Sky :  #64DCFF : (0.392 , 0.863 ,1) : 18
-    Screamin' Green: #43FFA3 : (0.263 , 1 ,0.639) : 19
+    ScreaminGreen: #43FFA3 : (0.263 , 1 ,0.639) : 19
     Sundown : #FFB0B0 : (1,0.69,0.69) : 20
     HarvestGold : #E4AC79 : (0.894 ,0.675,0.475) : 21
     LaserLemon : #FFFF63 : (1,1,0.388) : 22

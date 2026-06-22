@@ -174,10 +174,6 @@ class jointInserter:
 
 
 
-
-
-
-
     def printData(self):
         """
         계산된 결과를 콘솔에 출력 (디버그 용도).

@@ -5,7 +5,7 @@ a = Analysis(
     ['resizeImgManager.py'],
     pathex=[],
     binaries=[],
-    datas=[('resizeImgManager.ui', '.'), ('manual.html', '.')],
+    datas=[('resizeImgManager.ui', '.'), ('manual', 'manual')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},

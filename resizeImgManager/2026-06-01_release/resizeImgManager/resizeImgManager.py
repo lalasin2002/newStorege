@@ -241,7 +241,7 @@ class DesignerUI(QtWidgets.QWidget):
             self._toggleForTable = False
 
     def open_Manual(self):
-        manualPath = resource_path("manual.html") 
+        manualPath = resource_path("manual/manual.html") 
         if os.path.exists(manualPath):
             os.startfile(manualPath)
 
@@ -339,7 +339,15 @@ class DesignerUI(QtWidgets.QWidget):
             bodyCode_master += disconnect_code + connect_code
 
         final_maya_code = headCode_master + "\n" + bodyCode_master
+
         dummy_json_path = os.path.join(tempfile.gettempdir(), "dummy.json").replace("\\", "/") # 임시파일로 
+        make_dummy_json_code = """
+import json
+with open('{}', 'w') as f:
+    json.dump({{"status": "ok"}}, f)
+""".format(dummy_json_path)
+        final_maya_code += make_dummy_json_code
+
         success, data = connectMayaSocket.send_to_maya_for_jsonFile(
             final_maya_code, 
             dummy_json_path, 

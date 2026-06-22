@@ -6,7 +6,7 @@ import maya.OpenMaya as om
 from collections import OrderedDict
 import re
 
-def uniqueName(Name , maxLoop = 100 ):
+def uniqueName(Name , maxLoop = 2500 ):
     """
     Maya 씬 내에서 고유한 이름을 생성합니다.
 

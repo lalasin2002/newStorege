@@ -32,7 +32,7 @@ def create_file(nodeName , p2tName = None):
     fileNode = cmds.shadingNode("file", asTexture=True, isColorManaged=True, name=nodeName)
     p2t = None
     if p2tName:
-        p2t = cmds.createNode("place2dTexture",n= p2tName, asUtility=True)
+        p2t = cmds.shadingNode("place2dTexture",n= p2tName, asUtility=True)
         tasks = [
                 ("{}.coverage", "{}.coverage"),
                 ("{}.translateFrame", "{}.translateFrame"),
@@ -57,6 +57,9 @@ def create_file(nodeName , p2tName = None):
             cmds.connectAttr(source.format(p2t) , destination.format(fileNode),f =1)
 
     return fileNode , p2t
+
+
+
 
 
 lambertName = "test"
