@@ -127,7 +127,16 @@ class DesignerUI(QtWidgets.QDialog):
             ("insertGrpNumberStart"     ,"insertGroupingNumStart_Sb"   ,"value"             ,"setValue"             ,  1),
             ("insertGrpNumberPadding"   ,"insertGroupingNumPadding_Sb" ,"value"             ,"setValue"             ,  2),
             ("insertGrpCount"           ,"insertGrouping_Sb"           ,"value"             ,"setValue"             ,  1),
-            ("insertGrpNameFormat"      ,"insertGrpName_Le"            ,"text"              ,"setText"              , "{item}_insertGrp{Num}" )
+            ("insertGrpNameFormat"      ,"insertGrpName_Le"            ,"text"              ,"setText"              , "{item}_insertGrp{Num}" ),
+            ("insertGrpPattern"         ,"insertGrpPattern_Le"         ,"text"              ,"setText"              , "" ),
+            ("insertGrpGetName"         ,"getRenameInsertGrouping_Chb" ,"isChecked"         ,"setChecked"           , False),
+
+            ("mirrorGrpPattern"         ,"mirrorGrpPattern_Le"         ,"text"              ,"setText"              , "" ),
+            ("mirrorGrpNameFormat"      ,"mirrorGrpNameFormat_Le"      ,"text"              ,"setText"              , "{item}_mirrorGrp" ),
+            ("mirrorGrpTargetChk"       ,"mirrorGrpTarget_Chb"         ,"isChecked"         ,"setChecked"           , False),
+            ("mirrorLeftGrpName"        ,"mirrorLeftGrpName_Le"        ,"text"              ,"setText"              , "L_" ),
+            ("mirrorRightGrpName"       ,"mirrorRightGrpName_Le"        ,"text"              ,"setText"             , "R_" )
+
         ]
 
 
@@ -224,13 +233,121 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.selectObInSelect_Btn.clicked.connect(lambda : self.searchItem(1))
         self.ui.selectObjHierarchy_Btn.clicked.connect(lambda : self.searchItem(2))
 
+        #insertGrp
+        self.ui.insertGrouping_Btn.clicked.connect(self.insertGroup)
+        #mirrorGrp
+        self.ui.mirrorGrpName_Btn.clicked.connect(self.mirrorGroup)
+
+    def cntParentGroup(self):
+        pass
+
+
+    def mirrorGroup(self):
+        targetAxis = self.ui.mirrorGrpTarget_Chb.isChecked()
+        nameFormat = self.ui.mirrorGrpNameFormat_Le.text()
+        nameLeft = self.ui.mirrorLeftGrpName_Le.text()
+        nameRight = self.ui.mirrorRightGrpName_Le.text()
+        pattern = None
+        checkItemString = re.compile(r'\{item\}')
+        if self.ui.mirrorGrpPattern_Le.text():
+            pattern = self.ui.mirrorGrpPattern_Le.text()
+
+        selects =[s for s in cmds.ls(sl =1 )if controlObject.isDag(s)]
+        if not len(selects)>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        
+        try:
+            dulicates = [cmds.duplicate(x )[0] for x in selects]
+            groups =[]
+            for x in dulicates:
+                formats = {}
+                names = x
+                if pattern:
+                    search = re.search(pattern ,x)
+                    if search:
+                        names = search.group()
+                if checkItemString.search(nameFormat):
+                    formats["item"] = names
+                else:
+                    formats["item"] = ""
+                grpName = nameFormat.format(**formats)
+                mirrorGrp = grouping.insertGrp(x , [grpName] , False)[0]
+                groups.append(mirrorGrp)
+            
+            search_n_replace_dict = { "s" :  nameLeft , "r" : nameRight}
+            if targetAxis:
+                search_n_replace_dict = { "s" : nameRight , "r" : nameLeft }
+
+            for x in groups:
+                print (x)
+                cmds.setAttr(x + ".scaleX" , -1)
+                childs = cmds.listRelatives(x , c =1 ,fullPath=1)
+                if childs:
+                    split = childs[0].split("|")
+                    replaceSearch = re.search(r"(.+)(\d+)$" , split[-1])
+                    if replaceSearch:
+                        replaceTarget = replaceSearch.group(1)
+                        cmds.select(childs[0], r=True)
+                        mel.eval('searchReplaceNames "{s}" "{r}" "selected"'.format(s = split[-1] , r =replaceTarget))
+            cmds.select(groups)
+            mel.eval('searchReplaceNames "{s}" "{r}" "hierarchy"'.format(**search_n_replace_dict))
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+
+        
 
     def insertGroup(self):
         numStart = self.ui.insertGroupingNumStart_Sb.value()
-        
+        padding = self.ui.insertGroupingNumPadding_Sb.value()
+        getName = self.ui.getRenameInsertGrouping_Chb.isChecked()
+        nameFormat = self.ui.insertGrpName_Le.text()
+        grpCount = self.ui.insertGrouping_Sb.value()
+        pattern = None
+        checkItemString = re.compile(r'\{item\}')
+        checkNumString = re.compile(r'\{num\}')
 
-
-
+        if self.ui.insertGrpPattern_Le.text():
+            pattern = self.ui.insertGrpPattern_Le.text()
+        cmds.undoInfo(openChunk=1)
+        try:
+            selects = [s for s in cmds.ls(sl =1 )if controlObject.isDag(s)]
+            insertGrpNames = []
+            if not len(selects)>0:
+                return
+            if getName:
+                grpCount = 1
+                preNames = self._setTaskRenames([None for x in selects])
+                insertGrpNames = [[x] for _ ,x  in preNames ]
+            else:
+                for i , x in enumerate(selects):
+                    name = x
+                    formats = {}
+                    if pattern:
+                        search = re.search(pattern ,x)
+                        if search:
+                            name = search.group()
+                    if checkItemString.search(nameFormat):
+                        formats["item"] = name
+                    else:
+                        formats["item"] = ""
+                    tupleData = []
+                    for v in range(0,grpCount):
+                        if checkNumString.search(nameFormat):
+                            formats["num"] = str( int(numStart + v)).zfill(padding)
+                        else:
+                            formats["num"] = ""
+                        grpName = nameFormat.format(**formats)
+                        tupleData.append(grpName)
+                    insertGrpNames.append(tupleData)
+            print(insertGrpNames)     
+            for i , x in enumerate(selects):
+                grouping.insertGrp(x ,insertGrpNames[i] )
+        finally:
+            cmds.undoInfo(closeChunk=1)
+            
+            
     def searchItem(self , funcType = 0 ):
         
         selects = None
@@ -313,8 +430,6 @@ class DesignerUI(QtWidgets.QDialog):
                     cmds.setAttr(obj + ".overrideEnabled" , 0)
         finally:
             cmds.undoInfo(closeChunk=1)
-
-
 
 
     def createFoli(self):
@@ -703,10 +818,6 @@ class DesignerUI(QtWidgets.QDialog):
         finally:
             cmds.undoInfo(closeChunk=1)
 
-
-
-
-
     def matchObject(self):
         selects = cmds.ls(sl =1 ,allPaths=1)
 
@@ -846,7 +957,6 @@ class DesignerUI(QtWidgets.QDialog):
     def _setPreView(self , item , labelWidget):
         print (item )
 
-
     #_________________________________________________________________________loadui
 
     def closeEvent(self , event):
@@ -854,7 +964,6 @@ class DesignerUI(QtWidgets.QDialog):
             self._savePrev()
         except Exception as e:
             print(u">> 종료 중 저장 실패: {}".format(e))
-
 
     def _loadPrev(self):
         data = None
@@ -871,8 +980,6 @@ class DesignerUI(QtWidgets.QDialog):
                 widget = getattr(self.ui , widgetName)
                 value = self._prevData.get(key , default)
                 getattr(widget , setAttr)(value)
-
-
 
     def _savePrev(self):
 
@@ -903,9 +1010,6 @@ class DesignerUI(QtWidgets.QDialog):
             print (u">> _prev.json 가 저장되었습니다.")
         except Exception as e:
             print(u">> 에러 : _prev.json 저장 중 오류 발생: {}".format(e))
-
-
-
 
     def init_ui(self, uiPath):
         if not os.path.exists(uiPath):

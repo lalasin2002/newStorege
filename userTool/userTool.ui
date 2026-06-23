@@ -1537,7 +1537,7 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
       <item>
        <widget class="QTabWidget" name="function_tabw">
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
         <widget class="QWidget" name="object_tab">
          <attribute name="title">
@@ -2535,7 +2535,7 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
              <property name="geometry">
               <rect>
                <x>0</x>
-               <y>0</y>
+               <y>-302</y>
                <width>311</width>
                <height>1200</height>
               </rect>
@@ -2881,13 +2881,13 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                          <widget class="QSpinBox" name="insertGroupingNumStart_Sb">
                           <property name="minimumSize">
                            <size>
-                            <width>40</width>
+                            <width>60</width>
                             <height>0</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>40</width>
+                            <width>60</width>
                             <height>16777215</height>
                            </size>
                           </property>
@@ -2929,13 +2929,13 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                          <widget class="QSpinBox" name="insertGroupingNumPadding_Sb">
                           <property name="minimumSize">
                            <size>
-                            <width>35</width>
+                            <width>60</width>
                             <height>0</height>
                            </size>
                           </property>
                           <property name="maximumSize">
                            <size>
-                            <width>35</width>
+                            <width>60</width>
                             <height>16777215</height>
                            </size>
                           </property>
@@ -2953,6 +2953,65 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                     </widget>
                    </item>
                   </layout>
+                 </item>
+                 <item>
+                  <widget class="QFrame" name="insertGrpPattern_H">
+                   <layout class="QHBoxLayout" name="insertGrpName_H_2">
+                    <property name="leftMargin">
+                     <number>9</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="insertGrpPattern_La">
+                      <property name="minimumSize">
+                       <size>
+                        <width>50</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>50</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>pattern ::</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="insertGrpPattern_Le">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
                  </item>
                  <item>
                   <widget class="QFrame" name="insertGrpName_G">
@@ -2973,18 +3032,18 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                      <widget class="QLabel" name="label_17">
                       <property name="minimumSize">
                        <size>
-                        <width>100</width>
+                        <width>50</width>
                         <height>0</height>
                        </size>
                       </property>
                       <property name="maximumSize">
                        <size>
-                        <width>100</width>
+                        <width>50</width>
                         <height>16777215</height>
                        </size>
                       </property>
                       <property name="text">
-                       <string>insert Grp Name ::</string>
+                       <string>Name ::</string>
                       </property>
                       <property name="alignment">
                        <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
@@ -3006,7 +3065,7 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                        </size>
                       </property>
                       <property name="text">
-                       <string>{item}_insertGrp{Num}</string>
+                       <string>{item}_insertGrp{num}</string>
                       </property>
                      </widget>
                     </item>
@@ -3016,50 +3075,56 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                  <item>
                   <layout class="QHBoxLayout" name="insertGrouping_H">
                    <item>
-                    <widget class="QLabel" name="label_6">
-                     <property name="minimumSize">
-                      <size>
-                       <width>75</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>75</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>GrpCount :: </string>
-                     </property>
-                     <property name="alignment">
-                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="insertGrouping_Sb">
-                     <property name="minimumSize">
-                      <size>
-                       <width>50</width>
-                       <height>25</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>50</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="buttonSymbols">
-                      <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
-                     </property>
-                     <property name="minimum">
-                      <number>1</number>
-                     </property>
-                     <property name="value">
-                      <number>1</number>
-                     </property>
+                    <widget class="QFrame" name="insertGroupingCount_F">
+                     <layout class="QHBoxLayout" name="insertGroupingCount_H">
+                      <item>
+                       <widget class="QLabel" name="label_6">
+                        <property name="minimumSize">
+                         <size>
+                          <width>75</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>75</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="text">
+                         <string>GrpCount :: </string>
+                        </property>
+                        <property name="alignment">
+                         <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                        </property>
+                       </widget>
+                      </item>
+                      <item>
+                       <widget class="QSpinBox" name="insertGrouping_Sb">
+                        <property name="minimumSize">
+                         <size>
+                          <width>50</width>
+                          <height>25</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>50</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="buttonSymbols">
+                         <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
+                        </property>
+                        <property name="minimum">
+                         <number>1</number>
+                        </property>
+                        <property name="value">
+                         <number>1</number>
+                        </property>
+                       </widget>
+                      </item>
+                     </layout>
                     </widget>
                    </item>
                    <item>
@@ -3104,6 +3169,65 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                  <property name="bottomMargin">
                   <number>3</number>
                  </property>
+                 <item>
+                  <widget class="QFrame" name="mirrorGrpPattern_H">
+                   <layout class="QHBoxLayout" name="insertGrpName_H_3">
+                    <property name="leftMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="topMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="rightMargin">
+                     <number>0</number>
+                    </property>
+                    <property name="bottomMargin">
+                     <number>0</number>
+                    </property>
+                    <item>
+                     <widget class="QLabel" name="mirrorGrpPattern_La">
+                      <property name="minimumSize">
+                       <size>
+                        <width>50</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>50</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string>pattern ::</string>
+                      </property>
+                      <property name="alignment">
+                       <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                      </property>
+                     </widget>
+                    </item>
+                    <item>
+                     <widget class="QLineEdit" name="mirrorGrpPattern_Le">
+                      <property name="minimumSize">
+                       <size>
+                        <width>0</width>
+                        <height>0</height>
+                       </size>
+                      </property>
+                      <property name="maximumSize">
+                       <size>
+                        <width>16777215</width>
+                        <height>16777215</height>
+                       </size>
+                      </property>
+                      <property name="text">
+                       <string/>
+                      </property>
+                     </widget>
+                    </item>
+                   </layout>
+                  </widget>
+                 </item>
                  <item>
                   <layout class="QHBoxLayout" name="mirrorGrpNameFormat_H" stretch="1,2,1">
                    <item>
@@ -3239,6 +3363,76 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                       <size>
                        <width>100</width>
                        <height>50</height>
+                      </size>
+                     </property>
+                     <property name="text">
+                      <string>build</string>
+                     </property>
+                    </widget>
+                   </item>
+                  </layout>
+                 </item>
+                </layout>
+               </widget>
+              </item>
+              <item>
+               <widget class="QGroupBox" name="sequenceParentGb">
+                <property name="title">
+                 <string>sequence parent</string>
+                </property>
+                <layout class="QVBoxLayout" name="verticalLayout_27">
+                 <property name="leftMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="topMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="rightMargin">
+                  <number>0</number>
+                 </property>
+                 <property name="bottomMargin">
+                  <number>0</number>
+                 </property>
+                 <item>
+                  <layout class="QHBoxLayout" name="sequenceParent_H">
+                   <item>
+                    <widget class="QLabel" name="label_36">
+                     <property name="text">
+                      <string>parent target index ::</string>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="sequenceParentIndex_Sb">
+                     <property name="minimumSize">
+                      <size>
+                       <width>50</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="minimum">
+                      <number>-255</number>
+                     </property>
+                     <property name="maximum">
+                      <number>255</number>
+                     </property>
+                     <property name="value">
+                      <number>-1</number>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QPushButton" name="sequenceParent_Btn">
+                     <property name="minimumSize">
+                      <size>
+                       <width>100</width>
+                       <height>0</height>
+                      </size>
+                     </property>
+                     <property name="maximumSize">
+                      <size>
+                       <width>100</width>
+                       <height>16777215</height>
                       </size>
                      </property>
                      <property name="text">
@@ -3473,76 +3667,6 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                     <string>build</string>
                    </property>
                   </widget>
-                 </item>
-                </layout>
-               </widget>
-              </item>
-              <item>
-               <widget class="QGroupBox" name="sequenceParentGb">
-                <property name="title">
-                 <string>sequence parent</string>
-                </property>
-                <layout class="QVBoxLayout" name="verticalLayout_27">
-                 <property name="leftMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="topMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="rightMargin">
-                  <number>0</number>
-                 </property>
-                 <property name="bottomMargin">
-                  <number>0</number>
-                 </property>
-                 <item>
-                  <layout class="QHBoxLayout" name="sequenceParent_H">
-                   <item>
-                    <widget class="QLabel" name="label_36">
-                     <property name="text">
-                      <string>parent target index ::</string>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QSpinBox" name="sequenceParentIndex_Sb">
-                     <property name="minimumSize">
-                      <size>
-                       <width>50</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="minimum">
-                      <number>-255</number>
-                     </property>
-                     <property name="maximum">
-                      <number>255</number>
-                     </property>
-                     <property name="value">
-                      <number>-1</number>
-                     </property>
-                    </widget>
-                   </item>
-                   <item>
-                    <widget class="QPushButton" name="sequenceParent_Btn">
-                     <property name="minimumSize">
-                      <size>
-                       <width>100</width>
-                       <height>0</height>
-                      </size>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>100</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="text">
-                      <string>build</string>
-                     </property>
-                    </widget>
-                   </item>
-                  </layout>
                  </item>
                 </layout>
                </widget>
@@ -5026,11 +5150,11 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>647</x>
+     <x>622</x>
      <y>465</y>
     </hint>
     <hint type="destinationlabel">
-     <x>647</x>
+     <x>622</x>
      <y>537</y>
     </hint>
    </hints>
@@ -5042,11 +5166,11 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>480</x>
+     <x>468</x>
      <y>731</y>
     </hint>
     <hint type="destinationlabel">
-     <x>647</x>
+     <x>622</x>
      <y>707</y>
     </hint>
    </hints>
@@ -5058,12 +5182,12 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>387</x>
-     <y>367</y>
+     <x>391</x>
+     <y>290</y>
     </hint>
     <hint type="destinationlabel">
-     <x>653</x>
-     <y>416</y>
+     <x>614</x>
+     <y>358</y>
     </hint>
    </hints>
   </connection>
@@ -5074,12 +5198,12 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
    <slot>setDisabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>387</x>
-     <y>367</y>
+     <x>391</x>
+     <y>290</y>
     </hint>
     <hint type="destinationlabel">
-     <x>489</x>
-     <y>341</y>
+     <x>613</x>
+     <y>325</y>
     </hint>
    </hints>
   </connection>
@@ -5094,8 +5218,8 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
      <y>292</y>
     </hint>
     <hint type="destinationlabel">
-     <x>74</x>
-     <y>278</y>
+     <x>100</x>
+     <y>308</y>
     </hint>
    </hints>
   </connection>
@@ -5128,6 +5252,38 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
     <hint type="destinationlabel">
      <x>78</x>
      <y>358</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>getRenameInsertGrouping_Chb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>insertGrpPattern_H</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>320</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>423</x>
+     <y>384</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>getRenameInsertGrouping_Chb</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>insertGroupingCount_F</receiver>
+   <slot>setDisabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>330</x>
+     <y>282</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>396</x>
+     <y>414</y>
     </hint>
    </hints>
   </connection>

@@ -40,3 +40,37 @@ def Grping(Target , Count , Grp_Suffix = ["_Grp" , "_Offset" , "_Prime" , '_GrpP
     cmds.parent(Target ,  Groups[0])
 
     return  Groups
+
+
+def insertGrp(target , names = [] , match = True  , keepParent = True):
+    Groups =[]
+    isParent = None
+    matrix = None
+    if keepParent:
+        isParent = cmds.listRelatives(target , p =1,fullPath=1 )
+
+    if match:
+        matrix = cmds.xform(target  , q =1 , ws =1 , m = 1)
+    child = None
+    for x in names:
+        if child is None:
+            child = target 
+
+        
+        grp = cmds.createNode("transform" , n = x)
+        if matrix:
+            cmds.xform(grp , ws =1 ,m = matrix)
+        cmds.parent(child ,grp)
+        Groups.append(grp)
+        child = grp
+
+    if isParent:
+        cmds.parent(Groups[-1] , isParent[0])
+
+    return Groups
+    
+
+
+
+
+

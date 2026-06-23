@@ -210,7 +210,7 @@ class nameSetUp:
 
             if self.numberFormat:
                 num_str = str(current_num).zfill(self.padding)
-                print (">>>>>>>>>>>" , num_str)
+                #print (">>>>>>>>>>>" , num_str)
                 key = self.numberFormat.strip("{}")
                 formatDict[key] = num_str
 

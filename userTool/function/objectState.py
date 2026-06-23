@@ -88,7 +88,7 @@ def setDrawObj(Target, ColorNumber):
     Jon : #3F231F : (0.247 , 0.137 , 0.122) : 11
     TotemPole : #992600 : (0.6 , 0.149 ,0) : 12
     Red : #FF0000 : (1,0,0) : 13
-    Green : #00FF00 : (0,1,0) : 14
+    Green : #00FF00 : (0,1,0) : 14  
     Smalt : #004199 : (0,0.255,0.6) : 15 
     White : #FFFFFF : (1,1,1) : 16
     Yellow : #FFFF00 : (1,1,0) : 17
