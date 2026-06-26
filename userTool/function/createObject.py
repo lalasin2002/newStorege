@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
+from Cython import basestring
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 import os,sys
@@ -256,8 +257,46 @@ class jointInserter():
 
         return self.insertJnt
 
+    def orientJnt(self , orient_or_item = None , targetJnt=None , parentJnt=None , childJnt = None):
+        getOrient = None
+        if orient_or_item is None and self.parentJnt:
+            orient_or_item = self.parentJnt
+        if isinstance(orient_or_item , self.string_type) and cmds.objExists(orient_or_item):
+            if cmds.objectType(orient_or_item) == "joint":
+                getOrient = [cmds.getAttr(orient_or_item + ".jointOrient{}".format(ax)) for ax in "XYZ"]
+            else:
+                getOrient = cmds.xform(orient_or_item , ws =1 , q =1 , ro =1)
+        if isinstance(orient_or_item , (list, tuple)) and len(orient_or_item) >2:
+            if all( isinstance(x , (int , float)) for x in orient_or_item):
+                getOrient = orient_or_item
+        
+        
+        
+        if getOrient is None:
+            raise ValueError(u"orient_or_item 값이 유효하지 않거나 , 없습니다")
+        if parentJnt is None and self.parentJnt:
+            parentJnt = self.parentJnt
+        if targetJnt is None and self.insertJnt:
+            targetJnt = self.insertJnt
+        if childJnt is None and self.childJnt:
+            childJnt = self.childJnt
+        
+        targetJntGrp = cmds.createNode("transform" , n = targetJnt + "_FixGrp")
+        cmds.delete(cmds.parentConstraint( targetJnt, targetJntGrp , mo = 0))
+        cmds.parent(targetJnt , targetJntGrp)
+        cmds.parent(childJnt , world=1)
 
-    def orientJnt(self, aimV, upV, worldV, targetJnt=None, childJnt=None, parentJnt=None):
+        cmds.xform(targetJntGrp , ws =1 , ro = getOrient)
+
+        cmds.parent(targetJnt , parentJnt)
+        cmds.parent(childJnt , targetJnt)
+        cmds.delete(targetJntGrp)
+
+
+
+
+
+    def aimOrientJnt(self, aimV, upV, worldV, targetJnt=None, childJnt=None, parentJnt=None):
         """
         targetJnt를 childJnt를 향하도록 회전시키고 jointOrient에 굽는다(bake).
         
@@ -574,3 +613,155 @@ def create_foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
         
     return returnList
 
+def createCurve(cvList , degree = 3 , curveName = None , keepRange = False):
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+    attrsDict = {}
+    if not isinstance(cvList , (list , tuple)):
+        raise TypeError(u"cvList는 list 또는 tuple만 유효합니다.")
+    if not all(isinstance(cv , (list , tuple)) and len(cv) == 3 for cv in cvList):
+        raise TypeError(u"cvList의 각 요소는 길이 3의 list 또는 tuple이어야 합니다.")
+    if curveName is not None and not isinstance(curveName , string_type):
+        raise TypeError(u"curveName은 문자열만 유효합니다.")
+    if curveName:
+        attrsDict["n"] = curveName
+    #attrsDict["d"] = degree
+    spans = len(cvList) - degree
+    curveItrm = cmds.curve(p = cvList ,d =1 ,  **attrsDict)
+    keepControlPoints = True
+    if degree > 1:
+        keepControlPoints = False
+    curveItrm =cmds.rebuildCurve(curveItrm , d = degree ,s = spans , kcp =  keepControlPoints,  kr = keepRange , rpo = 1 , ch = 0)[0]
+    return curveItrm
+
+        
+def create_MeshFeatureEdge_curve(MeshItem, Name, angle_threshold=30, size=1, Position=False):
+    """
+    오브젝트의 외곽 형태(Border) 및 일정 각도 이상 꺾이는 특징적 엣지(Feature Edge)를 
+    추출하여 커브 컨트롤러를 생성합니다.
+    Args:
+        -MeshItem        (str): 컨트롤러를 생성할 대상 메쉬의 이름
+        -Name            (str): 생성될 컨트롤러(그룹)의 이름
+        -angle_threshold (int): 엣지 추출 기준 각도 (기본값 30도)
+        -size            (float): 컨트롤러의 전체적인 크기 (기본값 1)
+        -Position        (bool): 대상 메쉬와의 위치/회전 일치 여부 (기본값 False)
+    Returns:
+        생성된 컨트롤러의 이름(str)
+    """
+
+    if not cmds.objExists(MeshItem):
+        print(u"대상 메쉬가 존재하지 않습니다.")
+        return None
+    
+    shapes = cmds.listRelatives(MeshItem, shapes=True, fullPath=True) or []
+    if not any(cmds.objectType(s) == 'mesh' for s in shapes):
+        print(u"메쉬 타입이 아닙니다.")
+        return None
+
+    cmds.select(MeshItem)
+    TargetEdges = []
+
+    try:
+        # 1. 특정 각도 이상 꺾이는 엣지 선택 (Feature Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, angle=True, anglebound=(angle_threshold, 180))
+        angle_edges = cmds.ls(sl=True, fl=True) or []
+        cmds.polySelectConstraint(disable=True)
+
+        # 2. 열린 경계 엣지 선택 (Border Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, where=1)
+        border_edges = cmds.ls(sl=True, fl=True) or []
+        cmds.polySelectConstraint(disable=True)
+
+        # 두 결과물의 중복 제거 및 통합
+        TargetEdges = list(set(angle_edges + border_edges))
+
+    finally:
+        cmds.polySelectConstraint(disable=True)
+
+    if not TargetEdges:
+        print(u"외곽 형태를 정의할 엣지를 찾을 수 없습니다.")
+        cmds.select(cl=True)
+        return None
+
+    Ctrl = cmds.createNode("transform", n=Name)
+    mesh_pos = cmds.xform(MeshItem, q=True, ws=True, rp=True)
+    mesh_rot = cmds.xform(MeshItem, q=True, ws=True, ro=True)
+    
+    offset_pos = [-x for x in mesh_pos]
+    temp_curves_to_delete = []
+
+    for i, edge in enumerate(TargetEdges):
+        cmds.select(edge)
+        crv_transform = cmds.polyToCurve(degree=1, form=2, ch=False)[0]
+        cmds.xform(crv_transform, ws=True, t=offset_pos, r=True)
+        
+        cmds.makeIdentity(crv_transform, apply=True, t=1, r=1, s=1, n=0)
+
+        shp = cmds.listRelatives(crv_transform, s=True)[0]
+        renamed_shp = cmds.rename(shp, "{}{}Shape".format(Name, i + 1))
+        cmds.parent(renamed_shp, Ctrl, relative=True, shape=True)
+        
+        temp_curves_to_delete.append(crv_transform)
+        
+    if temp_curves_to_delete:
+        cmds.delete(temp_curves_to_delete)
+
+    cmds.scale(size, size, size, Ctrl)
+    cmds.makeIdentity(Ctrl, apply=True, s=1)
+
+    if Position:
+        cmds.xform(Ctrl, ws=True, t=mesh_pos)
+        cmds.xform(Ctrl, ws=True, ro=mesh_rot)
+
+    cmds.select(Ctrl)
+    return Ctrl
+
+
+def createPocif(Name=None, CrvName="", Parameter=0, TurnOnPercentage=True, connectTask=None):
+    """
+    'pointOnCurveInfo' 노드를 생성하고, 매개변수 및 백분율 모드를 설정합니다.
+    선택적으로 주어진 커브에 연결합니다.
+
+    Args:
+        Name (str): 생성할 'pointOnCurveInfo' 노드의 이름.
+        CrvName (str, optional): 연결할 커브의 이름(Transform 또는 Shape). 비어 있으면 연결하지 않습니다.
+        Parameter (float, optional): 'parameter' 속성에 설정할 값. 기본값은 0.
+        TurnOnPercentage (bool, optional): 'turnOnPercentage' 속성을 활성화할지 여부. 기본값은 True.
+        connectTask (list, optional): [ (NodeAttr, target.attr), ... ] 형태의 연결 리스트.
+
+    Returns:
+        str: 생성된 'pointOnCurveInfo' 노드의 이름.
+    """
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+
+    # 노드 생성
+    pocifDict = {}
+    if isinstance(Name, string_type):
+        pocifDict["n"] = Name
+        
+    POCIF = cmds.createNode('pointOnCurveInfo', **pocifDict)
+    cmds.setAttr("{}.turnOnPercentage".format(POCIF), TurnOnPercentage)
+    cmds.setAttr("{}.parameter".format(POCIF), Parameter)
+
+    if cmds.objExists(CrvName):
+        shapes = cmds.listRelatives(CrvName, shapes=True, noIntermediate=True) or []
+        target_curve = shapes[0] if shapes else CrvName
+        
+        if cmds.objExists("{}.worldSpace[0]".format(target_curve)):
+            cmds.connectAttr("{}.worldSpace[0]".format(target_curve), "{}.inputCurve".format(POCIF), f=True)
+
+    if isinstance(connectTask, list) and all(isinstance(x, tuple) and len(x) == 2 for x in connectTask):
+        for nodeAttr, connectTarget in connectTask:
+            source_attr = "{}.{}".format(POCIF, nodeAttr)
+            if cmds.objExists(source_attr) and cmds.objExists(connectTarget):
+                cmds.connectAttr(source_attr, connectTarget, f=True)
+    return POCIF
+
+
+    
+    

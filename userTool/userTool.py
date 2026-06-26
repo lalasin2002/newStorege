@@ -35,7 +35,7 @@ def pathAppend(log = True):
 
 
 pathAppend()
-from function import match ,grouping ,naming , pysideHelper , controlObject ,createObject , objectState , findObject
+from function import match ,grouping ,naming , pysideHelper , controlObject ,createObject , objectState , findObject ,controlAttribute
 
 
 current_path = __file__
@@ -69,9 +69,7 @@ class DesignerUI(QtWidgets.QDialog):
             ("reverseMatchTasks"        ,"targeting_reverse_Chb"       ,"isChecked"         ,"setChecked"           , False),
             ("deleteConstraint"         ,"deleteConstraint_Chb"        ,"isChecked"         ,"setChecked"           , True),
 
-            ("groupingNames"            ,"grpExtraName_Te"             ,"toPlainText"       ,"setPlainText"         ,"_Grp,_Offset,_Prime,_PrimeGrp"),
-            ("groupingPrefix"           ,"grpPrefixName_Rdb"           ,"isChecked"         ,"setChecked"           , False),
-            ("groupingSuffix"           ,"grpSuffixName_Rdb"           ,"isChecked"         ,"setChecked"           , True),
+            ("groupingNames"            ,"grpExtraName_Te"             ,"toPlainText"       ,"setPlainText"         ,"{item}_Grp,{item}_Offset,{item}_Prime,{item}_PrimeGrp"),
             ("groupingCount"            ,"grpCount_SB"                 ,"value"             ,"setValue"             , 2 ),
             ("groupingSequenceParent"   ,"groupingSequenceParent_Chb"  ,"isChecked"         ,"setChecked"           , False),
             ("groupingKeepPosition"     ,"groupingKeepPosition_Chb"    ,"isChecked"         ,"setChecked"           , True),
@@ -135,10 +133,53 @@ class DesignerUI(QtWidgets.QDialog):
             ("mirrorGrpNameFormat"      ,"mirrorGrpNameFormat_Le"      ,"text"              ,"setText"              , "{item}_mirrorGrp" ),
             ("mirrorGrpTargetChk"       ,"mirrorGrpTarget_Chb"         ,"isChecked"         ,"setChecked"           , False),
             ("mirrorLeftGrpName"        ,"mirrorLeftGrpName_Le"        ,"text"              ,"setText"              , "L_" ),
-            ("mirrorRightGrpName"       ,"mirrorRightGrpName_Le"        ,"text"              ,"setText"             , "R_" )
+            ("mirrorRightGrpName"       ,"mirrorRightGrpName_Le"       ,"text"              ,"setText"             , "R_" ),
+
+            ("sequenceParentIndex"      ,"sequenceParentIndex_Sb"      ,"value"             ,"setValue"             ,  1),
+
+            ("cntParentGrpPattern"         ,"cntParentGrpPattern_Le"          ,"text"              ,"setText"              , "" ),
+            ("cntParentGrpConstraintName"  ,"cntParentGrpConstraintName_Le"   ,"text"              ,"setText"              , "{item}_constraint" ),
+            ("cntParentGrpCntParentName"   ,"cntParentGrpCntParentName_Le"    ,"text"              ,"setText"              , "{item}_cntParent" ),
+            ("cntParentGrpConstraintGrps"  ,"cntParentGrpConstraintGrp_Te"    ,"toPlainText"       ,"setPlainText"         , "{item}_constraintGrp" ),
+            ("cntParentGrpConnectGrps"     ,"cntParentGrpConnectGrp_Te"       ,"toPlainText"       ,"setPlainText"         , "{item}_connectGrp" ),
+            ("cntParentTranslate"          ,"cntParentTrans_Chb"              ,"isChecked"         ,"setChecked"           , True),
+            ("cntParentRotate"             ,"cntParentRotate_Chb"             ,"isChecked"         ,"setChecked"           , True),
+            ("cntParentScale"              ,"cntParentScale_Chb"              ,"isChecked"         ,"setChecked"           , True),
+
+            ("createMeshCurveThresHold"    ,"createMeshCurveThresHold_Dsb"   ,"value"             ,"setValue"             ,  30),
+            ("createMeshCurveSize"         ,"createMeshCurveSize_Dsb"        ,"value"             ,"setValue"             ,  1),
+            ("createMeshCurveGetName"      ,"getNameCreateMeshCurve_Chb"     ,"isChecked"         ,"setChecked"           ,  False),
+
+            ("InsertCurveTarget"           ,"InsertCurveTarget_Cbb"           ,"currentIndex"      ,"setCurrentIndex"      ,  0 ),
+            
+            ("createCurveDegree"           ,"createCurveDegree_Sb"           ,"value"             ,"setValue"             ,  1 ),
+            ("createCurveGetName"          ,"getNameCreateCurve_Chb"         ,"isChecked"         ,"setChecked"           ,  False ),
+
+            ("addAttrTypr"                 ,"addAttr_Cbb"                    ,"currentIndex"      ,"setCurrentIndex"      ,  0 ),
+            ("addAttrMinCheck"             ,"addAttrMin_Chb"                 ,"isChecked"         ,"setChecked"           ,  False ),
+            ("addAttrMaxCheck"             ,"addAttrMax_Chb"                 ,"isChecked"         ,"setChecked"           ,  False ),
+            ("addAttrMinValue"             ,"addAttrMin_Dsb"                 ,"value"             ,"setValue"             ,  0 ),
+            ("addAttrMaxValue"             ,"addAttrMax_Dsb"                 ,"value"             ,"setValue"             ,  10 ),
+            ("addAttrName"                 ,"addAttrName_Le"                 ,"text"              ,"setText"              , "" ),
+            ("addAttrNiceName"             ,"addAttrNiceName_Le"             ,"text"              ,"setText"              , "" ),
+            ("addAttrEnums"                ,"addAttrEnum_Te"                 ,"toPlainText"       ,"setPlainText"         , "A ,B" ),
+
+            ("addSepAttrName"              ,"addSepAttrName_Le"              ,"text"              ,"setText"              , "" ),
+            ("addSepNiceName"              ,"addSepNiceName_Le"              ,"text"              ,"setText"              , "" ),
+            ("addSepAttrLock"              ,"addSepLock_Chb"                 ,"isChecked"         ,"setChecked"           ,  False ),
+
+            ("createPocifPattern"          ,"createPocifPattern_Le"          ,"text"              ,"setText"              , "" ),
+            ("createPocifCurveName"        ,"createPocifCurveName_Le"        ,"text"              ,"setText"              , "" ),
+            ("createPocifCntedObjName"     ,"createPocifCntedObjName_Le"     ,"text"              ,"setText"              , "" ),
+            ("createPocifNodeName"         ,"createPocifNodeName_Le"         ,"text"              ,"setText"              , "" ),
+            ("createPocifGetName_Chb"      ,"getNameCreatePocif_Chb"         ,"isChecked"         ,"setChecked"           ,  False ),
+            ("createPocifCurveDegree"      ,"createPocifCurveDegree_Sb"      ,"value"             ,"setValue"             ,  1 ),
+            ("createPocifConstraint"       ,"createPocifConstraint_Chb"      ,"isChecked"         ,"setChecked"           ,  False )
+            
+
+
 
         ]
-
 
 
         self.setWindowTitle("userTool")
@@ -237,9 +278,341 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.insertGrouping_Btn.clicked.connect(self.insertGroup)
         #mirrorGrp
         self.ui.mirrorGrpName_Btn.clicked.connect(self.mirrorGroup)
+        #sequence parent
+        self.ui.sequenceParent_Btn.clicked.connect(self.sequenceParent)
+        #cntParentGrp
+        self.ui.cntParentGrp_Btn.clicked.connect(lambda: self.cntParentGrp(debug=False))
+        self.ui.cntParentGrpDebug_Btn.clicked.connect(lambda: self.cntParentGrp(debug=True))
+        #createMeshCurve
+        self.ui.createMeshCurve_Btn.clicked.connect(self.createMeshCurve)
+        #insertCurve
+        self.ui.InsertCurve_Btn.clicked.connect(self.insertCurve)
+        #createCurve
+        self.ui.createCurve_Btn.clicked.connect(self.createCurve)
+        #addAttr
+        self.ui.addAttr_Btn.clicked.connect(self.addCustomAttr)
+        #sepAttr
+        self.ui.addSep_Btn.clicked.connect(self.addSeparateAttr)
+        #createPocifObjs
+        self.ui.createPocif_Btn.clicked.connect(self.createPocifObjs)
 
-    def cntParentGroup(self):
-        pass
+    def createPocifObjs(self):
+        selects = [x for x in cmds.ls(sl=1 ,allPaths =1 ) if controlObject.isDag(x)]
+        itemPatternCheck = re.compile(r'\{item\}')
+
+        curveName = self.ui.createPocifCurveName_Le.text()
+        connectObjName = self.ui.createPocifCntedObjName_Le.text()
+        nodeName = self.ui.createPocifNodeName_Le.text()
+        getName = self.ui.getNameCreatePocif_Chb.isChecked()
+        degree = self.ui.createPocifCurveDegree_Sb.value()
+        constraintCheck = self.ui.createPocifConstraint_Chb.isChecked()
+        
+        pattern = None
+        if self.ui.createPocifPattern_Le.text():
+            pattern = self.ui.createPocifPattern_Le.text()
+        if not len(selects)>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            renames = None
+            newCurveName = None
+            pocifCurve = None
+            if getName:
+                renames = self._setTaskRenames([None for x in selects])
+            if curveName:
+                if itemPatternCheck.search(curveName):
+                    newCurveName = curveName.format(item = selects[0])
+                else:
+                    newCurveName = curveName
+            else:
+                newCurveName = curveName
+            if newCurveName:
+                posList = [tuple(cmds.xform(x, ws =1 , t =1 , q=1)) for x in selects]
+                pocifCurve = createObject.createCurve(posList , degree , newCurveName )
+
+            
+
+            parameterDiv = 1.0/(len(selects)-1)
+            for  i ,x in enumerate(selects):
+                pocifName = None
+                cntedObjName = None
+                item = x
+                if pattern:
+                    search = re.search(pattern ,x)
+                    if search:
+                        #print ("sss",search.group())
+                        item = search.group()
+
+                if renames:
+                    item = renames[i][1]
+
+                if itemPatternCheck.search(connectObjName):
+                    cntedObjName = connectObjName.format(item = item)
+                else:
+                    cntedObjName = connectObjName
+                if itemPatternCheck.search(nodeName):
+                    pocifName = nodeName.format(item = item)
+                else:
+                    pocifName = nodeName
+                
+                if cntedObjName:
+                    cntedObjName = cmds.spaceLocator(n = cntedObjName)[0]
+                if pocifName:
+                    connectData = []
+                    for ax in "XYZ":
+                        data = ("position{}" .format(ax) , "{}.translate{}" .format(cntedObjName , ax))
+                        connectData.append(data)
+                    pocifNode = createObject.createPocif(pocifName , pocifCurve ,parameterDiv *i , True , connectData)
+
+                if constraintCheck:
+                    cmds.pointConstraint(cntedObjName ,x ,mo=1 )
+                    
+                
+
+
+
+        finally:
+            cmds.undoInfo(closeChunk=1)
+        
+
+
+
+
+    def addSeparateAttr(self):
+        selects = [x for x in cmds.ls(sl=1 ,allPaths =1 ) if controlObject.isDag(x)]
+        longName = self.ui.addSepAttrName_Le.text()
+        niceName = self.ui.addSepNiceName_Le.text()
+        attrLock = self.ui.addSepLock_Chb.isChecked()
+        if longName is None or longName == "":
+            return
+        if not len(selects)>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            for x in selects:
+                controlAttribute.addSeparateAttr(x, longName ,attrLock , niceName)
+
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+    def addCustomAttr(self):
+        selects = [x for x in cmds.ls(sl=1 ,allPaths =1 ) if controlObject.isDag(x)]
+        longName = self.ui.addAttrName_Le.text()
+        niceName = self.ui.addAttrNiceName_Le.text()
+        checkMin = self.ui.addAttrMin_Chb.isChecked()
+        checkMax = self.ui.addAttrMax_Chb.isChecked()
+        minValue = self.ui.addAttrMin_Dsb.value()
+        maxValue = self.ui.addAttrMax_Dsb.value()
+        attrType = self.ui.addAttr_Cbb.currentText()
+
+        enums = None
+        if self.ui.addAttrEnum_Te.toPlainText():
+            enums = self._getTextList(self.ui.addAttrEnum_Te.toPlainText())
+            enums = ":".join(enums)
+        if longName is None or longName == "":
+            return
+        if not len(selects)>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            for item in selects:
+                attrDict = {}
+                if niceName:
+                    attrDict["nn"] = niceName
+
+                if attrType in ["float" , "int"]:
+                    if checkMin:
+                        attrDict["min"] =  minValue
+                        attrDict["hasMinValue"] = True
+                    if checkMax:
+                        attrDict["max"] = maxValue
+                        attrDict["hasMaxValue"] = True
+                    if checkMin and attrType == "int":
+                        attrDict["min"] =  int(minValue)
+                    if checkMax and attrType == "int":
+                        attrDict["max"] =  int(maxValue)   
+                if attrType == "enum":
+                    if enums:
+                        attrDict["en"] = enums
+                    else:
+                        continue
+                controlAttribute.addCustomAttr(item , longName , attrType , **attrDict)
+        finally:
+            cmds.undoInfo(closeChunk=1)
+        
+    def createCurve(self):
+        selects = cmds.ls(sl=1 ,allPaths =1 , fl =1)
+        degree = self.ui.createCurveDegree_Sb.value()
+        getName = self.ui.getNameCreateCurve_Chb.isChecked()
+        if not len(selects)>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            posList = []
+            for x in selects:
+                pos = cmds.xform(x,ws =1, q =1 , t =1 )
+                if all(x == 0 for x in pos):
+                    pos = cmds.xform(x , q =1 , pivots=1 ,ws =1)[:3]
+                posList.append(tuple(pos))
+            for i in range(len(selects)):
+                print (selects[i] , posList[i] )
+            crvName =None
+            if getName:
+                crvName = self._setTaskRenames([None])[1]
+            crv = createObject.createCurve(posList , degree , crvName )
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+
+
+    def insertCurve(self):
+        selects = [x for x in cmds.ls(sl =1) if controlObject.isDag(x)]
+        if not len(selects)>0:
+            return
+        targetIndex = self.ui.InsertCurveTarget_Cbb.currentIndex()
+        insertSource = None
+        insertTargets = None
+        cmds.undoInfo(openChunk=1)
+        try:
+            if targetIndex == 0:
+                insertSource = selects[0]
+                insertTargets = selects[1:]
+            else:
+                insertSource = selects[-1]
+                insertTargets = selects[:-1]
+            for x in insertTargets:
+                dulicateInsertSource = controlObject.dulicateObject(insertSource)
+                controlObject.insertShp(x , dulicateInsertSource[0] , types = ["nurbsCurve"] , renameBool = True)
+                cmds.delete(dulicateInsertSource[0])
+
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+
+    def createMeshCurve(self):
+        selects = [x for x in cmds.ls(sl =1) if controlObject.isDag(x)]
+        if not len(selects)>0:
+            return
+        angle_threshold = self.ui.createMeshCurveThresHold_Dsb.value()
+        size = self.ui.createMeshCurveSize_Dsb.value()
+        getName = self.ui.getNameCreateMeshCurve_Chb.isChecked()
+        cmds.undoInfo(openChunk=1)
+        try:
+            if getName:
+                renames = self._setTaskRenames([None for x in selects])
+            for i,x in enumerate(selects):
+                name = naming.uniqueName("curve")
+                if getName:
+                    name = renames[i][1]
+                createObject.create_MeshFeatureEdge_curve(x , name , angle_threshold , size, True)
+        finally:
+            cmds.undoInfo(closeChunk=1)
+        
+    def cntParentGrp(self, debug = False):
+        selects = [ x for x in cmds.ls(sl =1 ) if controlObject.isDag(x)]
+        print (selects)
+        if not len(selects)>0:
+            return
+        pattern = None
+        if self.ui.cntParentGrpPattern_Le.text():
+            pattern = self.ui.cntParentGrpPattern_Le.text()
+        itemCheckPattern = re.compile(r'\{item\}')
+
+        preConstraintName = self.ui.cntParentGrpConstraintName_Le.text()
+        preCntParentName = self.ui.cntParentGrpCntParentName_Le.text()
+
+        preConstraintGrpName = self._getTextList(self.ui.cntParentGrpConstraintGrp_Te.toPlainText())
+        preConnectGrpName = self._getTextList(self.ui.cntParentGrpConnectGrp_Te.toPlainText())
+
+        translateChk = self.ui.cntParentTrans_Chb.isChecked()
+        rotateChk = self.ui.cntParentRotate_Chb.isChecked()
+        scaleChk = self.ui.cntParentScale_Chb.isChecked()
+        attr = []
+        constraintTypes = []
+        if translateChk:
+            constraintTypes.append("pointConstraint")
+            attr.append("translate")
+        if rotateChk:
+            constraintTypes.append("orientConstraint")
+            attr.append("rotate")
+        if scaleChk:
+            constraintTypes.append("scaleConstraint")
+            attr.append("scale")
+        cmds.undoInfo(openChunk=1)
+        try:
+            connectParent = grouping.connectParent()
+            for x in selects:
+                print (x)
+                constraintGrpNames = []
+                connectGrpNames = []
+                constrainName = None
+                connectName = None
+
+                item = x
+                if pattern:
+                    search = re.search(pattern ,x)
+                    if search:
+                        #print ("sss",search.group())
+                        item = search.group()
+
+                #print (item)
+
+                if itemCheckPattern.search(preConstraintName):
+                    constrainName = preConstraintName.format(item = item)
+                if itemCheckPattern.search(preCntParentName):
+                    connectName = preCntParentName.format(item = item)
+
+
+                for nameItem in preConstraintGrpName:
+                    if itemCheckPattern.search(nameItem):
+                        constraintGrpNames.append(nameItem.format(item = item))
+                    else:
+                        constraintGrpNames.append(nameItem)
+                for nameItem in preConnectGrpName:
+                    if itemCheckPattern.search(nameItem):
+                        connectGrpNames.append(nameItem.format(item = item))
+                    else:
+                        connectGrpNames.append(nameItem)
+
+                connectParent.addTarget(item)
+                connectParent.setWorkTarget(item, constraintName=constrainName, connectName=connectName)
+                connectParent.setGroupData(item , constraintGrpList = constraintGrpNames , connectGrpList = connectGrpNames)
+                connectParent.setConstraintData(item , constraints = constraintTypes)
+                connectParent.setConnectData(item , connectTarget = item , connects = attr)
+            
+            if debug:
+                pprint.pprint (connectParent.dictWork)
+            else:
+                connectParent.build()
+        finally:
+            cmds.undoInfo(closeChunk=1)
+        
+
+
+
+    def sequenceParent(self):
+        selects =[s for s in cmds.ls(sl =1 , allPaths=1)if controlObject.isDag(s)]
+        selects.reverse()
+        index = self.ui.sequenceParentIndex_Sb.value()
+        if not len(selects)>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            parent = None
+            lastParent = None
+            for x in selects:
+                allChild = cmds.ls(x , dagObjects=1 , allPaths=1)
+                try:
+                    lastParent = allChild[index]
+                except:
+                    lastParent = allChild[-1]
+                if parent:
+                    cmds.parent(x ,parent )
+                parent = lastParent
+        finally:
+            cmds.undoInfo(closeChunk=1)
+            
+        
 
 
     def mirrorGroup(self):
@@ -539,12 +912,11 @@ class DesignerUI(QtWidgets.QDialog):
             if constraintCheck:
                 for i,x in selects:
                     cmds.parentConstraint(folis[i] , x , mo =1 )
-
-
+        
         finally:
             cmds.undoInfo(closeChunk=1)
-
-
+    
+    
     def insertJoint(self):
         cmds.undoInfo(openChunk=1)
         try:
@@ -559,11 +931,11 @@ class DesignerUI(QtWidgets.QDialog):
             Axis = None
             startJnt = hierarchySelects[0]
             endJnt = hierarchySelects[1]
-            aimDict ={
-                "X" : [(1,0,0) ,(0,1,0) ,(0,1,0)],
-                "Y" : [(0,1,0) ,(1,0,0), (1,0,0)],
-                "Z" : [(0,0,1) ,(1,0,0), (1,0,0)]
-            }
+            #aimDict ={
+            #    "X" : [(1,0,0) ,(0,1,0) ,(0,1,0)],
+            #    "Y" : [(0,1,0) ,(1,0,0), (1,0,0)],
+            #   "Z" : [(0,0,1) ,(1,0,0), (1,0,0)]
+            #}
 
             if selectAxis == "auto":
                 Axis = objectState.getJntAxis(startJnt , endJnt)
@@ -578,7 +950,7 @@ class DesignerUI(QtWidgets.QDialog):
                 parameter = divValue * i
                 inserter.calculateVector(naming.uniqueName("insert_joint") , parameter)
                 inserter.createInsertJnt()
-                inserter.orientJnt(aimDict.get(Axis)[0] ,aimDict.get(Axis)[1] , aimDict.get(Axis)[2] )
+                inserter.orientJnt()
             
             cmds.select(selects )
         finally:
@@ -734,17 +1106,17 @@ class DesignerUI(QtWidgets.QDialog):
 
     def grouping(self):
         selects = cmds.ls(sl =1 ,allPaths=1)
-
+        itemCheckPattern = re.compile(r'\{item\}')
         groupsNames = self._getTextList(self.ui.grpExtraName_Te.toPlainText())
+        groupsNames = [x for x in groupsNames if itemCheckPattern.search(x)]
+        #print (groupsNames)
         sequenceParent = self.ui.groupingSequenceParent_Chb.isChecked()
         keepPosition = self.ui.groupingKeepPosition_Chb.isChecked()
         groupingCount = self.ui.grpCount_SB.value()
-
-        prefix = False
-        if self.ui.grpPrefixName_Rdb.isChecked():
-            prefix = True
-        if self.ui.grpSuffixName_Rdb.isChecked():
-            prefix = False
+        if len(selects) == 0:
+            return
+        if not groupsNames:
+            return
 
         keepParentTask = []
         cmds.undoInfo(openChunk=1)
@@ -753,8 +1125,10 @@ class DesignerUI(QtWidgets.QDialog):
             selects.reverse()
             for item in selects:
                 rootParent = cmds.listRelatives(item , p =1 ,allDescendents=1)
-
-                grp = grouping.Grping(item , groupingCount ,groupsNames ,prefix)
+                groupData = [x.format(item = item) for x in groupsNames]
+                
+                
+                grp = grouping.insertGrp(item , groupData[:groupingCount] , keepPosition)
 
                 if rootParent and keepPosition:
                     task = (grp[-1] , rootParent[0])

@@ -7,10 +7,13 @@ DefaultVersion = 2020
 UiName = "StandOuterTool.ui"
 
 
-# 플러그인 로딩 스킵
 os.environ["MAYA_SKIP_USERSETUP_PY"] = "1"
 os.environ["MAYA_NO_STANDALONE_MSG"] = "1"
 os.environ["MAYA_MODULE_PATH"] = ""
+
+# --- [추가할 내용] V-Ray 다이얼로그/팝업 강제 차단 ---
+os.environ["VRAY_SILENT_MODE"] = "1"
+os.environ["VRAY_FOR_MAYA_SILENT"] = "1"
 
 if sys.version_info[0] < 3:
     text_type = unicode
@@ -920,7 +923,30 @@ class DesignerUI(QtWidgets.QDialog):
                         pass
 
 
-                    try: 
+                    try:
+                        # 1. 마야 자체 보안 경고창 강제 무력화
+                        security_vars = [
+                            "securityWarningOnScriptNode",
+                            "securityWarningOnMelEval",
+                            "securityWarningOnPythonEval"
+                        ]
+                        for var in security_vars:
+                            if cmds.optionVar(exists=var):
+                                cmds.optionVar(intValue=(var, 0))
+
+                        # 2. 마야 스캐너 콜백(팝업 원흉) 플러그인 강제 언로드
+                        if cmds.pluginInfo('MayaScanner', q=True, loaded=True):
+                            cmds.unloadPlugin('MayaScanner')
+                        if cmds.pluginInfo('MayaScannerCB', q=True, loaded=True):
+                            cmds.unloadPlugin('MayaScannerCB')
+                        # --------------------------------------------------
+
+                        was_scanner_loaded = cmds.pluginInfo('MayaScanner', q=True, loaded=True)
+                        if was_scanner_loaded:
+                            cmds.unloadPlugin('MayaScanner')
+                            # 스캐너 버전에 따라 콜백 플러그인도 함께 해제
+                            if cmds.pluginInfo('MayaScannerCB', q=True, loaded=True):
+                                cmds.unloadPlugin('MayaScannerCB')
                         cmds.file(path , open = True , force = True , prompt=False , executeScriptNodes=False,loadReferenceDepth='none')
                         uiconfig =  backup_UI_Config()
                     except Exception as e:
