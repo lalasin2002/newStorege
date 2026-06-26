@@ -135,27 +135,45 @@ class moveAttr():
             attrData = self._setDict(item , attr , index)
             self.workDict[attr] = attrData
 
-    def moveElement(self , element_or_index  , moveElement_or_moveIndex):
-        startRootIndex = None
-        destinationIndex = None
-        if isinstance(element_or_index, self.string_type) and element_or_index in self.standardAttrs:
-            startRootIndex = self.standardAttrs.index(element_or_index)
-        elif isinstance(element_or_index, int) and 0 <= element_or_index < len(self.standardAttrs):
-            startRootIndex = element_or_index
+    def moveElement(self, element_or_index, moveElement_or_moveIndex):
+        """
+        두 요소의 인덱스를 찾아 리스트 순서를 바꾸고 딕셔너리를 동기화합니다.
+        """
+        startRootIndex = self._getIndex(element_or_index)
+        destinationIndex = self._getIndex(moveElement_or_moveIndex)
 
-        if isinstance(moveElement_or_moveIndex, self.string_type) and moveElement_or_moveIndex in self.standardAttrs:
-            destinationIndex = self.standardAttrs.index(moveElement_or_moveIndex)
-        elif isinstance(moveElement_or_moveIndex, int) and 0 <= moveElement_or_moveIndex < len(self.standardAttrs):
-            destinationIndex = moveElement_or_moveIndex
-
-        if startRootIndex is not None and destinationIndex is not None: # 0 운 False으로 취급함
-            self.standardAttrs[startRootIndex] , self.standardAttrs[destinationIndex] = self.standardAttrs[destinationIndex] ,self.standardAttrs[startRootIndex]
-
+        if startRootIndex is not None and destinationIndex is not None:
+            self._swapInList(startRootIndex, destinationIndex)
+            self._syncWorkDict(startRootIndex, destinationIndex)
+            return True
+            
+        return False
 
         
 
 
     #--helper
+    def _getIndex(self, element_or_index):
+        if isinstance(element_or_index, self.string_type) and element_or_index in self.standardAttrs:
+            return self.standardAttrs.index(element_or_index)
+        elif isinstance(element_or_index, int) and 0 <= element_or_index < len(self.standardAttrs):
+            return element_or_index
+        return None
+    
+    def _swapInList(self, idx1, idx2):
+        self.standardAttrs[idx1], self.standardAttrs[idx2] = self.standardAttrs[idx2], self.standardAttrs[idx1]
+
+    def _syncWorkDict(self, idx1, idx2):
+        # 이미 _swapInList가 실행된 후이므로, 바뀐 위치의 속성 이름을 가져옵니다.
+        moved_attr1 = self.standardAttrs[idx1]
+        moved_attr2 = self.standardAttrs[idx2]
+        
+        if moved_attr1 in self.workDict:
+            self.workDict[moved_attr1]["index"] = idx1
+        if moved_attr2 in self.workDict:
+            self.workDict[moved_attr2]["index"] = idx2
+
+
     def _setDict(self, item , attr , index ):
         objAttr = self._existObjAttr(item,attr )
         if not objAttr:
