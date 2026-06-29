@@ -11,10 +11,10 @@ try:
 except:
     from shiboken2 import wrapInstance
 try:
-    from PySide6.QtWidgets import QApplication, QFileDialog
-    from PySide6 import QtCore, QtWidgets, QtUiTools, QtGui 
+    from PySide6.QtWidgets import QApplication, QFileDialog ,QListWidget, QListWidgetItem
+    from PySide6 import QtCore, QtWidgets, QtUiTools, QtGui
 except:
-    from PySide2.QtWidgets import QApplication, QFileDialog
+    from PySide2.QtWidgets import QApplication, QFileDialog ,QListWidget, QListWidgetItem
     from PySide2 import QtCore, QtWidgets, QtUiTools, QtGui 
 
 
@@ -174,13 +174,22 @@ class DesignerUI(QtWidgets.QDialog):
             ("createPocifNodeName"         ,"createPocifNodeName_Le"         ,"text"              ,"setText"              , "" ),
             ("createPocifGetName_Chb"      ,"getNameCreatePocif_Chb"         ,"isChecked"         ,"setChecked"           ,  False ),
             ("createPocifCurveDegree"      ,"createPocifCurveDegree_Sb"      ,"value"             ,"setValue"             ,  1 ),
-            ("createPocifConstraint"       ,"createPocifConstraint_Chb"      ,"isChecked"         ,"setChecked"           ,  False )
+            ("createPocifConstraint"       ,"createPocifConstraint_Chb"      ,"isChecked"         ,"setChecked"           ,  False ),
+
+
+            ("nurbsCrvScaleValue"          ,"nurbsCrvScale_Dsb"              ,"value"             ,"setValue"             ,  1 ),
+
+            ("mirrrorJntMatchLeft"         , "mirrrorJntMatchLeft_Le"         ,"text"              ,"setText"              , "" ),
+            ("mirrrorJntMatchRight"       , "mirrrorJntMatchRight_Le"         ,"text"              ,"setText"              , "" ),
+            ("mirrrorJntMatchAxis"         ,"mirrrorJntAxis_Cbb"              ,"currentIndex"      ,"setCurrentIndex"      ,  2 )
             
 
 
 
         ]
+        self.moveAttrTarget = None
 
+        #--------
 
         self.setWindowTitle("userTool")
         self.init_ui(uiPath)
@@ -295,6 +304,146 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.addSep_Btn.clicked.connect(self.addSeparateAttr)
         #createPocifObjs
         self.ui.createPocif_Btn.clicked.connect(self.createPocifObjs)
+        #moveAttr
+        self.ui.moveAttrRefresh_Btn.clicked.connect(lambda : self.loadMoveAttr(self._selectItem(-1)))
+        self.ui.moveAttrUp_Btn.clicked.connect(lambda : self.moveAttr(True))
+        self.ui.moveAttrDown_Btn.clicked.connect(lambda : self.moveAttr(False))
+        self.ui.moveAttrLock_Btn.clicked.connect(lambda : self.setAttrState(0))
+        self.ui.moveAttrNonKeyable_Btn.clicked.connect(lambda : self.setAttrState(1))
+        #curveScale
+        self.ui.nurbsCrvScale_Btn.clicked.connect(self.curveScale)
+        #mirrorJntMatch
+        self.ui.mirrrorJntMatch_Btn.clicked.connect(self.mirrorMatch)
+
+    def mirrorMatch(self):
+        axis = self.ui.mirrrorJntAxis_Cbb.currentText()
+        leftString =self.ui.mirrrorJntMatchLeft_Le.text()
+        rightSrting = self.ui.mirrrorJntMatchRight_Le.text()
+
+        selects = self._selectItem()
+        if not len(selects )>0:
+            return
+        cmds.undoInfo(openChunk=1)
+
+
+        try:
+            renameWorks = []
+            renameTasks = []
+            search_replaces = []
+            if leftString and rightSrting:
+                search_replaces = [leftString , rightSrting]
+            for x in selects:
+                dulicate =  controlObject.mirrorObject(x , axis , search_replaces)
+                dulicate = [x for x in dulicate if controlObject.isDag(x)]
+                renameWorks += dulicate
+            for x in renameWorks:
+                renameObj = x.replace(leftString , rightSrting).rstrip("1")
+                task = (x , renameObj)
+                renameTasks.append(task)
+            names = naming.nameTask()
+            names.addTask(renameTasks )
+            names.build()
+            
+
+
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+
+    def curveScale(self):
+        selects = self._selectItem()
+        scaleValue = self.ui.nurbsCrvScale_Dsb.value()
+        if not len(selects )>0:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            for x in selects:
+                controlObject.scaleCurveCvs(x ,scaleValue )
+
+            cmds.select(selects)
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+    def setAttrState(self, typeInt = 0 ):
+        item = self.ui.moveAttr_Lw.selectedItems()
+        allItems = pysideHelper.getListWidgetAllItem(self.ui.moveAttr_Lw)
+        if item is None:
+            return
+        if not allItems:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            selectAttr = item[0].text()
+            objectName = item[0].data(QtCore.Qt.UserRole)
+            if typeInt == 0 :
+                controlAttribute.toggleAttrLock(objectName , selectAttr)
+            if typeInt == 1 :
+                controlAttribute.toggleAttrKeyable(objectName , selectAttr)
+        
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+
+
+    def moveAttr(self , up = True):
+        item = self.ui.moveAttr_Lw.selectedItems()
+        allItems = pysideHelper.getListWidgetAllItem(self.ui.moveAttr_Lw)
+        if item is None:
+            return
+        if not allItems:
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            addIndex = 1
+            if up:
+                addIndex = -1
+            selectAttr = item[0].text()
+            objectName = item[0].data(QtCore.Qt.UserRole)
+            moveAttrSystem = controlAttribute.moveAttr()
+
+            moveAttrSystem.setStandardAttrs(allItems)
+            moveAttrSystem.defineData(objectName , allItems)
+    
+            currentIndex = moveAttrSystem.workDict.get(selectAttr).get('index')
+            moveAttrSystem.moveElement(currentIndex , currentIndex + addIndex)
+            moveAttrSystem.build()
+            self.loadMoveAttr(objectName )
+
+            print(currentIndex , addIndex , currentIndex + addIndex)
+            self.ui.moveAttr_Lw.setCurrentRow(currentIndex + addIndex)
+
+        finally:
+            cmds.undoInfo(closeChunk=1)
+        
+    
+    def loadMoveAttr(self , item):
+        if item is None or item == []:
+            return
+        if not cmds.objExists(item):
+            return
+        cmds.undoInfo(openChunk=1)
+        try:
+            print (item)
+            workAttr=[]
+            AttrsChannal = cmds.listAttr(item , ud =1)
+            AttrsKeyable = []
+            if AttrsChannal:
+                workAttr += AttrsChannal
+            if AttrsKeyable:
+                workAttr += AttrsKeyable
+            if len(workAttr)>0:
+                print (workAttr)
+                Attrs = [ (item , attr) for attr in workAttr]
+                self.ui.moveAttr_Lw.clear()
+                for object , attr in Attrs:
+                    item = QListWidgetItem(attr)
+                    item.setData(QtCore.Qt.UserRole ,object )
+                    
+                    self.ui.moveAttr_Lw.addItem(item)
+        finally:
+            cmds.undoInfo(closeChunk=1)
+
+
 
     def createPocifObjs(self):
         selects = [x for x in cmds.ls(sl=1 ,allPaths =1 ) if controlObject.isDag(x)]
@@ -366,17 +515,10 @@ class DesignerUI(QtWidgets.QDialog):
 
                 if constraintCheck:
                     cmds.pointConstraint(cntedObjName ,x ,mo=1 )
-                    
-                
-
-
 
         finally:
             cmds.undoInfo(closeChunk=1)
         
-
-
-
 
     def addSeparateAttr(self):
         selects = [x for x in cmds.ls(sl=1 ,allPaths =1 ) if controlObject.isDag(x)]
@@ -667,9 +809,6 @@ class DesignerUI(QtWidgets.QDialog):
             mel.eval('searchReplaceNames "{s}" "{r}" "hierarchy"'.format(**search_n_replace_dict))
         finally:
             cmds.undoInfo(closeChunk=1)
-
-
-        
 
     def insertGroup(self):
         numStart = self.ui.insertGroupingNumStart_Sb.value()
@@ -1259,6 +1398,19 @@ class DesignerUI(QtWidgets.QDialog):
 
 
     #_________________________________________________________________________helper
+    def _selectItem(self , indexNum = None):
+        selects = [x for x in cmds.ls(sl=1 ,allPaths =1 ) if controlObject.isDag(x)]
+        if not len(selects) >0:
+            return []
+        if indexNum:
+            try:
+                return selects[indexNum]
+            except:
+                return []
+        else:
+            return selects
+
+
     def _setGroupCountOffsetMax(self):
         groupNameData = self.ui.grpExtraName_Te.toPlainText()
         groupNameList = self._getTextList(groupNameData)
@@ -1405,9 +1557,14 @@ class DesignerUI(QtWidgets.QDialog):
     def _setup_icon(self):
         style = QApplication.style() 
         refresh_icon = style.standardIcon(QtWidgets.QStyle.SP_BrowserReload)
-
+        upArrow_icon = style.standardIcon(QtWidgets.QStyle.SP_ArrowUp)
+        downArrow_icon = style.standardIcon(QtWidgets.QStyle.SP_ArrowDown)
         iconMapTasks = [
-            ("loadCurveData_Btn" , refresh_icon)
+            ("loadCurveData_Btn" , refresh_icon),
+            ("moveAttrRefresh_Btn" , refresh_icon),
+            ("moveAttrUp_Btn" , upArrow_icon),
+            ("moveAttrDown_Btn" , downArrow_icon)
+
         ]
         for widget_name , icon in iconMapTasks:
             widget = getattr(self.ui , widget_name)

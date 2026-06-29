@@ -102,7 +102,7 @@ def get_pocif_translate(crv , parameter , turnOffPecentage = True):
     return data
 
 
-def getMeshVtx_SequencePos(FirstVtxs, ConversionTuple=True, MaxLoop=1000):
+def getMeshVtx_SequencePos(FirstVtxs, ConversionTuple=True, MaxLoop=500):
     """
     메쉬 버텍스 시작점부터 시퀀스(Ring) 단위로 확장하며 각 구간의 중심점 Pos를 가져오기
     Args:
@@ -123,18 +123,12 @@ def getMeshVtx_SequencePos(FirstVtxs, ConversionTuple=True, MaxLoop=1000):
     SearchedSet = set(FirstVtxs)  
     CurrentRing = list(FirstVtxs) 
     Add = list(FirstVtxs)         
-    
     loop_count = 0
-    
-    
     while len(SearchedSet) <= TotalVtxCount:
-        
-        
         if loop_count >= MaxLoop:
             print(u"경고: MaxLoop 제한에 도달하여 연산을 강제 중지합니다.")
             break
             
-        
         if CurrentRing:
             x_sum, y_sum, z_sum = 0.0, 0.0, 0.0
             for vtx in CurrentRing:

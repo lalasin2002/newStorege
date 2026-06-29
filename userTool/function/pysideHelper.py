@@ -92,6 +92,9 @@ def delete_QwidgetItems( Qwidget):
 
 
 
+def getListWidgetAllItem(widget):
+    all_texts = [widget.item(i).text() for i in range(widget.count())]
+    return all_texts 
 
 
 

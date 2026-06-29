@@ -124,40 +124,32 @@ class Ikrig:
         if print_now:
             print(msg)
 
-    def Grping(self,Target , Count , Grp_Suffix = ["_Grp" , "_Offset" , "_Prime" , '_GrpPrime']):
-        """
-        주어진 대상 오브젝트에 대해 여러 개의 그룹을 생성하고 계층화합니다.
-        생성된 그룹은 대상 오브젝트의 위치에 스냅된 후, 대상 오브젝트는 가장 안쪽 그룹의 자식이 됩니다.
+    def insertGrp(self ,target , names = [] , match = True  , keepParent = True):
+        Groups =[]
+        isParent = None
+        matrix = None
+        if keepParent:
+            isParent = cmds.listRelatives(target , p =1,fullPath=1 )
 
-        Args:
-            Target (str): 그룹 계층을 생성할 대상 오브젝트의 이름.
-            Count (int): 생성할 그룹의 개수 (Grp_Suffix 리스트의 처음부터 Count 만큼 사용).
-            Grp_Suffix (list, optional): 생성할 그룹의 이름에 사용될 접미사 리스트.
-                                        기본값은 ["_Grp", "_Offset", "_Prime", "_GrpPrime"].
+        if match:
+            matrix = cmds.xform(target  , q =1 , ws =1 , m = 1)
+        child = None
+        for x in names:
+            if child is None:
+                child = target 
 
-        Returns:
-            list: 생성된 그룹의 리스트 (바깥쪽 그룹부터 안쪽 그룹 순서).
-        """
+            
+            grp = cmds.createNode("transform" , n = x)
+            if matrix:
+                cmds.xform(grp , ws =1 ,m = matrix)
+            cmds.parent(child ,grp)
+            Groups.append(grp)
+            child = grp
 
-        Count = int(Count) # Count를 정수로 변환
-        Groups =[] # 생성된 그룹들을 저장할 리스트
-        Parent_Group = None # 이전 그룹을 저장하여 계층을 구축
+        if isParent:
+            cmds.parent(Groups[-1] , isParent[0])
 
-        # 지정된 Count 만큼 그룹 생성 및 계층화
-        for i , x in enumerate(Grp_Suffix[:Count]):
-            Group = cmds.createNode("transform" , n = "{}{}" .format(Target ,x)) # 그룹 노드 생성
-
-            if Parent_Group:
-                cmds.parent( Parent_Group ,Group ) # 이전 그룹을 현재 그룹의 자식으로 설정 (바깥쪽에서 안쪽으로)
-            Parent_Group = Group # 현재 그룹을 이전 그룹으로 업데이트
-            Groups.append(Group) # 생성된 그룹을 리스트에 추가
-
-        # 가장 바깥쪽 그룹을 대상 오브젝트의 위치에 스냅하고 제약 조건 삭제
-        cmds.delete(cmds.parentConstraint(Target, Groups[-1]))
-        # 대상 오브젝트를 가장 안쪽 그룹의 자식으로 설정
-        cmds.parent(Target ,  Groups[0])
-
-        return  Groups
+        return Groups
 
     def CreateOrGet_Loc(self,obj_or_pos , Name  = "locator" , MaxWhileCount =100): #2025-06-13 추가
         """
@@ -413,7 +405,7 @@ class Ikrig:
         else:
             self.log("> ScaleDefault is already set to: {}" .format(self.ScaleDefault) , printLog)
 
-    def setIKHandle(self ,  Name = None ,RootJnt = None,TargetJnt = None  , GrpCount = 0 , solver =  "ikRPsolver" , printLog = False):
+    def setIKHandle(self ,  Name = None ,RootJnt = None,TargetJnt = None  , grpName = [] , solver =  "ikRPsolver" , printLog = False):
         if RootJnt is None and TargetJnt is None:
             if len(self.Jntlist) >1 :
                 RootJnt = self.Jntlist[0]
@@ -430,8 +422,11 @@ class Ikrig:
             print (">>>>", IK)
             #self.IKs.append(IK[0])
             Grp = None
-            if GrpCount>0:
-                Grp = self.Grping(IK , GrpCount)
+            if not len(grpName)>0:
+                grpName = ["{}_grp".format(Name)]
+
+            if len(grpName)>0:
+                Grp = self.insertGrp(IK ,grpName )
             IK_Dic = {
                 "IKhandle" : IK,
                 "Group" : Grp ,
