@@ -68,7 +68,18 @@ def addCustomAttr(item , longName , attrType , **kwargs):
     cmds.addAttr(item, ln=longName, **attrArgs)
     return attrPath
 
-
+def addStringattr(node, attr_name, value=""):
+    """오직 String 타입의 어트리뷰트만 생성하고 값을 입력하는 함수"""
+    attr_path = "{}.{}".format(node, attr_name)
+    
+    # 1. 속성이 존재하지 않을 때만 새로 껍데기 생성
+    if not cmds.attributeQuery(attr_name, node=node, exists=True):
+        cmds.addAttr(node, ln=attr_name, dt="string")
+        
+    # 2. 생성된(또는 이미 있는) 속성에 String 값 넣기
+    cmds.setAttr(attr_path, value, type="string")
+    
+    return attr_path
 
 #---------------toggle
 
