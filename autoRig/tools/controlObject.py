@@ -21,7 +21,6 @@ def pathAppend(log = True):
         print (st)
 
 pathAppend(False)
-import naming
 
 
 def isDag(node_name):
@@ -116,20 +115,98 @@ def load_importReference(filePath , namespace = None):
     if namespace and isinstance(namespace , string_type):
         attrDict = {"namespace" : namespace }
 
+    beforeRefs = set(cmds.ls(type="reference") or [])
     try:
         cmds.file(filePath , reference= 1, **attrDict )
     except Exception as e:
         raise ValueError(u">> load_importReference 에러 : {}" .format(e))
     
-    refNode = cmds.file(filePath , q =1 , referenceNode=True)
-    if not refNode:
-        cmds.warning(u">> load_importReference 에러 : 레퍼런스 노드를 찾을수없음" )
+    afterRefs = set(cmds.ls(type="reference") or [])
+    newRefs = list(afterRefs - beforeRefs)
+    
+    
+    if not newRefs:
+        cmds.warning(u">> load_importReference 에러 : 새 reference 노드를 찾을 수 없음")
         return []
-    imported_nodes = cmds.referenceQuery(refNode, nodes=True, dagPath=True)
+    
+    refNode = newRefs[0]
+    imported_nodes = get_referenceObjects(refNode )
     cmds.file(filePath, importReference=True)
     return imported_nodes
 
+def load_reference(filePath, namespace=None, mergeNamespacesOnClash=False, flag=None):
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
 
+    if not os.path.exists(filePath):
+        return None
+
+    attrDict = {
+        "options": "v=0;",
+        "reference": True,
+        "ignoreVersion": True
+    }
+
+    if namespace and isinstance(namespace, string_type):
+        attrDict.update({
+            "namespace": namespace,
+            "mergeNamespacesOnClash": mergeNamespacesOnClash
+        })
+
+    if isinstance(flag, dict) and flag:
+        attrDict.update(flag)
+
+    try:
+        refPath = cmds.file(filePath, **attrDict)
+
+        refNode = cmds.referenceQuery(refPath, referenceNode=True)
+
+        return refNode
+
+    except Exception as e:
+        print("Reference load failed: {}".format(filePath))
+        print(e)
+        return None
+
+
+def get_referenceObjects(refNode_or_path, flag=None):
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+
+    refNode = None
+    if isinstance(refNode_or_path, string_type) and os.path.exists(refNode_or_path):
+        refResult = cmds.file(refNode_or_path, q=True, referenceNode=True)
+        refNode = refNode_or_path
+        if isinstance(refResult, list) and len(refResult) > 0:
+            refNode = refResult[0]
+        elif isinstance(refResult, string_type):
+            refNode = refResult
+    elif cmds.objExists(refNode_or_path):
+        if cmds.objectType(refNode_or_path) == "reference":
+            refNode = refNode_or_path
+
+    if not refNode:
+        print("Warning: Cannot find a valid reference node for '{}'".format(refNode_or_path))
+        return []
+
+    if flag is None:
+        flag = {
+            "nodes": True,
+            "dagPath": True
+        }
+
+    try:
+        nodes = cmds.referenceQuery(refNode, **flag)
+        return nodes or []
+
+    except Exception as e:
+        print("Reference query failed: {}".format(refNode))
+        print(e)
+        return []
 
 def scaleCurveCvs(item , value = 1.0):
     cvs = cmds.ls("{}.cv[*]" .format(item), flatten=True)

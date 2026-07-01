@@ -116,6 +116,37 @@ def load_importReference(filePath , namespace = None):
     if namespace and isinstance(namespace , string_type):
         attrDict = {"namespace" : namespace }
 
+    beforeRefs = set(cmds.ls(type="reference") or [])
+    try:
+        cmds.file(filePath , reference= 1, **attrDict )
+    except Exception as e:
+        raise ValueError(u">> load_importReference 에러 : {}" .format(e))
+    
+    afterRefs = set(cmds.ls(type="reference") or [])
+    newRefs = list(afterRefs - beforeRefs)
+    
+    
+    if not newRefs:
+        cmds.warning(u">> load_importReference 에러 : 새 reference 노드를 찾을 수 없음")
+        return []
+    
+    refNode = newRefs[0]
+    imported_nodes = cmds.referenceQuery(refNode, nodes=True, dagPath=True)
+    cmds.file(filePath, importReference=True)
+    return imported_nodes
+
+def load_importReference(filePath , namespace = None):
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+
+    attrDict = {}
+    if namespace is None:
+        attrDict = { "namespace" :":", "mergeNamespacesOnClash" : True}
+    if namespace and isinstance(namespace , string_type):
+        attrDict = {"namespace" : namespace }
+
     try:
         cmds.file(filePath , reference= 1, **attrDict )
     except Exception as e:
@@ -128,7 +159,6 @@ def load_importReference(filePath , namespace = None):
     imported_nodes = cmds.referenceQuery(refNode, nodes=True, dagPath=True)
     cmds.file(filePath, importReference=True)
     return imported_nodes
-
 
 
 def scaleCurveCvs(item , value = 1.0):
