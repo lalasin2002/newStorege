@@ -40,7 +40,22 @@ def isDag(node_name):
     return "dagNode" in inherited_types
 
 
+def getShapeType(obj):
+    if not cmds.objExists(obj):
+        return None
 
+    # obj 자체가 shape일 수도 있음
+    node_type = cmds.nodeType(obj)
+
+    if node_type not in ["transform", "joint"]:
+        return node_type
+
+    shapes = cmds.listRelatives(obj, s=1, ni=1) or []
+
+    if not shapes:
+        return None
+
+    return cmds.nodeType(shapes[0])
 
 
 def insertShp(target , shps , types = ["nurbsCurve" , "mesh"] , renameBool = True):

@@ -100,5 +100,5 @@
     "nurbsCrvScaleValue": 0.85,
     "mirrrorJntMatchLeft": "LF_",
     "mirrrorJntMatchRight": "RF_",
-    "mirrrorJntMatchAxis": 1
+    "mirrrorJntMatchAxis": 2
 }

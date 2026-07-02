@@ -1,0 +1,847 @@
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
+from Cython import basestring
+import maya.api.OpenMaya as om
+import maya.cmds as cmds
+import os,sys
+
+
+def pathAppend(log = True):
+    # __file__ 현재 작업중인 파일 위치
+    #os.path.dirname (경로)의 메인폴더 위치
+    st = u"-----"*2 + "{}" + u"-----"*2 +"\n"
+    st = st.format("pathAppend")
+    CurrentDir = os.path.dirname(os.path.abspath(__file__))
+    if not CurrentDir in sys.path:
+        sys.path.append(CurrentDir)
+        st+= u">> sys.path 등록 : {}\n".format(CurrentDir)
+    else:
+        st+= u">> sys.path 이미등록됨 : {}\n".format(CurrentDir)
+
+    if log:
+        print (st)
+
+pathAppend(False)
+import naming , controlObject
+
+
+class jointCreater():
+    def __init__(self):
+        self.string_type = None
+        try:
+            self.string_type = basestring
+        except NameError:
+            self.string_type = str
+
+        self.startVector = None
+        self.endVector = None
+        self.distance = None
+
+
+    def setStartEndVector(self , startPoint_or_object , endPoint_or_object):
+        startPoint = self._defineData(startPoint_or_object)
+        endPoint = self._defineData(endPoint_or_object)
+
+        if not startPoint or not endPoint:
+            raise ValueError(u"startPoint 또는 endPoint가 유효하지 않습니다. 입력값: {}, {}".format(startPoint_or_object, endPoint_or_object))
+
+        self.startVector = om.MVector(*startPoint)
+        self.endVector = om.MVector(*endPoint)
+
+    def getParameter(self , param):
+        if self.startVector is None or self.endVector is None:
+            raise ValueError(u"startVector 또는 endVector가 정의되지 않았습니다.")
+        try:
+            param = float(param)
+        except:
+            raise ValueError(u"param은 숫자여야 합니다. 입력값: {}".format(param))
+        
+        diffVector = self.endVector - self.startVector
+        resultVector = self.startVector + (diffVector * param)
+        return resultVector
+    
+    def createJointByParam(self , param , jointName = None , offsetGroupName = None ,parentPoint = None  ):
+
+        pointVector = self.getParameter(param)
+        jointFlag = {}
+        offsetGroupFlag = {}
+
+        if jointName and isinstance(jointName , self.string_type):
+            jointFlag["n"] = naming.uniqueName(jointName)
+        if offsetGroupName and isinstance(offsetGroupName , self.string_type):
+            offsetGroupFlag["n"] = naming.uniqueName(offsetGroupName)
+
+        controlTarget = None
+        offsetGroup = None
+        cmds.select(cl =1)
+        createJnt = cmds.joint(**jointFlag)
+        controlTarget = createJnt
+        if offsetGroupFlag:
+            offsetGroup = cmds.createNode("transform" , **offsetGroupFlag)
+            controlTarget = offsetGroup
+            cmds.parent(createJnt ,controlTarget )
+
+        cmds.xform(controlTarget , ws= 1, t= [pointVector.x , pointVector.y , pointVector.z])
+        cmds.select(createJnt)
+
+        if parentPoint and cmds.objExists(parentPoint):
+            cmds.parent(controlTarget , parentPoint)
+        return createJnt , offsetGroup
+
+
+    def _defineData(self, item):
+        returnPoint = None
+        if isinstance(item , self.string_type) and cmds.objExists(item):
+            returnPoint =  cmds.xform(item , q =1 , ws =1 , t =1)
+            if all(x == 0 for x in returnPoint):
+                returnPoint = cmds.xform(item , q =1 , ws =1 , rp =1)
+            return returnPoint
+        if isinstance(item , (list , tuple)) and len(item) == 3 and all(isinstance(x , (int , float)) for x in item):
+            returnPoint = item
+            return returnPoint
+        return returnPoint
+
+
+
+
+class jointInserter():
+    """
+    조인트 체인을 다루는 도구. 두 조인트 사이에 새 조인트를 끼워넣거나
+    체인 안의 기존 조인트를 다른 위치로 옮길 수 있다.
+    
+    startJnt → endJnt의 직선 보간 기반으로 작업하며,
+    체인이 꺾여있으면 가장 가까운 segment에 끼우거나 그 segment로 이동한다.
+    선택적으로 aimConstraint를 이용한 방향 정렬도 수행 가능.
+    
+    사용 순서 (조인트 끼워넣기):
+        1. __init__          - 클래스 선언
+        2. setStartEndJnt    - 체인 시작/끝 조인트 재설정
+        3. calculateVector  - 끼울 위치 및 segment 계산
+        4. printData        - (선택) 디버그 출력
+        5. createInsertJnt  - 조인트 생성 및 hierarchy 재구성
+        6. orientJnt        - (선택) 방향 정렬
+    
+    사용 순서 (조인트 옮기기):
+        1. __init__         - 체인 시작/끝 지정 및 검증
+        2. moveJointInChain - 체인 안의 조인트를 새 위치로 이동
+    
+    예시:
+        # 끼워넣기
+        inserter = jointInserter("joint1", "joint4")
+        inserter.calculateVector("newJnt", 0.5)
+        inserter.createInsertJnt()
+        inserter.orientJnt((1,0,0), (0,1,0), (0,1,0))
+        
+        # 옮기기
+        inserter = jointInserter("joint1", "joint4")
+        inserter.moveJointInChain("joint2", 0.7)
+    """
+
+    def __init__(self):
+        """
+        클래스를 초기화하고 체인의 시작/끝 조인트를 검증 후 저장.
+
+        Args:
+            -startJnt (str): 체인의 시작 조인트 (씬에 존재해야 함)
+            -endJnt   (str): 체인의 끝 조인트 (startJnt의 후손이어야 함)
+        Returns:
+            None
+        주의점:
+            endJnt가 startJnt의 후손 계층에 없으면 에러.
+            insertName, parameter 등은 calculateVector 호출 시 지정.
+        """
+        self.string_type = None
+
+        self.insertJnt = None
+        self.insertVector = None
+
+        self.childJnt = None
+        self.parentJnt = None
+        
+        self.startJnt = None
+        self.endJnt = None
+        self.insertName = None
+        self.parameter = None
+        self.closestDistance = None
+        try:
+            self.string_type = basestring
+        except NameError:
+            self.string_type = str
+
+    def setStartEndJnt(self, startJnt, endJnt):
+        """
+        체인의 시작/끝 조인트를 새로 지정하고 검증 후 저장.
+
+        Args:
+            -startJnt (str): 체인의 시작 조인트 (씬에 존재해야 함)
+        """
+        self._validate_object(startJnt)
+        self._validate_object(endJnt)
+        childrens = cmds.listRelatives(startJnt, allDescendents=True, type='joint') or []
+        if endJnt not in childrens:
+            raise ValueError(u"{}는 {}의 자식 계층이 아닙니다.".format(endJnt, startJnt))
+        
+        self.startJnt = startJnt
+        self.endJnt = endJnt
+
+
+
+
+    def calculateVector(self, insertName ,parameter ):
+        
+        """
+        새 조인트가 들어갈 위치(insertVector)와 끼워넣을 segment를 계산.
+        
+        startJnt → endJnt 직선 보간으로 insertVector를 구한 뒤,
+        체인의 모든 segment를 순회하며 점-선분 거리(dot product 투영)로 
+        가장 가까운 segment를 찾아 parent/child 조인트를 결정한다.
+
+        Args:
+            -insertName (str)   : 생성할 새 조인트의 이름 (씬에 같은 이름 없어야 함)
+            -parameter  (float) : 0.0 ~ 1.0 사이의 보간 비율 (start→end 직선 기준)
+        Returns:
+            None (결과는 self.insertVector, self.parentJnt, self.childJnt, 
+                  self.closestDistance에 저장됨)
+        주의점:
+            __init__이 먼저 호출되어 self.startJnt, self.endJnt가 세팅되어 있어야 함.
+            이 메서드 호출 후 createInsertJnt 호출 가능.
+        """
+        if not isinstance(insertName , self.string_type):
+            raise TypeError(u"{}는 문자열만 유효합니다.".format(insertName))
+        if not isinstance(parameter , (int , float)) or isinstance(parameter, bool):
+            raise TypeError(u"{}는 실수만 유효합니다.".format(parameter))
+        if not 0.0 <= parameter <= 1.0:
+            raise ValueError(u"parameter는 0.0 ~ 1.0 범위여야 합니다. 입력값: {}".format(parameter))
+        if cmds.objExists(insertName):
+            raise ValueError(u"{}가 이미 존재합니다.".format(insertName))
+
+
+
+
+        if self.startJnt is None:
+            raise ValueError(u"self.startJnt의 정의가 None 입니다.")
+        if self.endJnt is None:
+            raise ValueError(u"self.endJnt의 정의가 None 입니다.")
+        #if self.parameter is None:
+        #    raise ValueError(u"self.parameter가 정의가 이루어지지 않았습니다.")
+
+        self.insertName = insertName
+        self.parameter = parameter
+        
+        self.insertVector = self._calc_insert_position(parameter)
+        self.parentJnt, self.childJnt, self.closestDistance = self._find_closest_segment(self.insertVector)
+
+
+
+        #self.closestDistance = closestDistance
+        #self.parentJnt = insertParentJnt
+        #self.insertVector =  insertVector
+        #self.childJnt = insertChildJnt
+
+    def moveJointInChain(self , editJnt , parameter ):
+        """
+        체인 안의 기존 조인트를 새 parameter 위치로 이동시키고 hierarchy를 재구성.
+        
+        editJnt를 일단 월드로 빼낸 뒤 새 위치로 이동시키고,
+        새 위치에 가장 가까운 segment의 사이로 다시 끼워넣는다.
+
+        Args:
+            -editJnt   (str)   : 옮길 조인트 (체인 안에 있어야 함)
+            -parameter (float) : 0.0 ~ 1.0 사이의 보간 비율 (start→end 직선 기준)
+        Returns:
+            None
+        주의점:
+            editJnt가 startJnt나 endJnt면 체인 기준점이 흔들리므로 막힘.
+            editJnt가 체인 안에 없으면 에러.
+            이동 후 hierarchy가 재구성되므로 자식 조인트들도 영향 받음.
+        """
+
+        chains = self._getJntChains(self.startJnt, self.endJnt)
+        if not editJnt in chains:
+            raise ValueError(u"{}는 조인트체인안에 없습니다.".format(editJnt))
+        if not 0.0 <= parameter <= 1.0:
+            raise ValueError(u"parameter는 0.0 ~ 1.0 범위여야 합니다. 입력값: {}".format(parameter))
+        
+
+        editPos = self._calc_insert_position(parameter)
+        self.parentJnt, self.childJnt, self.closestDistance = self._find_closest_segment(editPos , editJnt)
+
+        cmds.parent(editJnt , ws =1)
+        cmds.xform(editJnt  , ws =1 , t= [editPos.x , editPos.y , editPos.z])
+
+        if self.parentJnt:
+            cmds.parent(editJnt ,self.parentJnt)
+        if self.childJnt:
+            cmds.parent(self.childJnt , editJnt)
+
+
+
+    def printData(self):
+        """
+        계산된 결과를 콘솔에 출력 (디버그 용도).
+        
+        끼울 위치(parent/child segment), insertVector 좌표, 
+        closestDistance를 출력한다.
+
+        Args:
+            None
+        Returns:
+            None (print만 수행)
+        주의점:
+            calculateVector 또는 moveJointInChain이 먼저 호출되어 
+            self.parentJnt, self.childJnt, self.insertVector가 세팅되어 있어야 함.
+        """
+        if  self.parentJnt is None:
+            raise ValueError(u"self.parentJnt가 정의되지 않았습니다.")
+        if  self.childJnt is None:
+            raise ValueError(u"self.childJnt가 정의되지 않았습니다.")
+        if  self.insertVector is None:
+            raise ValueError(u"self.insertVector가 정의되지 않았습니다.")
+
+        print(u"끼울 위치: {} <-> {} 사이".format(self.parentJnt, self.childJnt))
+        print(u"insertVector 좌표: {} , {} , {}".format(self.insertVector.x , self.insertVector.y , self.insertVector .z) )
+        print(u"가장 가까운 거리: {}".format(self.closestDistance))
+
+
+    def createInsertJnt(self):
+        """
+        계산된 위치에 새 조인트를 생성하고 hierarchy를 재구성.
+        
+        self.insertVector 위치에 self.insertName으로 조인트를 만든 뒤,
+        self.parentJnt 의 자식으로 붙이고, self.childJnt를 새 조인트의 자식으로 옮긴다.
+        결과적으로 parent ─ newJnt ─ child 구조가 된다.
+
+        Args:
+            None (모든 정보는 calculateVector에서 저장된 self값 사용)
+        Returns:
+            생성된 조인트의 이름 (str)
+        주의점:
+            calculateVector가 먼저 호출되어 self.insertVector 등이 세팅되어 있어야 함.
+            이 메서드는 joint orient를 재계산하지 않으므로, 필요시 orientJnt 호출.
+        """
+        if not self.parentJnt:
+            raise ValueError(u"self.parentJnt가 정의되지 않았습니다.")
+        if not self.childJnt:
+            raise ValueError(u"self.childJnt가 정의되지 않았습니다.")
+        if not self.insertVector:
+            raise ValueError(u"self.insertVector가 정의되지 않았습니다.")
+        
+        #if insertParentJnt and  insertChildJnt and insertVector:
+            
+
+        cmds.select(cl =1)
+        self.insertJnt = cmds.joint(n = self.insertName)
+        cmds.xform(self.insertJnt , ws =1 , t = [self.insertVector.x , self.insertVector.y, self.insertVector.z])
+        cmds.parent(self.insertJnt , self.parentJnt)
+        cmds.parent(self.childJnt , self.insertJnt)
+
+        return self.insertJnt
+
+    def orientJnt(self , orient_or_item = None , targetJnt=None , parentJnt=None , childJnt = None):
+        getOrient = None
+        if orient_or_item is None and self.parentJnt:
+            orient_or_item = self.parentJnt
+        if isinstance(orient_or_item , self.string_type) and cmds.objExists(orient_or_item):
+            if cmds.objectType(orient_or_item) == "joint":
+                getOrient = [cmds.getAttr(orient_or_item + ".jointOrient{}".format(ax)) for ax in "XYZ"]
+            else:
+                getOrient = cmds.xform(orient_or_item , ws =1 , q =1 , ro =1)
+        if isinstance(orient_or_item , (list, tuple)) and len(orient_or_item) >2:
+            if all( isinstance(x , (int , float)) for x in orient_or_item):
+                getOrient = orient_or_item
+        
+        
+        
+        if getOrient is None:
+            raise ValueError(u"orient_or_item 값이 유효하지 않거나 , 없습니다")
+        if parentJnt is None and self.parentJnt:
+            parentJnt = self.parentJnt
+        if targetJnt is None and self.insertJnt:
+            targetJnt = self.insertJnt
+        if childJnt is None and self.childJnt:
+            childJnt = self.childJnt
+        
+        targetJntGrp = cmds.createNode("transform" , n = targetJnt + "_FixGrp")
+        cmds.delete(cmds.parentConstraint( targetJnt, targetJntGrp , mo = 0))
+        cmds.parent(targetJnt , targetJntGrp)
+        cmds.parent(childJnt , world=1)
+
+        cmds.xform(targetJntGrp , ws =1 , ro = getOrient)
+
+        cmds.parent(targetJnt , parentJnt)
+        cmds.parent(childJnt , targetJnt)
+        cmds.delete(targetJntGrp)
+
+
+
+
+
+    def aimOrientJnt(self, aimV, upV, worldV, targetJnt=None, childJnt=None, parentJnt=None):
+        """
+        targetJnt를 childJnt를 향하도록 회전시키고 jointOrient에 굽는다(bake).
+        
+        임시 그룹(_FixGrp)을 만들어 targetJnt를 그 자식으로 넣고, aimConstraint로
+        childJnt를 향하게 회전시킨 뒤 constraint를 삭제하여 회전값만 남긴다.
+        worldUpType은 "objectrotation"으로 고정되어 parentJnt의 회전축을 참조한다.
+
+        Args:
+            -aimV       (tuple): 조준 축 벡터 (예: (1,0,0) → X축이 child를 향함)
+            -upV        (tuple): 업 축 벡터 (예: (0,1,0) → Y축이 위를 향함)
+            -worldV     (tuple): 월드 업 벡터 (예: (0,1,0))
+            -targetJnt  (str)  : (선택) 정렬할 조인트. None이면 self.insertJnt 사용.
+            -childJnt   (str)  : (선택) 조준 대상. None이면 self.childJnt 사용.
+            -parentJnt  (str)  : (선택) 업 벡터 참조 대상. None이면 self.parentJnt 사용.
+        Returns:
+            None (targetJnt의 jointOrient를 직접 수정)
+        주의점:
+            createInsertJnt가 먼저 호출되어 self.insertJnt가 세팅되어 있어야 함
+            (또는 targetJnt를 직접 지정).
+            childJnt를 임시로 월드로 unparent했다가 복원하므로, 
+            childJnt에 자식이 더 있으면 그 자식들도 함께 따라감.
+        """
+        self._validate_vector(aimV , "aimV")
+        self._validate_vector(upV , "upV")
+        self._validate_vector(worldV , "worldV")
+        if targetJnt:
+            self._validate_object(targetJnt)
+        if childJnt:
+            self._validate_object(childJnt)
+        if parentJnt:
+            self._validate_object(parentJnt)
+
+        if targetJnt is None and self.insertJnt:
+            targetJnt = self.insertJnt
+        if childJnt is None and self.childJnt:
+            childJnt = self.childJnt
+        if parentJnt is None and self.parentJnt:
+            parentJnt = self.parentJnt
+
+        targetJntGrp = cmds.createNode("transform" , n = targetJnt + "_FixGrp")
+        cmds.delete(cmds.parentConstraint( targetJnt, targetJntGrp , mo = 0))
+        cmds.parent(targetJnt , targetJntGrp)
+        cmds.parent(childJnt , world=1)
+
+        cmds.delete(cmds.aimConstraint(childJnt , targetJntGrp , aimVector= aimV , upVector=upV , worldUpVector= worldV , worldUpType = "objectrotation" , worldUpObject= parentJnt))
+        cmds.parent(targetJnt , parentJnt)
+        cmds.parent(childJnt , targetJnt)
+        cmds.delete(targetJntGrp)
+
+    #-------------------------helperDef
+
+
+    def _getJntChains(self , startJnt, endJnt):
+        """
+        startJnt에서 endJnt까지 이어지는 조인트 체인 리스트를 반환.
+        
+        재귀 호출로 startJnt의 자식 중 endJnt에 도달하는 경로를 찾아 따라가며
+        리스트에 누적한다.
+
+        Args:
+            -startJnt (str): 체인의 시작 조인트
+            -endJnt   (str): 체인의 끝 조인트 (startJnt의 후손이어야 함)
+        Returns:
+            조인트 이름 리스트(list) - 예: ['joint1', 'joint2', 'joint3', 'joint4']
+        주의점:
+            startJnt에서 endJnt로 가는 경로가 없으면 ValueError.
+            체인이 분기되어 있어도 endJnt를 향하는 경로 하나만 반환.
+        체인이 segment 1개도 못 만들면(예: excludeJnt로 다 제거) 오작동 가능.
+        """
+        if not cmds.objExists(startJnt):
+            raise ValueError(u"{}가 존재하지 않습니다." .format(startJnt))
+        if not cmds.nodeType(startJnt) =="joint":
+            raise TypeError(u"{}는 조인트가 아닙니다.." .format(startJnt))
+        if not cmds.objExists(endJnt ):
+            raise ValueError(u"{}가 존재하지 않습니다." .format(endJnt))
+        if not cmds.nodeType(endJnt) =="joint":
+            raise TypeError(u"{}는 조인트가 아닙니다.." .format(endJnt))
+        
+        # ===== 종료 조건 (Base Case) =====
+        # startJnt와 endJnt가 같으면 더 내려갈 필요 없음
+        # 재귀가 더 이상 깊어지지 않고 여기서 진짜 값을 반환
+
+        if startJnt == endJnt:
+            return [endJnt]
+
+        children = cmds.listRelatives(startJnt, c=True, type='joint') or []
+        for child in children:
+            # 이 child의 모든 후손 조인트들 (자식의 자식의 자식...)
+
+            # 이 child가 endJnt거나, endJnt가 child의 후손에 있으면
+            # >>  child를 따라가면 endJnt에 도달할 수 있음
+            descendants = cmds.listRelatives(child, ad=True, type='joint') or []
+            if child == endJnt or endJnt in descendants:
+                ## 과정예시
+                # child == endJnt :: 'joint2' == 'joint4'  >>  False
+                # endJnt in descendants :: 'joint4' in ['joint5','joint4','joint3'] >>  True
+
+                return [startJnt] + self._getJntChains(child, endJnt)
+                # startJnt == endJnt 될때 까지 호출
+                # [startJnt]  + getJntChains(child, endJnt)
+                # ['joint1']  + getJntChains(child, endJnt) = ['joint2']
+                # ['joint1']  +     ['joint2']      + getJntChains(child, endJnt) =  ['joint3']
+                # ['joint1']  +     ['joint2']      +        ['joint3']           + getJntChains(child, endJnt) = ['joint4']
+                
+            
+        raise ValueError(u"{}에서 {}로 가는 경로가 없습니다.".format(startJnt, endJnt))
+
+
+    def _validate_vector(self, vec, nameString):
+        """
+        벡터 입력값(tuple, 길이 3, 숫자 요소)을 검증하는 헬퍼 메서드.
+
+        Args:
+            -vec        (tuple): 검증할 튜플 (예: (1, 0, 0))
+            -nameString (str)  : 에러 메시지에 표시할 이름 (예: "aimV")
+        Returns:
+            None (통과 시 아무것도 반환 안 함, 실패 시 예외 발생)
+        주의점:
+            tuple이 아니면 TypeError, 길이가 3이 아니면 ValueError,
+            요소 중 int/float이 아닌 것이 있으면 TypeError (bool은 거부).
+        """
+        if not isinstance(vec, tuple):
+            raise TypeError(u"{}는 tuple이어야 합니다.".format(nameString))
+        if len(vec) != 3:
+            raise ValueError(u"{}는 길이 3이어야 합니다.".format(nameString))
+        if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in vec):
+            raise TypeError(u"{}의 요소는 int/float이어야 합니다.".format(nameString))
+
+
+    def _validate_object(self, target, typeString="joint"):
+        """
+        Maya 노드 입력값(문자열, 존재 여부, 노드 타입)을 검증하는 헬퍼 메서드.
+
+        Args:
+            -target     (str): 검증할 노드 이름 (예: "joint1")
+            -typeString (str): 기대하는 노드 타입 (기본값 "joint")
+        Returns:
+            None (통과 시 아무것도 반환 안 함, 실패 시 예외 발생)
+        주의점:
+            문자열이 아니면 TypeError, 씬에 존재하지 않으면 ValueError,
+            지정한 타입이 아니면 TypeError.
+        """
+        if not isinstance(target , self.string_type):
+            raise TypeError(u"{}는 문자열만 유효합니다.".format(target))
+        if not cmds.objExists(target):
+            raise ValueError(u"{}는 존재하지 않습니다" .format(target))
+        if not cmds.nodeType(target) == typeString:
+            raise TypeError(u"{}는 조인트가 아닙니다" .format(target))
+        
+    def _calc_insert_position(self, parameter):
+        """startJnt와 endJnt 사이를 parameter로 보간한 위치 반환"""
+        startVector = om.MVector(*cmds.xform(self.startJnt, q=True, ws=True, rp=True))
+        endVector   = om.MVector(*cmds.xform(self.endJnt,   q=True, ws=True, rp=True))
+        diffVector  = endVector - startVector
+        return startVector + diffVector * parameter
+    
+    def _find_closest_segment(self, targetVector , excludeJnt=None):
+        """체인에서 targetVector에 가장 가까운 segment의 (parent, child)와 거리 반환"""
+        chains = self._getJntChains(self.startJnt, self.endJnt)
+        if excludeJnt:
+            chains = [j for j in chains if j != excludeJnt]
+        closestDistance = float('inf')
+        insertParentJnt = None
+        insertChildJnt  = None
+        
+        parentJnt    = chains[0]
+        parentVector = om.MVector(*cmds.xform(chains[0], q=True, ws=True, rp=True))
+        
+        for child in chains[1:]:
+            childVector = om.MVector(*cmds.xform(child, q=True, ws=True, rp=True))
+            firstBetweenDiff  = childVector - parentVector
+            secondBetweenDiff = targetVector - parentVector
+            
+            dotP = firstBetweenDiff * secondBetweenDiff
+            # dotP 계산을 위한 Diff들 (각도기 모양 )
+            # first는 child간 방향벡터
+            # second는 insertVector간 방향벡터
+
+            projectDistanceNormal = dotP / (firstBetweenDiff * firstBetweenDiff)
+            # 아래와 같은 식임 
+            # projectDistance = dotP/firstBetweenDiff.length()
+            # projectDistanceNormal = projectDistance / firstBetweenDiff.length()
+
+            # dotP / (firstBetweenDiff * firstBetweenDiff) 가 더 효율적인 이유:
+            # .length() = √(x²+y²+z²)  → 제곱근(√) 연산 포함, 비싼 연산
+            # 벡터 자기 자신과의 dot product = x²+y²+z² = |AB]² → 제곱근 없이 바로 |AB]² 가 나옴
+            # 어차피 |AB|로 두 번 나누는 거 = |AB]² 으로 한 번 나누는 거랑 같음
+            # → 제곱근 두 번 계산하느니, dot product 한 번이 빠름
+
+            projectDistanceNormal = max(0.0, min(1.0, projectDistanceNormal))
+            # min(1, t): 위에서 막음 (1 이상이면 1로)
+            # max(0, ...): 아래에서 막음 (0 이하면 0으로)
+
+            projectPoint = parentVector + firstBetweenDiff * projectDistanceNormal
+            projectDistance = (targetVector - projectPoint).length()
+
+            # closestDistance = firstBetweenDiff 투영했을때의 거리 (비교)
+            if projectDistance < closestDistance:
+                closestDistance = projectDistance
+                insertParentJnt = parentJnt  # ← 현재 segment의 parent 이름
+                insertChildJnt  = child
+            
+            parentVector = childVector
+            parentJnt    = child
+        
+        return insertParentJnt, insertChildJnt, closestDistance
+
+
+
+def create_textCrv_fixed(Name, TextString, CenterPivotBool=True, Font="Lucida Sans Unicode", selected=True):
+    """
+    텍스트 커브 생성 및 히스토리 강제 삭제
+    Args:
+        -Name            (str): 생성될 텍스트 커브의 최상위 그룹 이름
+        -TextString      (str): 생성할 텍스트 내용
+        -CenterPivotBool (bool): 텍스트의 중심을 월드 원점(X=0)으로 맞출지 여부
+        -FontSizePt      (float): 폰트 크기
+        -Font            (str): 폰트 종류
+        -selected        (bool): 생성 완료 후 해당 컨트롤러 선택 여부
+    Returns:
+        최상위 그룹 이름(str)
+    """
+    #FontOption = "{}, {}pt".format(Font, FontSizePt)
+    textObject = cmds.textCurves(t=TextString, f=Font)
+    
+    cmds.delete(textObject[-1])
+    
+    textObject = textObject[0]
+    Ctrl = cmds.createNode("transform", n=Name)
+    
+    # 커브 쉐입 경로 수집
+    curves = cmds.listRelatives(textObject, ad=True, type="nurbsCurve", fullPath=True) or []
+    if not curves:
+        print (u"생성된 텍스트 커브가 없습니다.")
+        cmds.delete([textObject, Ctrl])
+        return ""
+
+    # 피벗 중앙 정렬
+    
+    if CenterPivotBool:
+        bbox = cmds.xform(textObject, query=True, boundingBox=True)
+        center_x = (bbox[0] + bbox[3]) / 2.0
+        cmds.move(-center_x, 0, 0, textObject, relative=True, worldSpace=True)
+    
+    # Freeze (0,0,0 날아감 방지)
+    #all_transforms = cmds.listRelatives(textObject, ad=True, type="transform", fullPath=True) or []
+    #all_transforms.append(textObject) 
+    cmds.makeIdentity(textObject, apply=True, t=1, r=1, s=1, n=0, pn=1)
+    
+    
+    for i, shape in enumerate(curves):
+        new_shape = cmds.parent(shape, Ctrl, shape=True, relative=True)[0]
+        curve = cmds.rename(new_shape, "{}{}shape".format(Name, i + 1))
+        
+        
+    cmds.delete(textObject)
+    
+    if selected:
+        cmds.select(Ctrl)
+    
+    return Ctrl
+
+
+def create_foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
+    """
+    지오메트리(메쉬 또는 NURBS 서피스)에 부착되는 폴리클(Follicle) 노드를 생성합니다.
+
+    이 함수는 지정된 UV 좌표에 폴리클을 생성하고, 이를 대상 지오메트리에 연결하여
+    지오메트리가 변형될 때 폴리클이 표면을 따라 움직이도록 합니다.
+    폴리클은 주로 헤어, 리깅, 오브젝트 부착 등에 사용됩니다.
+
+    Args:
+        Name (str): 생성될 폴리클의 기본 이름.
+        Geo (str, optional): 폴리클을 부착할 대상 지오메트리(메쉬 또는 NURBS 서피스)의 이름.
+                             None이면 연결 없이 폴리클만 생성됩니다. 기본값은 None.
+        ParameterUV (tuple or list, optional):
+            폴리클이 위치할 서피스의 UV 좌표. (U, V) 형식으로 제공합니다.
+            값의 범위는 일반적으로 0.0에서 1.0 사이입니다. 기본값은 (0.5, 0.5) (중앙).
+
+    Returns:
+        list: [폴리클 트랜스폼 노드 이름, 폴리클 쉐잎 노드 이름] 리스트.
+    """
+    FoliShp = cmds.createNode( "follicle", n = Name + "Shape" )
+    FoliTransForm = cmds.listRelatives(FoliShp , p = 1 , type= "transform")[0]
+    FoliTransForm = cmds.rename(FoliTransForm, Name)
+    returnList = [FoliTransForm ,  FoliShp]
+
+    cmds.connectAttr("{}.outTranslate" .format(FoliShp) , "{}.translate".format(FoliTransForm) , f=1)
+    cmds.connectAttr("{}.outRotate" .format(FoliShp) , "{}.rotate".format(FoliTransForm) , f=1)
+    Shp = None
+    OutputAttr = ".outMesh"
+    InputAttr = ".inputMesh"
+
+    # 지오메트리가 제공되었는지 확인
+    if Geo and cmds.objExists(Geo):
+        # 입력된 지오메트리의 쉐잎 노드를 찾음
+        if cmds.objectType(Geo) == "transform":
+            Shp = cmds.listRelatives(Geo , s =1 )[0]
+        else:
+            Shp = Geo # 이미 쉐잎 노드일 경우
+        
+        # 지오메트리 타입에 따라 연결할 속성을 결정 (NURBS 또는 메쉬)
+        if cmds.objectType(Shp) == "nurbsSurface":
+            OutputAttr = ".local"
+            InputAttr = ".inputSurface"
+        
+        # 지오메트리의 아웃풋과 월드 매트릭스를 폴리클에 연결
+        cmds.connectAttr("{}{}" .format(Geo , OutputAttr) , "{}{}" .format(FoliShp , InputAttr) ,f =1)
+        cmds.connectAttr("{}.worldMatrix[0]" .format(Geo ) , "{}.inputWorldMatrix" .format(FoliShp ) ,f =1)
+        
+    # 파라미터 UV 값 설정
+    for  i, Axis in enumerate("UV"):
+        cmds.setAttr("{}.parameter{}" .format(FoliShp , Axis) , ParameterUV[i])
+        
+    return returnList
+
+def createCurve(cvList , degree = 3 , curveName = None , keepRange = False):
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+    attrsDict = {}
+    if not isinstance(cvList , (list , tuple)):
+        raise TypeError(u"cvList는 list 또는 tuple만 유효합니다.")
+    if not all(isinstance(cv , (list , tuple)) and len(cv) == 3 for cv in cvList):
+        raise TypeError(u"cvList의 각 요소는 길이 3의 list 또는 tuple이어야 합니다.")
+    if curveName is not None and not isinstance(curveName , string_type):
+        raise TypeError(u"curveName은 문자열만 유효합니다.")
+    if curveName:
+        attrsDict["n"] = curveName
+    #attrsDict["d"] = degree
+    spans = len(cvList) - degree
+    curveItrm = cmds.curve(p = cvList ,d =1 ,  **attrsDict)
+    keepControlPoints = True
+    if degree > 1:
+        keepControlPoints = False
+    curveItrm =cmds.rebuildCurve(curveItrm , d = degree ,s = spans , kcp =  keepControlPoints,  kr = keepRange , rpo = 1 , ch = 0)[0]
+    return curveItrm
+
+        
+def create_MeshFeatureEdge_curve(MeshItem, Name, angle_threshold=30, size=1, Position=False):
+    """
+    오브젝트의 외곽 형태(Border) 및 일정 각도 이상 꺾이는 특징적 엣지(Feature Edge)를 
+    추출하여 커브 컨트롤러를 생성합니다.
+    Args:
+        -MeshItem        (str): 컨트롤러를 생성할 대상 메쉬의 이름
+        -Name            (str): 생성될 컨트롤러(그룹)의 이름
+        -angle_threshold (int): 엣지 추출 기준 각도 (기본값 30도)
+        -size            (float): 컨트롤러의 전체적인 크기 (기본값 1)
+        -Position        (bool): 대상 메쉬와의 위치/회전 일치 여부 (기본값 False)
+    Returns:
+        생성된 컨트롤러의 이름(str)
+    """
+
+    if not cmds.objExists(MeshItem):
+        print(u"대상 메쉬가 존재하지 않습니다.")
+        return None
+    
+    shapes = cmds.listRelatives(MeshItem, shapes=True, fullPath=True) or []
+    if not any(cmds.objectType(s) == 'mesh' for s in shapes):
+        print(u"메쉬 타입이 아닙니다.")
+        return None
+
+    cmds.select(MeshItem)
+    TargetEdges = []
+
+    try:
+        # 1. 특정 각도 이상 꺾이는 엣지 선택 (Feature Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, angle=True, anglebound=(angle_threshold, 180))
+        angle_edges = cmds.ls(sl=True, fl=True) or []
+        cmds.polySelectConstraint(disable=True)
+
+        # 2. 열린 경계 엣지 선택 (Border Edge)
+        cmds.polySelectConstraint(mode=3, type=0x8000, where=1)
+        border_edges = cmds.ls(sl=True, fl=True) or []
+        cmds.polySelectConstraint(disable=True)
+
+        # 두 결과물의 중복 제거 및 통합
+        TargetEdges = list(set(angle_edges + border_edges))
+
+    finally:
+        cmds.polySelectConstraint(disable=True)
+
+    if not TargetEdges:
+        print(u"외곽 형태를 정의할 엣지를 찾을 수 없습니다.")
+        cmds.select(cl=True)
+        return None
+
+    Ctrl = cmds.createNode("transform", n=Name)
+    mesh_pos = cmds.xform(MeshItem, q=True, ws=True, rp=True)
+    mesh_rot = cmds.xform(MeshItem, q=True, ws=True, ro=True)
+    
+    offset_pos = [-x for x in mesh_pos]
+    temp_curves_to_delete = []
+
+    for i, edge in enumerate(TargetEdges):
+        cmds.select(edge)
+        crv_transform = cmds.polyToCurve(degree=1, form=2, ch=False)[0]
+        cmds.xform(crv_transform, ws=True, t=offset_pos, r=True)
+        
+        cmds.makeIdentity(crv_transform, apply=True, t=1, r=1, s=1, n=0)
+
+        shp = cmds.listRelatives(crv_transform, s=True)[0]
+        renamed_shp = cmds.rename(shp, "{}{}Shape".format(Name, i + 1))
+        cmds.parent(renamed_shp, Ctrl, relative=True, shape=True)
+        
+        temp_curves_to_delete.append(crv_transform)
+        
+    if temp_curves_to_delete:
+        cmds.delete(temp_curves_to_delete)
+
+    cmds.scale(size, size, size, Ctrl)
+    cmds.makeIdentity(Ctrl, apply=True, s=1)
+
+    if Position:
+        cmds.xform(Ctrl, ws=True, t=mesh_pos)
+        cmds.xform(Ctrl, ws=True, ro=mesh_rot)
+
+    cmds.select(Ctrl)
+    return Ctrl
+
+
+def createPocif(Name=None, CrvName="", Parameter=0, TurnOnPercentage=True, connectTask=None):
+    """
+    'pointOnCurveInfo' 노드를 생성하고, 매개변수 및 백분율 모드를 설정합니다.
+    선택적으로 주어진 커브에 연결합니다.
+
+    Args:
+        Name (str): 생성할 'pointOnCurveInfo' 노드의 이름.
+        CrvName (str, optional): 연결할 커브의 이름(Transform 또는 Shape). 비어 있으면 연결하지 않습니다.
+        Parameter (float, optional): 'parameter' 속성에 설정할 값. 기본값은 0.
+        TurnOnPercentage (bool, optional): 'turnOnPercentage' 속성을 활성화할지 여부. 기본값은 True.
+        connectTask (list, optional): [ (NodeAttr, target.attr), ... ] 형태의 연결 리스트.
+
+    Returns:
+        str: 생성된 'pointOnCurveInfo' 노드의 이름.
+    """
+    try:
+        string_type = basestring
+    except NameError:
+        string_type = str
+
+    # 노드 생성
+    pocifDict = {}
+    if isinstance(Name, string_type):
+        pocifDict["n"] = Name
+        
+    POCIF = cmds.createNode('pointOnCurveInfo', **pocifDict)
+    cmds.setAttr("{}.turnOnPercentage".format(POCIF), TurnOnPercentage)
+    cmds.setAttr("{}.parameter".format(POCIF), Parameter)
+
+    if cmds.objExists(CrvName):
+        shapes = cmds.listRelatives(CrvName, shapes=True, noIntermediate=True) or []
+        target_curve = shapes[0] if shapes else CrvName
+        
+        if cmds.objExists("{}.worldSpace[0]".format(target_curve)):
+            cmds.connectAttr("{}.worldSpace[0]".format(target_curve), "{}.inputCurve".format(POCIF), f=True)
+
+    if isinstance(connectTask, list) and all(isinstance(x, tuple) and len(x) == 2 for x in connectTask):
+        for nodeAttr, connectTarget in connectTask:
+            source_attr = "{}.{}".format(POCIF, nodeAttr)
+            if cmds.objExists(source_attr) and cmds.objExists(connectTarget):
+                cmds.connectAttr(source_attr, connectTarget, f=True)
+    return POCIF
+
+
+    
+    

@@ -9,10 +9,7 @@ current_path = __file__
 current_folderPath = os.path.abspath(os.path.dirname(current_path))
 parent_folderPath = os.path.dirname(current_folderPath)
 
-tools_folderPath = os.path.join(parent_folderPath, "tools")
-guide_folderPath = os.path.join(current_folderPath, "guide_rigs")
 
-# 중요: tools 폴더가 아니라 autoRig 폴더를 sys.path에 추가
 if parent_folderPath not in sys.path:
     sys.path.append(parent_folderPath)
     print("Added to sys.path: {}".format(parent_folderPath))
@@ -62,7 +59,7 @@ def setTags(item , dts ={ "rig_side" : "" , "rig_type" : ""  , "rig_part" : "" ,
 
 
 
-class guideManager():
+class guideDataManager():
     def __init__(self):
         try:
             self.string_type = basestring
@@ -75,12 +72,12 @@ class guideManager():
         self.checkPoints = ["rig_side" ,"rig_type" , "rig_part" , "rig_role" , "rig_data" , "rig_boneType" , "rig_index"]
 
         self.dataRules = {
-                "rig_boneType" : ["{rig_side}", "{alp}", "rig_boneType"],
-                "rootPoint": ["{rig_side}", "{alp}", "rootPoint"],
-                "nonParent": ["{rig_side}", "{alp}", "nonParent"],
-                "mirrorRoot": ["{rig_side}", "{alp}", "mirrorRoot"],
-                "default": ["{rig_side}", "{alp}", "{rig_role}", "{rig_data}", "{rig_part}"]
-            }
+            #"rig_boneType" : ["{rig_boneType}", "{alp}", "{rig_side}", "rig_boneType"],
+            "rootPoint": ["{rig_boneType}", "{alp}", "{rig_side}", "rootPoint"],
+            "nonParent": ["{rig_boneType}", "{alp}", "{rig_side}", "nonParent"],
+            "mirrorRoot": ["{rig_boneType}", "{alp}", "{rig_side}", "mirrorRoot"],
+            "default": ["{rig_boneType}", "{alp}", "{rig_side}", "{rig_role}", "{rig_data}", "{rig_part}"]
+        }
 
 
     #_______________________________________________________
@@ -102,12 +99,20 @@ class guideManager():
             return []
         
         guideNodes = controlObject.load_reference(path , nameSpace )
-        print (guideNodes)
+        #print ()
         if not guideNodes:
             return []
-        guideObjects = controlObject.get_referenceObjects(guideNodes)
+        
 
+        return guideNodes
+    
+    def getReferenceObjects(self, refNode  ):
+        if cmds.objectType(refNode) != "reference":
+            return []
+        
+        guideObjects = controlObject.get_referenceObjects(refNode )
         return guideObjects
+
 
 
     def setDefineData(self, items, buildIndex=0, buildAlp="A"):
@@ -125,21 +130,42 @@ class guideManager():
             metaData["buildIndex"] = buildIndex
             metaData["alp"] = buildAlp
 
-            
             side = metaData.get("rig_side")
             alp = metaData.get("alp")
             rig_type = metaData.get("rig_type")
-            rig_boneType =metaData.get("rig_boneType")
+            rig_boneType = metaData.get("rig_boneType")
 
-            if side not in finalDict:
-                finalDict[side] = {}
+            # 필수 data path 데이터 방어
+            if not rig_boneType:
+                continue
 
-            if alp not in finalDict[side]:
-                finalDict[side][alp] = {
+            if not alp:
+                continue
+
+            if not side:
+                continue
+
+            #1단계 : boneType -> alp 까지만 먼저 생성
+            if rig_boneType not in finalDict:
+                finalDict[rig_boneType] = {}
+
+
+            #2단계 : finalDict[rig_boneType] 이후 alp key가 없으면 alp 입력
+            ''' 예시 자료
+            "chest": {
+                    "A": {
+                        "rigType": "biped",
+                        "buildIndex": 0,
+                        "alp": "A",
+                        "rig_boneType": "chest",
+            
+            '''
+            if alp not in finalDict[rig_boneType]:
+                finalDict[rig_boneType][alp] = {
                     "rigType": rig_type,
                     "buildIndex": buildIndex,
                     "alp": alp,
-                    "rig_boneType" : rig_boneType
+                    "rig_boneType": rig_boneType
                 }
 
             path_middle_keys = self._getPathMiddleKey(metaData)
@@ -147,12 +173,20 @@ class guideManager():
 
             current = finalDict
 
-            for key in path_middle_keys[:-1]:
+            # path_middle_keys[:-1]하는 이유 : 
+            # 마지막 key는 detail_data가 들어갈 저장 이름이므로,
+            # 마지막 key를 제외한 중간 경로만 먼저 dict로 생성한다.
+            # finalDict["leg"]["A"]["L"]["main"]["loc"]["knee"] = detail_data 최종적으로 이걸 만들기 위함
+            # 
+            for key in path_middle_keys[:-1]: 
+                # finalDict["leg"] => finalDict["leg"]["A"] => finalDict["leg"]["A"]["L"] => ...["loc"] + detail_data 까지
                 if key not in current:
                     current[key] = {}
                 current = current[key]
 
+            # finalDict["leg"]...["loc"]["knee"]
             last_key = path_middle_keys[-1]
+            # finalDict["leg"]...["loc"]["knee"] = detail_data
             current[last_key] = detail_data
 
         return finalDict
@@ -199,19 +233,20 @@ class guideManager():
         part = metaData.get("rig_part")
 
         if part == "rootPoint":
-            ruleList = self.dataRules["rootPoint"] # ["{rig_side}","{alp}","rootPoint"]
+            ruleList = self.dataRules["rootPoint"] # ["{rig_boneType}", "{alp}", "{rig_side}", "rootPoint"],
         elif part == "nonParent":
-            ruleList = self.dataRules["nonParent"] # ["{rig_side}","{alp}","nonParent"]
+            ruleList = self.dataRules["nonParent"] # ["{rig_boneType}", "{alp}", "{rig_side}", "nonParent"],
         elif part == "mirrorRoot":
             ruleList = self.dataRules["mirrorRoot"]
-        elif part == "rig_boneType":
-            ruleList = self.dataRules["rig_boneType"]
+        #elif part == "rig_boneType":
+        #    ruleList = self.dataRules["rig_boneType"]
         else:
-            ruleList = self.dataRules["default"] # ["{rig_side}","{alp}", "{rig_role}", "{rig_data}", "{rig_part}"]
+            ruleList = self.dataRules["default"] # ["{rig_boneType}", "{alp}", "{rig_side}", "{rig_role}", "{rig_data}", "{rig_part}"]
 
         path_keys = [ rule.format(**metaData) for rule in ruleList ] #포매팅
 
-        ## ex) path_keys = ["L", "A", "main", "loc", "shoulder"]  , rule 은 "{rig_side}", "{alp}", "{rig_role}", "{rig_data}", "{rig_part}"
+        ## ex) path_keys = [ "arm" , "A" , "L", "main", "loc", "shoulder"]
+        ##          rule 은 "{rig_boneType}", "{alp}", "{rig_side}", "{rig_role}", "{rig_data}", "{rig_part}"
 
         return path_keys
 
@@ -322,14 +357,14 @@ class guideCombine():
             cmds.delete(isConstraint)
         cmds.parentConstraint(self.headPoint , item ,mo =1)
 
-    def setCombineLeftHandPoint(self ,item):
+    def setCombineLeftHand(self ,item):
         if not cmds.objExists(item):
             return
         isConstraint = cmds.listRelatives(item , type = "parentConstraint")
         if isConstraint:
             cmds.delete(isConstraint)
         cmds.parentConstraint(self.LeftHandPoint , item ,mo =1)
-    def setCombineRightHandPoint(self ,item):
+    def setCombineRightHand(self ,item):
         if not cmds.objExists(item):
             return
         isConstraint = cmds.listRelatives(item , type = "parentConstraint")
@@ -438,28 +473,37 @@ leg_path = os.path.abspath(r"D:\Code\MayaCode\autoRig\guide_rigs\guide_biped_leg
 arm_path = os.path.abspath(r"D:\Code\MayaCode\autoRig\guide_rigs\guide_biped_arm.ma") 
 chest_path = os.path.abspath(r"D:\Code\MayaCode\autoRig\guide_rigs\guide_biped_chest.ma") 
 hand_path = os.path.abspath(r"D:\Code\MayaCode\autoRig\guide_rigs\guide_biped_hand.ma")
-
+head_path = os.path.abspath(r"D:\Code\MayaCode\autoRig\guide_rigs\guide_biped_head.ma")
 
 total_data = {}
 
-guide = guideManager()
-chest_objs = guide.importGuide(chest_path , "guide")
-leg_objs = guide.importGuide(leg_path , "guide")
-arm_objs = guide.importGuide(arm_path , "guide")
-hand_objs = guide.importGuide(hand_path , "guide")
+guide = guideDataManager()
+chest_ref = guide.importGuide(chest_path , "guide")
+leg_ref = guide.importGuide(leg_path , "guide")
+arm_ref = guide.importGuide(arm_path , "guide")
+hand_ref = guide.importGuide(hand_path , "guide")
+head_ref = guide.importGuide(head_path , "guide")
+
+
+
+chest_objs = guide.getReferenceObjects(chest_ref)
+leg_objs = guide.getReferenceObjects(leg_ref)
+arm_objs = guide.getReferenceObjects(arm_ref)
+hand_objs = guide.getReferenceObjects(hand_ref)
+head_objs = guide.getReferenceObjects(head_ref)
 
 chest_data = guide.setDefineData(chest_objs)
 leg_data = guide.setDefineData(leg_objs)
 arm_data = guide.setDefineData(arm_objs)
 hand_data = guide.setDefineData(hand_objs)
+head_data = guide.setDefineData(head_objs)
 
-total_data = {
-     "chest" : chest_data,
-     "legA"  : leg_data,
-     "armA"  : arm_data,
-     "handA" : hand_data
-
-    }
+total_data = {}
+total_data.update(chest_data)
+total_data.update(leg_data)
+total_data.update(arm_data)
+total_data.update(hand_data)
+total_data.update(head_data)
 
 debug_temp_path = r"D:\Code\MayaCode\autoRig\guide_rigs\temp.json"
 debug_temp_path = os.path.abspath(debug_temp_path)
@@ -468,12 +512,16 @@ with open(debug_temp_path , "w" ) as f:
     json.dump(total_data ,f , indent=4)
 
 
+
 guideCombineManager = guideCombine()
 
-chestPoints = total_data["chest"]["C"]["A"]["main"]
-armPoints = total_data["armA"]
-legPoints = total_data["legA"]
-handPoints = total_data["handA"]
+chestPoints = total_data["chest"]["A"]["C"]["main"]["loc"]
+
+armPoints = total_data["arm"]["A"]
+legPoints = total_data["leg"]["A"]
+handPoints = total_data["hand"]["A"]
+headPoints = total_data["head"]["A"]
+
 
 total_mirrors =[ x.get("name") for x in findKeyValues(total_data , "mirrorRoot")]
 total_nonParent =[ x.get("name") for x in findKeyValues(total_data ,"nonParent")] 
@@ -483,18 +531,19 @@ pprint.pprint(total_mirrors)
 
 guideCombineManager.createTotalGroup()
 
-guideCombineManager.setRootPoint(chestPoints["loc"]["root"]["name"])
-guideCombineManager.setChestPoint(chestPoints["loc"]["chest"]["name"])
-guideCombineManager.setHeadPoint(chestPoints["loc"]["neckEnd"]["name"])
-guideCombineManager.setLeftHandPoint(armPoints["L"]["A"]["main"]["loc"]["wrist"]["name"])
-guideCombineManager.setRightHandPoint(armPoints["R"]["A"]["main"]["loc"]["wrist"]["name"])
+guideCombineManager.setRootPoint(chestPoints["root"]["name"])
+guideCombineManager.setChestPoint(chestPoints["chest"]["name"])
+guideCombineManager.setHeadPoint(chestPoints["neckEnd"]["name"])
+guideCombineManager.setLeftHandPoint(armPoints["L"]["main"]["loc"]["wrist"]["name"])
+guideCombineManager.setRightHandPoint(armPoints["R"]["main"]["loc"]["wrist"]["name"])
 
-guideCombineManager.setCombineRoot(legPoints["L"]["A"]["mirrorRoot"]["name"])
-guideCombineManager.setCombineRoot(legPoints["R"]["A"]["mirrorRoot"]["name"])
-guideCombineManager.setCombineChest(armPoints["L"]["A"]["mirrorRoot"]["name"])
-guideCombineManager.setCombineChest(armPoints["R"]["A"]["mirrorRoot"]["name"])
-guideCombineManager.setCombineLeftHandPoint(handPoints["L"]["A"]["mirrorRoot"]["name"])
-guideCombineManager.setCombineRightHandPoint(handPoints["R"]["A"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineRoot(legPoints["L"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineRoot(legPoints["R"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineChest(armPoints["L"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineChest(armPoints["R"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineLeftHand(handPoints["L"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineRightHand(handPoints["R"]["mirrorRoot"]["name"])
+guideCombineManager.setCombineHead(headPoints["C"]["mirrorRoot"]["name"])
 
 
 

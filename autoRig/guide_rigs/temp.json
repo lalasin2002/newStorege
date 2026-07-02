@@ -1,11 +1,11 @@
 {
     "chest": {
-        "C": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "chest",
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "chest",
+            "C": {
                 "nonParent": {
                     "name": "guide:chest_nonParent",
                     "pos": null,
@@ -156,13 +156,13 @@
             }
         }
     },
-    "legA": {
-        "L": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "leg",
+    "leg": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "leg",
+            "L": {
                 "nonParent": {
                     "name": "guide1:L_leg_nonParent",
                     "pos": null,
@@ -354,14 +354,8 @@
                         }
                     }
                 }
-            }
-        },
-        "R": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "leg",
+            },
+            "R": {
                 "nonParent": {
                     "name": "guide1:R_leg_nonParent",
                     "pos": null,
@@ -556,13 +550,13 @@
             }
         }
     },
-    "armA": {
-        "L": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "arm",
+    "arm": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "arm",
+            "L": {
                 "nonParent": {
                     "name": "guide2:L_arm_nonParent",
                     "pos": null,
@@ -756,14 +750,8 @@
                     "rig_boneType": "arm",
                     "side": "L"
                 }
-            }
-        },
-        "R": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "arm",
+            },
+            "R": {
                 "nonParent": {
                     "name": "guide2:R_arm_nonParent",
                     "pos": null,
@@ -960,13 +948,13 @@
             }
         }
     },
-    "handA": {
-        "L": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "hand",
+    "hand": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "hand",
+            "L": {
                 "nonParent": {
                     "name": "guide3:L_hand_nonParent",
                     "pos": null,
@@ -1271,14 +1259,8 @@
                     "rig_boneType": "hand",
                     "side": "L"
                 }
-            }
-        },
-        "R": {
-            "A": {
-                "rigType": "biped",
-                "buildIndex": 0,
-                "alp": "A",
-                "rig_boneType": "hand",
+            },
+            "R": {
                 "nonParent": {
                     "name": "guide3:R_hand_nonParent",
                     "pos": null,
@@ -1582,6 +1564,300 @@
                     "index": null,
                     "rig_boneType": "hand",
                     "side": "R"
+                }
+            }
+        }
+    },
+    "head": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "head",
+            "C": {
+                "nonParent": {
+                    "name": "guide4:head_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "head",
+                    "side": "C"
+                },
+                "mirrorRoot": {
+                    "name": "guide4:head_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "head",
+                    "side": "C"
+                },
+                "rootPoint": {
+                    "name": "guide4:head_loc_Grp",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "head",
+                    "side": "C"
+                },
+                "main": {
+                    "loc": {
+                        "head": {
+                            "name": "guide4:head_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "head",
+                            "side": "C"
+                        },
+                        "headA": {
+                            "name": "guide4:headA_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "head",
+                            "side": "C"
+                        },
+                        "headB": {
+                            "name": "guide4:headB_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "head",
+                            "side": "C"
+                        },
+                        "nose": {
+                            "name": "guide4:nose_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "head",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tongue": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "tongue",
+            "C": {
+                "main": {
+                    "curve": {
+                        "tongue": {
+                            "name": "guide4:tongue_curve",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        }
+                    },
+                    "curveShape": {
+                        "tongue": {
+                            "name": "guide4:tongue_curveShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        }
+                    },
+                    "loc": {
+                        "tongue1": {
+                            "name": "guide4:tongue1_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        },
+                        "tongue2": {
+                            "name": "guide4:tongue2_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        },
+                        "tongue3": {
+                            "name": "guide4:tongue3_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        }
+                    }
+                },
+                "extra": {
+                    "loc": {
+                        "tongue1": {
+                            "name": "guide4:tongueExtra1_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        },
+                        "tongue2": {
+                            "name": "guide4:tongueExtra2_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        }
+                    }
+                },
+                "pivot": {
+                    "loc": {
+                        "tongue": {
+                            "name": "guide4:tonguePivot_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "tongue",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "jaw": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "jaw",
+            "C": {
+                "main": {
+                    "loc": {
+                        "jaw": {
+                            "name": "guide4:jaw_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "jaw",
+                            "side": "C"
+                        },
+                        "jawEnd": {
+                            "name": "guide4:jawEnd_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "jaw",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "gum": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "gum",
+            "C": {
+                "main": {
+                    "loc": {
+                        "gumA": {
+                            "name": "guide4:gumA_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "gum",
+                            "side": "C"
+                        },
+                        "gumB": {
+                            "name": "guide4:gumB_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "gum",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "eye": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "eye",
+            "L": {
+                "main": {
+                    "loc": {
+                        "eyeRoot": {
+                            "name": "guide4:L_eyeRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "eye",
+                            "side": "L"
+                        },
+                        "eye": {
+                            "name": "guide4:L_eye_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "eye",
+                            "side": "L"
+                        },
+                        "eyeEnd": {
+                            "name": "guide4:L_eyeEnd_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "eye",
+                            "side": "L"
+                        }
+                    },
+                    "aimVector": {
+                        "eyeAim": {
+                            "name": "guide4:L_eyeAim_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "eye",
+                            "side": "L"
+                        }
+                    }
+                }
+            },
+            "R": {
+                "main": {
+                    "loc": {
+                        "eyeRoot": {
+                            "name": "guide4:R_eyeRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "eye",
+                            "side": "R"
+                        },
+                        "eye": {
+                            "name": "guide4:R_eye_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "eye",
+                            "side": "R"
+                        },
+                        "eyeEnd": {
+                            "name": "guide4:R_eyeEnd_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "eye",
+                            "side": "R"
+                        }
+                    },
+                    "aimVector": {
+                        "eyeAim": {
+                            "name": "guide4:R_eyeAim_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "eye",
+                            "side": "R"
+                        }
+                    }
+                }
+            },
+            "C": {
+                "main": {
+                    "aimVector": {
+                        "eye": {
+                            "name": "guide4:C_eye_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "eye",
+                            "side": "C"
+                        }
+                    }
                 }
             }
         }
