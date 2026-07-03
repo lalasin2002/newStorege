@@ -6,23 +6,7 @@ import maya.cmds as cmds
 import os,sys
 
 
-def pathAppend(log = True):
-    # __file__ 현재 작업중인 파일 위치
-    #os.path.dirname (경로)의 메인폴더 위치
-    st = u"-----"*2 + "{}" + u"-----"*2 +"\n"
-    st = st.format("pathAppend")
-    CurrentDir = os.path.dirname(os.path.abspath(__file__))
-    if not CurrentDir in sys.path:
-        sys.path.append(CurrentDir)
-        st+= u">> sys.path 등록 : {}\n".format(CurrentDir)
-    else:
-        st+= u">> sys.path 이미등록됨 : {}\n".format(CurrentDir)
-
-    if log:
-        print (st)
-
-pathAppend(False)
-import controlObject
+from tools import controlObject
 
 
 class jointCreater():
@@ -202,9 +186,6 @@ class jointInserter():
         self.startJnt = startJnt
         self.endJnt = endJnt
 
-
-
-
     def calculateVector(self, insertName ,parameter ):
         
         """
@@ -232,9 +213,6 @@ class jointInserter():
             raise ValueError(u"parameter는 0.0 ~ 1.0 범위여야 합니다. 입력값: {}".format(parameter))
         if cmds.objExists(insertName):
             raise ValueError(u"{}가 이미 존재합니다.".format(insertName))
-
-
-
 
         if self.startJnt is None:
             raise ValueError(u"self.startJnt의 정의가 None 입니다.")
@@ -292,8 +270,6 @@ class jointInserter():
         if self.childJnt:
             cmds.parent(self.childJnt , editJnt)
 
-
-
     def printData(self):
         """
         계산된 결과를 콘솔에 출력 (디버그 용도).
@@ -344,9 +320,6 @@ class jointInserter():
         if not self.insertVector:
             raise ValueError(u"self.insertVector가 정의되지 않았습니다.")
         
-        #if insertParentJnt and  insertChildJnt and insertVector:
-            
-
         cmds.select(cl =1)
         self.insertJnt = cmds.joint(n = self.insertName)
         cmds.xform(self.insertJnt , ws =1 , t = [self.insertVector.x , self.insertVector.y, self.insertVector.z])
@@ -368,8 +341,6 @@ class jointInserter():
             if all( isinstance(x , (int , float)) for x in orient_or_item):
                 getOrient = orient_or_item
         
-        
-        
         if getOrient is None:
             raise ValueError(u"orient_or_item 값이 유효하지 않거나 , 없습니다")
         if parentJnt is None and self.parentJnt:
@@ -389,9 +360,6 @@ class jointInserter():
         cmds.parent(targetJnt , parentJnt)
         cmds.parent(childJnt , targetJnt)
         cmds.delete(targetJntGrp)
-
-
-
 
 
     def aimOrientJnt(self, aimV, upV, worldV, targetJnt=None, childJnt=None, parentJnt=None):

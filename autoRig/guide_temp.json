@@ -1,0 +1,1866 @@
+{
+    "root_type": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "root_type",
+            "C": {
+                "nonParent": {
+                    "name": "guide_root:root_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "root_type",
+                    "side": "C"
+                },
+                "main": {
+                    "curve": {
+                        "chest": {
+                            "name": "guide_root:chest_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        }
+                    },
+                    "curveShape": {
+                        "chest": {
+                            "name": "guide_root:chest_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        }
+                    },
+                    "loc": {
+                        "root": {
+                            "name": "guide_root:root_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        },
+                        "splne2": {
+                            "name": "guide_root:splne2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        },
+                        "splne1": {
+                            "name": "guide_root:splne1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        },
+                        "chest": {
+                            "name": "guide_root:chest_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        }
+                    },
+                    "aimVector": {
+                        "root": {
+                            "name": "guide_root:root_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_root:root_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "root_type",
+                    "side": "C"
+                },
+                "extra": {
+                    "loc": {
+                        "chest": {
+                            "name": "guide_root:chestExtra_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        },
+                        "root": {
+                            "name": "guide_root:rootExtra_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "root_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "neck_type": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "neck_type",
+            "C": {
+                "main": {
+                    "curve": {
+                        "neck": {
+                            "name": "guide_root:neck_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        }
+                    },
+                    "curveShape": {
+                        "neck": {
+                            "name": "guide_root:neck_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        }
+                    },
+                    "loc": {
+                        "neckRoot": {
+                            "name": "guide_root:neckRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        },
+                        "neckEnd": {
+                            "name": "guide_root:neckEnd_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        },
+                        "neck": {
+                            "name": "guide_root:neck_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        }
+                    },
+                    "aimVector": {
+                        "neckRoot": {
+                            "name": "guide_root:neckRoot_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        }
+                    }
+                },
+                "extra": {
+                    "loc": {
+                        "chest": {
+                            "name": "guide_root:neckRootExtra_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        },
+                        "neckEnd": {
+                            "name": "guide_root:neckEndExtra_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "neck_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "head_type": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "head_type",
+            "C": {
+                "nonParent": {
+                    "name": "guide_head:head_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "head_type",
+                    "side": "C"
+                },
+                "mirrorRoot": {
+                    "name": "guide_head:head_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "head_type",
+                    "side": "C"
+                },
+                "main": {
+                    "loc": {
+                        "head": {
+                            "name": "guide_head:head_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "head_type",
+                            "side": "C"
+                        },
+                        "headA": {
+                            "name": "guide_head:headA_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "head_type",
+                            "side": "C"
+                        },
+                        "headB": {
+                            "name": "guide_head:headB_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "head_type",
+                            "side": "C"
+                        },
+                        "nose": {
+                            "name": "guide_head:nose_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "head_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tongue_type_type": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "tongue_type_type",
+            "C": {
+                "main": {
+                    "curve": {
+                        "tongue": {
+                            "name": "guide_head:tongue_curve",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "tongue_type_type",
+                            "side": "C"
+                        }
+                    },
+                    "curveShape": {
+                        "tongue": {
+                            "name": "guide_head:tongue_curveShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "tongue_type_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "jaw_type": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "jaw_type",
+            "C": {
+                "main": {
+                    "loc": {
+                        "jaw": {
+                            "name": "guide_head:jaw_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "jaw_type",
+                            "side": "C"
+                        },
+                        "jawEnd": {
+                            "name": "guide_head:jawEnd_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "jaw_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "gum_type": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "gum_type",
+            "C": {
+                "main": {
+                    "loc": {
+                        "gumA": {
+                            "name": "guide_head:gumA_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "gum_type",
+                            "side": "C"
+                        },
+                        "gumB": {
+                            "name": "guide_head:gumB_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "gum_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "tongue_type": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "tongue_type",
+            "C": {
+                "main": {
+                    "loc": {
+                        "tongue1": {
+                            "name": "guide_head:tongue1_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "tongue_type",
+                            "side": "C"
+                        },
+                        "tongue2": {
+                            "name": "guide_head:tongue2_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "tongue_type",
+                            "side": "C"
+                        },
+                        "tongue3": {
+                            "name": "guide_head:tongue3_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "tongue_type",
+                            "side": "C"
+                        }
+                    }
+                },
+                "extra": {
+                    "loc": {
+                        "tongue1": {
+                            "name": "guide_head:tongueExtra1_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "tongue_type",
+                            "side": "C"
+                        },
+                        "tongue2": {
+                            "name": "guide_head:tongueExtra2_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "tongue_type",
+                            "side": "C"
+                        }
+                    }
+                },
+                "pivot": {
+                    "loc": {
+                        "tongue": {
+                            "name": "guide_head:tonguePivot_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "tongue_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "eye_type": {
+        "A": {
+            "rigType": "bipad",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "eye_type",
+            "L": {
+                "main": {
+                    "loc": {
+                        "eyeRoot": {
+                            "name": "guide_head:L_eyeRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "eye_type",
+                            "side": "L"
+                        },
+                        "eye": {
+                            "name": "guide_head:L_eye_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "eye_type",
+                            "side": "L"
+                        },
+                        "eyeEnd": {
+                            "name": "guide_head:L_eyeEnd_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "eye_type",
+                            "side": "L"
+                        }
+                    },
+                    "aimVector": {
+                        "eyeAim": {
+                            "name": "guide_head:L_eyeAim_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "eye_type",
+                            "side": "L"
+                        }
+                    }
+                }
+            },
+            "R": {
+                "main": {
+                    "loc": {
+                        "eyeRoot": {
+                            "name": "guide_head:R_eyeRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "eye_type",
+                            "side": "R"
+                        },
+                        "eye": {
+                            "name": "guide_head:R_eye_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "eye_type",
+                            "side": "R"
+                        },
+                        "eyeEnd": {
+                            "name": "guide_head:R_eyeEnd_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "eye_type",
+                            "side": "R"
+                        }
+                    },
+                    "aimVector": {
+                        "eyeAim": {
+                            "name": "guide_head:R_eyeAim_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "eye_type",
+                            "side": "R"
+                        }
+                    }
+                }
+            },
+            "C": {
+                "main": {
+                    "aimVector": {
+                        "eye": {
+                            "name": "guide_head:C_eye_loc",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "eye_type",
+                            "side": "C"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "leg_type": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "leg_type",
+            "L": {
+                "nonParent": {
+                    "name": "guide_leg:L_leg_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "leg_type",
+                    "side": "L"
+                },
+                "main": {
+                    "curve": {
+                        "hip": {
+                            "name": "guide_leg:L_hip_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "knee": {
+                            "name": "guide_leg:L_knee_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:L_ankle_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "toe": {
+                            "name": "guide_leg:L_toe_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        }
+                    },
+                    "curveShape": {
+                        "hip": {
+                            "name": "guide_leg:L_hip_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "knee": {
+                            "name": "guide_leg:L_knee_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:L_ankle_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "toe": {
+                            "name": "guide_leg:L_toe_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        }
+                    },
+                    "loc": {
+                        "hip": {
+                            "name": "guide_leg:L_hip_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "knee": {
+                            "name": "guide_leg:L_knee_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:L_ankle_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "toeEnd": {
+                            "name": "guide_leg:L_toeEnd_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "toe": {
+                            "name": "guide_leg:L_toe_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        }
+                    },
+                    "aimVector": {
+                        "hip": {
+                            "name": "guide_leg:L_hip_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_leg:L_hip_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "leg_type",
+                    "side": "L"
+                },
+                "extra": {
+                    "loc": {
+                        "hip": {
+                            "name": "guide_leg:L_hipExtra_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:L_ankleExtra_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "knee": {
+                            "name": "guide_leg:L_kneeExtra_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        }
+                    },
+                    "pivot": {
+                        "heel": {
+                            "name": "guide_leg:L_heelExtra_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "toeEnd": {
+                            "name": "guide_leg:L_toeEndExtra_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "bankRight": {
+                            "name": "guide_leg:L_bankRight_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "bankLeft": {
+                            "name": "guide_leg:L_bankLeft_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        },
+                        "toe": {
+                            "name": "guide_leg:L_toeExtra_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "leg_type",
+                            "side": "L"
+                        }
+                    }
+                }
+            },
+            "R": {
+                "nonParent": {
+                    "name": "guide_leg:R_leg_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "leg_type",
+                    "side": "R"
+                },
+                "main": {
+                    "curve": {
+                        "hip": {
+                            "name": "guide_leg:R_hip_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "knee": {
+                            "name": "guide_leg:R_knee_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:R_ankle_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "toe": {
+                            "name": "guide_leg:R_toe_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        }
+                    },
+                    "curveShape": {
+                        "hip": {
+                            "name": "guide_leg:R_hip_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "knee": {
+                            "name": "guide_leg:R_knee_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:R_ankle_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "toe": {
+                            "name": "guide_leg:R_toe_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        }
+                    },
+                    "loc": {
+                        "hip": {
+                            "name": "guide_leg:R_hip_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "knee": {
+                            "name": "guide_leg:R_knee_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:R_ankle_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "toeEnd": {
+                            "name": "guide_leg:R_toeEnd_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "toe": {
+                            "name": "guide_leg:R_toe_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        }
+                    },
+                    "aimVector": {
+                        "hip": {
+                            "name": "guide_leg:R_hip_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_leg:R_hip_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "leg_type",
+                    "side": "R"
+                },
+                "extra": {
+                    "loc": {
+                        "hip": {
+                            "name": "guide_leg:R_hipExtra_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "ankle": {
+                            "name": "guide_leg:R_ankleExtra_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "knee": {
+                            "name": "guide_leg:R_kneeExtra_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        }
+                    },
+                    "pivot": {
+                        "heel": {
+                            "name": "guide_leg:R_heelExtra_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "toeEnd": {
+                            "name": "guide_leg:R_toeEndExtra_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "bankRight": {
+                            "name": "guide_leg:R_bankRight_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "bankLeft": {
+                            "name": "guide_leg:R_bankLeft_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        },
+                        "toe": {
+                            "name": "guide_leg:R_toeExtra_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "leg_type",
+                            "side": "R"
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "arm_type": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "arm_type",
+            "L": {
+                "nonParent": {
+                    "name": "guide_arm:L_arm_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "arm_type",
+                    "side": "L"
+                },
+                "main": {
+                    "curve": {
+                        "scapula": {
+                            "name": "guide_arm:L_scapula_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:L_shoulder_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:L_elbow_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:L_wrist_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    },
+                    "curveShape": {
+                        "scapula": {
+                            "name": "guide_arm:L_scapula_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:L_shoulder_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:L_elbow_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:L_wrist_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    },
+                    "loc": {
+                        "scapula": {
+                            "name": "guide_arm:L_scapula_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:L_shoulder_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:L_elbow_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:L_wrist_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "wristEnd": {
+                            "name": "guide_arm:L_wristEnd_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    },
+                    "aimVector": {
+                        "shoulder_aim": {
+                            "name": "guide_arm:L_shoulder_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "scapula": {
+                            "name": "guide_arm:L_scapula_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    }
+                },
+                "extra": {
+                    "curve": {
+                        "shoulder": {
+                            "name": "guide_arm:L_shoulderExtra_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:L_elbowExtra_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    },
+                    "curveShape": {
+                        "shoulder": {
+                            "name": "guide_arm:L_shoulderExtra_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:L_elbowExtra_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    },
+                    "loc": {
+                        "elbow": {
+                            "name": "guide_arm:L_elbowExtra_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:L_shoulderExtra_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:L_wristExtra_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "arm_type",
+                            "side": "L"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_arm:L_scapula_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "arm_type",
+                    "side": "L"
+                },
+                "rootPoint": {
+                    "name": "guide_arm:L_scapula_loc_Grp",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "arm_type",
+                    "side": "L"
+                }
+            },
+            "R": {
+                "nonParent": {
+                    "name": "guide_arm:R_arm_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "arm_type",
+                    "side": "R"
+                },
+                "main": {
+                    "curve": {
+                        "scapula": {
+                            "name": "guide_arm:R_scapula_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulder_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:R_elbow_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:R_wrist_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    },
+                    "curveShape": {
+                        "scapula": {
+                            "name": "guide_arm:R_scapula_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulder_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:R_elbow_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:R_wrist_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    },
+                    "loc": {
+                        "scapula": {
+                            "name": "guide_arm:R_scapula_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulder_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:R_elbow_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:R_wrist_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "wristEnd": {
+                            "name": "guide_arm:R_wristEnd_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    },
+                    "aimVector": {
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulder_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "scapula": {
+                            "name": "guide_arm:R_scapula_vector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    }
+                },
+                "extra": {
+                    "curve": {
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulderExtra_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:R_elbowExtra_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    },
+                    "curveShape": {
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulderExtra_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "elbow": {
+                            "name": "guide_arm:R_elbowExtra_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    },
+                    "loc": {
+                        "elbow": {
+                            "name": "guide_arm:R_elbowExtra_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "shoulder": {
+                            "name": "guide_arm:R_shoulderExtra_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        },
+                        "wrist": {
+                            "name": "guide_arm:R_wristExtra_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "arm_type",
+                            "side": "R"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_arm:R_scapula_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "arm_type",
+                    "side": "R"
+                },
+                "rootPoint": {
+                    "name": "guide_arm:R_scapula_loc_Grp",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "arm_type",
+                    "side": "R"
+                }
+            }
+        }
+    },
+    "hand_type": {
+        "A": {
+            "rigType": "biped",
+            "buildIndex": 0,
+            "alp": "A",
+            "rig_boneType": "hand_type",
+            "L": {
+                "nonParent": {
+                    "name": "guide_hand:L_hand_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "hand_type",
+                    "side": "L"
+                },
+                "main": {
+                    "curve": {
+                        "index": {
+                            "name": "guide_hand:L_index_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle": {
+                            "name": "guide_hand:L_middle_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring": {
+                            "name": "guide_hand:L_ring_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky": {
+                            "name": "guide_hand:L_pinky_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "thumb": {
+                            "name": "guide_hand:L_thumb_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        }
+                    },
+                    "curveShape": {
+                        "index": {
+                            "name": "guide_hand:L_index_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle": {
+                            "name": "guide_hand:L_middle_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring": {
+                            "name": "guide_hand:L_ring_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky": {
+                            "name": "guide_hand:L_pinky_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "thumb": {
+                            "name": "guide_hand:L_thumb_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        }
+                    },
+                    "loc": {
+                        "thumbRoot": {
+                            "name": "guide_hand:L_thumbRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "thumb1": {
+                            "name": "guide_hand:L_thumb1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "thumb2": {
+                            "name": "guide_hand:L_thumb2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "thumb3": {
+                            "name": "guide_hand:L_thumb3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinkyRoot": {
+                            "name": "guide_hand:L_pinkyRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky1": {
+                            "name": "guide_hand:L_pinky1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky2": {
+                            "name": "guide_hand:L_pinky2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky3": {
+                            "name": "guide_hand:L_pinky3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky4": {
+                            "name": "guide_hand:L_pinky4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ringRoot": {
+                            "name": "guide_hand:L_ringRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring1": {
+                            "name": "guide_hand:L_ring1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring2": {
+                            "name": "guide_hand:L_ring2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring3": {
+                            "name": "guide_hand:L_ring3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring4": {
+                            "name": "guide_hand:L_ring4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "indexRoot": {
+                            "name": "guide_hand:L_indexRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "index1": {
+                            "name": "guide_hand:L_index1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "index2": {
+                            "name": "guide_hand:L_index2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "index3": {
+                            "name": "guide_hand:L_index3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "index4": {
+                            "name": "guide_hand:L_index4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middleRoot": {
+                            "name": "guide_hand:L_middleRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle1": {
+                            "name": "guide_hand:L_middle1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle2": {
+                            "name": "guide_hand:L_middle2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle3": {
+                            "name": "guide_hand:L_middle3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle4": {
+                            "name": "guide_hand:L_middle4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        }
+                    },
+                    "aimVector": {
+                        "thumb": {
+                            "name": "guide_hand:L_thumb_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "pinky": {
+                            "name": "guide_hand:L_pinky_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "ring": {
+                            "name": "guide_hand:L_ring_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "index": {
+                            "name": "guide_hand:L_index_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        },
+                        "middle": {
+                            "name": "guide_hand:L_middle_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "L"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_hand:L_handRoot_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "hand_type",
+                    "side": "L"
+                }
+            },
+            "R": {
+                "nonParent": {
+                    "name": "guide_hand:R_hand_nonParent",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "hand_type",
+                    "side": "R"
+                },
+                "main": {
+                    "curve": {
+                        "index": {
+                            "name": "guide_hand:R_index_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle": {
+                            "name": "guide_hand:R_middle_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring": {
+                            "name": "guide_hand:R_ring_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky": {
+                            "name": "guide_hand:R_pinky_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "thumb": {
+                            "name": "guide_hand:R_thumb_Crv",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        }
+                    },
+                    "curveShape": {
+                        "index": {
+                            "name": "guide_hand:R_index_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle": {
+                            "name": "guide_hand:R_middle_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring": {
+                            "name": "guide_hand:R_ring_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky": {
+                            "name": "guide_hand:R_pinky_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "thumb": {
+                            "name": "guide_hand:R_thumb_CrvShape",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        }
+                    },
+                    "loc": {
+                        "thumbRoot": {
+                            "name": "guide_hand:R_thumbRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "thumb1": {
+                            "name": "guide_hand:R_thumb1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "thumb2": {
+                            "name": "guide_hand:R_thumb2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "thumb3": {
+                            "name": "guide_hand:R_thumb3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinkyRoot": {
+                            "name": "guide_hand:R_pinkyRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky1": {
+                            "name": "guide_hand:R_pinky1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky2": {
+                            "name": "guide_hand:R_pinky2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky3": {
+                            "name": "guide_hand:R_pinky3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky4": {
+                            "name": "guide_hand:R_pinky4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ringRoot": {
+                            "name": "guide_hand:R_ringRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring1": {
+                            "name": "guide_hand:R_ring1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring2": {
+                            "name": "guide_hand:R_ring2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring3": {
+                            "name": "guide_hand:R_ring3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring4": {
+                            "name": "guide_hand:R_ring4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "indexRoot": {
+                            "name": "guide_hand:R_indexRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "index1": {
+                            "name": "guide_hand:R_index1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "index2": {
+                            "name": "guide_hand:R_index2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "index3": {
+                            "name": "guide_hand:R_index3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "index4": {
+                            "name": "guide_hand:R_index4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middleRoot": {
+                            "name": "guide_hand:R_middleRoot_loc",
+                            "pos": null,
+                            "index": "0",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle1": {
+                            "name": "guide_hand:R_middle1_loc",
+                            "pos": null,
+                            "index": "1",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle2": {
+                            "name": "guide_hand:R_middle2_loc",
+                            "pos": null,
+                            "index": "2",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle3": {
+                            "name": "guide_hand:R_middle3_loc",
+                            "pos": null,
+                            "index": "3",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle4": {
+                            "name": "guide_hand:R_middle4_loc",
+                            "pos": null,
+                            "index": "4",
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        }
+                    },
+                    "aimVector": {
+                        "thumb": {
+                            "name": "guide_hand:R_thumb_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "pinky": {
+                            "name": "guide_hand:R_pinky_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "ring": {
+                            "name": "guide_hand:R_ring_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "index": {
+                            "name": "guide_hand:R_index_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        },
+                        "middle": {
+                            "name": "guide_hand:R_middle_aimVector",
+                            "pos": null,
+                            "index": null,
+                            "rig_boneType": "hand_type",
+                            "side": "R"
+                        }
+                    }
+                },
+                "mirrorRoot": {
+                    "name": "guide_hand:R_handRoot_mirror",
+                    "pos": null,
+                    "index": null,
+                    "rig_boneType": "hand_type",
+                    "side": "R"
+                }
+            }
+        }
+    }
+}

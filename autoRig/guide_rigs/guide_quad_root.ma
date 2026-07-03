@@ -1,6 +1,6 @@
 //Maya ASCII 2022 scene
-//Name: guide_biped_chest.ma
-//Last modified: Wed, Jul 01, 2026 06:50:04 PM
+//Name: guide_quad_root.ma
+//Last modified: Fri, Jul 03, 2026 08:48:45 PM
 //Codeset: 949
 requires maya "2022";
 requires -nodeType "VRaySettingsNode" -dataType "VRaySunParams" -dataType "vrayFloatVectorData"
@@ -13,17 +13,17 @@ fileInfo "product" "Maya 2022";
 fileInfo "version" "2022";
 fileInfo "cutIdentifier" "202303271415-baa69b5798";
 fileInfo "osv" "Windows 10 Pro v2009 (Build: 19045)";
-fileInfo "UUID" "EFE6F087-41E3-43E5-3851-C7A9B6FC6D4A";
+fileInfo "UUID" "0F34F194-4BC9-EAD7-C9B6-1CA1CEF3B12E";
 createNode transform -s -n "persp";
 	rename -uid "E98F2045-41CF-383A-1CE8-38B73E6C7918";
 	setAttr ".v" no;
-	setAttr ".t" -type "double3" 7.8066749188875786 28.153895077244457 18.656972956007596 ;
-	setAttr ".r" -type "double3" -5.1383527295827882 23.00000000000172 2.1595178650705825e-16 ;
+	setAttr ".t" -type "double3" 50.648532860567485 42.699587543953804 -33.022779744259282 ;
+	setAttr ".r" -type "double3" -20.738352729584264 118.60000000000498 0 ;
 createNode camera -s -n "perspShape" -p "persp";
 	rename -uid "2AC9D49C-4FB1-6C91-B00F-20B93A1B746F";
 	setAttr -k off ".v" no;
 	setAttr ".fl" 34.999999999999993;
-	setAttr ".coi" 19.856105494700966;
+	setAttr ".coi" 60.477238873115539;
 	setAttr ".imn" -type "string" "persp";
 	setAttr ".den" -type "string" "persp_depth";
 	setAttr ".man" -type "string" "persp_mask";
@@ -64,21 +64,21 @@ createNode camera -s -n "frontShape" -p "front";
 createNode transform -s -n "side";
 	rename -uid "F9C8F567-4683-9354-2706-44B4951E094E";
 	setAttr ".v" no;
-	setAttr ".t" -type "double3" 1000.1 48.694751617506839 1.8432548303335334 ;
+	setAttr ".t" -type "double3" 1000.1 33.58374107073967 4.2914073770164691 ;
 	setAttr ".r" -type "double3" 0 90 0 ;
 createNode camera -s -n "sideShape" -p "side";
 	rename -uid "296BF61A-4FA3-3103-C3AE-D1B4098E2382";
 	setAttr -k off ".v" no;
 	setAttr ".rnd" no;
 	setAttr ".coi" 1000.1;
-	setAttr ".ow" 35.585888701322489;
+	setAttr ".ow" 131.52488509420809;
 	setAttr ".imn" -type "string" "side";
 	setAttr ".den" -type "string" "side_depth";
 	setAttr ".man" -type "string" "side_mask";
 	setAttr ".hc" -type "string" "viewSet -s %camera";
 	setAttr ".o" yes;
 	setAttr ".ai_translator" -type "string" "orthographic";
-createNode transform -n "chest_nonParent";
+createNode transform -n "root_nonParent";
 	rename -uid "32B077C1-4EE4-5706-8EC1-EA96F01D924D";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
 	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
@@ -86,13 +86,13 @@ createNode transform -n "chest_nonParent";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
 	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "nonParent";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "space";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_side" -type "string" "C";
-createNode transform -n "neck_Crv" -p "chest_nonParent";
+createNode transform -n "neck_Crv" -p "root_nonParent";
 	rename -uid "7F835C6E-4ED5-EADC-02AC-A08133A1C975";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
 	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
@@ -102,11 +102,11 @@ createNode transform -n "neck_Crv" -p "chest_nonParent";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ovdt" 2;
 	setAttr ".ove" yes;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neck";
-	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "curve";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_side" -type "string" "C";
 createNode nurbsCurve -n "neck_CrvShape" -p "neck_Crv";
 	rename -uid "92FEEFA1-4299-DB9D-4692-F6AEF3C10091";
@@ -122,17 +122,17 @@ createNode nurbsCurve -n "neck_CrvShape" -p "neck_Crv";
 		3 2 0 no 3
 		7 0 0 0 0.5 1 1 1
 		5
-		0 45 0
-		0 46 0
-		0 48 0
-		0 50 0
-		0 51 0
+		0 23 11.5
+		0 24 11.916250000000002
+		0 26 12.75
+		0 27.999999999999996 13.583750000000002
+		0 29 14
 		;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neck";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_side" -type "string" "C";
 createNode nurbsCurve -n "neck_CrvShape1Orig" -p "neck_Crv";
 	rename -uid "EDFC0EE6-41AC-26C1-EAA6-0598EFC80ED1";
@@ -157,7 +157,7 @@ createNode nurbsCurve -n "neck_CrvShape1Orig" -p "neck_Crv";
 		"gtag" 2
 		"cluster1" 1 "cv[1]"
 		"cluster2" 1 "cv[3]";
-createNode transform -n "chest_Crv" -p "chest_nonParent";
+createNode transform -n "chest_Crv" -p "root_nonParent";
 	rename -uid "65941274-4BD6-4E71-060B-15AA80D9AD82";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
 	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
@@ -167,11 +167,11 @@ createNode transform -n "chest_Crv" -p "chest_nonParent";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ovdt" 2;
 	setAttr ".ove" yes;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "chest";
-	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "curve";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_side" -type "string" "C";
 createNode nurbsCurve -n "chest_CrvShape" -p "chest_Crv";
 	rename -uid "E18A63C5-4162-AB9F-B8B0-288C3E8F9E71";
@@ -187,18 +187,18 @@ createNode nurbsCurve -n "chest_CrvShape" -p "chest_Crv";
 		3 3 0 no 3
 		8 0 0 0 0.33333333333333331 0.66666666666666663 1 1 1
 		6
-		0 22 0
-		0 24.44444465637207 0
-		0 29.348000000000003 0
-		-0.07342204270015884 36.651999999999504 0
-		-0.024449540219152896 41.555557250976399 0
-		0 44 0
+		0 22 -10
+		0 21.997560656372066 -7.7755600000000005
+		0 22 -3.3200000000000003
+		-0.07342204270015884 21.999999999999503 3.3200000000000003
+		-0.024449540219152896 22.002441250976396 7.7755599999999987
+		0 22 10
 		;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "chest";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_side" -type "string" "C";
 createNode transform -n "root_mirror";
 	rename -uid "BB037801-45CD-2BDD-7A90-40948BB40BF6";
@@ -208,27 +208,15 @@ createNode transform -n "root_mirror";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
 	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
-	setAttr ".t" -type "double3" 0 22 0 ;
+	setAttr ".t" -type "double3" 0 22 -10 ;
 	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "mirrorRoot";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "space";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 createNode transform -n "root_loc_Grp" -p "root_mirror";
-	rename -uid "120E22D6-4452-F2B0-0880-3AB2ADB36A95";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_part" -type "string" "rootPoint";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "space";
-	setAttr ".rig_boneType" -type "string" "chest";
-	setAttr ".rig_side" -type "string" "C";
+	rename -uid "5F265CF3-4724-95A8-00B2-02AC9A340E8F";
 createNode transform -n "root_loc" -p "root_loc_Grp";
 	rename -uid "3E3FD532-496F-2DC4-CF29-2A81729136B6";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
@@ -240,11 +228,11 @@ createNode transform -n "root_loc" -p "root_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "root";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_index" -type "string" "0";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "root_locShape" -p "root_loc";
@@ -265,11 +253,11 @@ createNode transform -n "splne2_loc" -p "splne2_loc_Grp";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
 	setAttr ".t" -type "double3" -0.07342204270015884 -4.9737991503207013e-13 0 ;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "splne2";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_index" -type "string" "2";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "splne2_locShape" -p "splne2_loc";
@@ -309,11 +297,11 @@ createNode transform -n "splne1_loc" -p "splne1_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "splne1";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_index" -type "string" "1";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "splne1_locShape" -p "splne1_loc";
@@ -353,11 +341,11 @@ createNode transform -n "neckRoot_loc" -p "neckRoot_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neckRoot";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_index" -type "string" "0";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "neckRoot_locShape" -p "neckRoot_loc";
@@ -377,11 +365,11 @@ createNode transform -n "neckRootExtra_loc" -p "neckRootExtra_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "chest";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_index" -type "string" "0";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "neckRootExtra_locShape" -p "neckRootExtra_loc";
@@ -423,11 +411,11 @@ createNode transform -n "neckEndExtra_loc" -p "neckEndExtra_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neckEnd";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_index" -type "string" "1";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "neckEndExtra_locShape" -p "neckEndExtra_loc";
@@ -458,7 +446,7 @@ createNode pointConstraint -n "neckEndExtra_loc_Grp_pointConstraint1" -p "neckEn
 	setAttr -k on ".w1" 0.667;
 createNode transform -n "neckEnd_loc_Grp" -p "neckRoot_loc";
 	rename -uid "741A0674-44D8-A914-323E-ED8B94658960";
-	setAttr ".t" -type "double3" 0 6 0 ;
+	setAttr ".t" -type "double3" 0 6 2.5 ;
 createNode transform -n "neckEnd_loc" -p "neckEnd_loc_Grp";
 	rename -uid "3C15D887-4273-C2DA-2244-75866412FA64";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
@@ -470,11 +458,11 @@ createNode transform -n "neckEnd_loc" -p "neckEnd_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neckEnd";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_index" -type "string" "2";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "neckEnd_locShape" -p "neckEnd_loc";
@@ -493,11 +481,11 @@ createNode transform -n "neckRoot_vector" -p "neckRoot_vector_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 6;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neckRoot";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "aimVector";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_side" -type "string" "C";
 createNode nurbsCurve -n "neckRoot_vectorShape" -p "neckRoot_vector";
 	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
@@ -547,11 +535,11 @@ createNode transform -n "neck_loc" -p "neck_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "neck";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "neck_type";
 	setAttr ".rig_index" -type "string" "1";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "neck_locShape" -p "neck_loc";
@@ -580,9 +568,9 @@ createNode pointConstraint -n "neck_loc_Grp_pointConstraint1" -p "neck_loc_Grp";
 	setAttr ".rst" -type "double3" 0 48 0 ;
 	setAttr -k on ".w0";
 	setAttr -k on ".w1";
-createNode pointConstraint -n "neckRoot_loc_Grp_pointConstraint1" -p "neckRoot_loc_Grp";
-	rename -uid "33503C85-4127-DDAD-912E-61BF2DBCAE58";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_chest_locW0" -dv 1 -min 0 -at "double";
+createNode parentConstraint -n "neckRoot_loc_Grp_parentConstraint1" -p "neckRoot_loc_Grp";
+	rename -uid "A57EA30E-4863-44EC-48A8-99A3F4E6FAFB";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "chest_locW0" -dv 1 -min 0 -at "double";
 	setAttr -k on ".nds";
 	setAttr -k off ".v";
 	setAttr -k off ".tx";
@@ -595,12 +583,12 @@ createNode pointConstraint -n "neckRoot_loc_Grp_pointConstraint1" -p "neckRoot_l
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".o" -type "double3" 0 1 0 ;
-	setAttr ".rst" -type "double3" 0 23 0 ;
+	setAttr ".tg[0].tot" -type "double3" 0 1 1.4999999999999982 ;
+	setAttr ".rst" -type "double3" 0 1 31.5 ;
 	setAttr -k on ".w0";
 createNode transform -n "chest_loc_Grp" -p "root_loc";
 	rename -uid "8DC482D6-4DE0-5B1C-8914-2EBB6C8B331B";
-	setAttr ".t" -type "double3" 0 22 0 ;
+	setAttr ".t" -type "double3" 0 0 20 ;
 createNode transform -n "chest_loc" -p "chest_loc_Grp";
 	rename -uid "649567CA-41AE-ED71-6741-C4A3ADA35EBB";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
@@ -612,11 +600,11 @@ createNode transform -n "chest_loc" -p "chest_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "chest";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_index" -type "string" "3";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "chest_locShape" -p "chest_loc";
@@ -636,11 +624,11 @@ createNode transform -n "chestExtra_loc" -p "chestExtra_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "chest";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_index" -type "string" "1";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "chestExtra_locShape" -p "chestExtra_loc";
@@ -682,11 +670,11 @@ createNode transform -n "rootExtra_loc" -p "rootExtra_loc_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "root";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_index" -type "string" "0";
 	setAttr ".rig_side" -type "string" "C";
 createNode locator -n "rootExtra_locShape" -p "rootExtra_loc";
@@ -726,11 +714,11 @@ createNode transform -n "root_vector" -p "root_vector_Grp";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 6;
-	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_type" -type "string" "quad_type";
 	setAttr ".rig_part" -type "string" "root";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "aimVector";
-	setAttr ".rig_boneType" -type "string" "chest";
+	setAttr ".rig_boneType" -type "string" "root_type";
 	setAttr ".rig_side" -type "string" "C";
 createNode nurbsCurve -n "root_vectorShape" -p "root_vector";
 	rename -uid "3D7EAE15-4721-EA88-38EE-0D8CE869B006";
@@ -739,13 +727,13 @@ createNode nurbsCurve -n "root_vectorShape" -p "root_vector";
 		1 6 0 no 3
 		7 0 1 2 3 4 5 6
 		7
-		-1.6653345369377348e-16 0 0.49999999999999983
-		-1.6653345369377348e-16 0.5 -3.6977854932234928e-32
-		1.6653345369377348e-16 0 -0.49999999999999983
-		3.3306690738754696e-16 0 -0.99999999999999967
-		-3.3306690738754696e-16 1 -7.3955709864469857e-32
-		-3.3306690738754696e-16 0 0.99999999999999967
-		-1.6653345369377348e-16 0 0.49999999999999983
+		-1.6653345369377348e-16 -0.49999999999999989 -1.6653345369377348e-16
+		-1.6653345369377348e-16 -1.6653345369377348e-16 0.50000000000000011
+		1.6653345369377348e-16 0.49999999999999989 1.6653345369377348e-16
+		3.3306690738754696e-16 0.99999999999999978 3.3306690738754696e-16
+		-3.3306690738754696e-16 -3.3306690738754696e-16 1.0000000000000002
+		-3.3306690738754696e-16 -0.99999999999999978 -3.3306690738754696e-16
+		-1.6653345369377348e-16 -0.49999999999999989 -1.6653345369377348e-16
 		;
 createNode aimConstraint -n "root_vector_Grp_aimConstraint1" -p "root_vector_Grp";
 	rename -uid "8FE3C858-4A2E-3775-18AA-F9982C158597";
@@ -762,22 +750,20 @@ createNode aimConstraint -n "root_vector_Grp_aimConstraint1" -p "root_vector_Grp
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
+	setAttr ".a" -type "double3" 0 0 1 ;
 	setAttr ".wut" 2;
 	setAttr ".rsrr" -type "double3" 0 0 45.000000000000007 ;
 	setAttr -k on ".w0";
 createNode lightLinker -s -n "lightLinker1";
-	rename -uid "714017C9-4179-7D6B-F09F-899F2776A5E8";
+	rename -uid "4D528CAC-4DF3-DA11-F34F-8A8EFA02F105";
 	setAttr -s 2 ".lnk";
 	setAttr -s 2 ".slnk";
 createNode displayLayerManager -n "layerManager";
-	rename -uid "59FFB7F3-4F98-1000-0006-968FFFB9EA96";
+	rename -uid "F3CC2B92-4424-BB58-C269-199C01922498";
 createNode displayLayer -n "defaultLayer";
 	rename -uid "287D8167-4032-53EE-4996-8685FE0C83E8";
 createNode renderLayerManager -n "renderLayerManager";
-	rename -uid "4CFE5A5E-43DD-D432-B069-67AEBF184D08";
+	rename -uid "9E6089B9-47AD-D939-80E3-2F92802D508B";
 createNode renderLayer -n "defaultRenderLayer";
 	rename -uid "F04BB8FA-4375-B4F3-1D64-59B7C4140232";
 	setAttr ".g" yes;
@@ -787,9 +773,9 @@ createNode renderLayer -n "defaultRenderLayer1";
 	rename -uid "6904B8B9-44D8-89A6-F9F7-CFAB4708A9BB";
 	setAttr ".g" yes;
 createNode shapeEditorManager -n "shapeEditorManager3";
-	rename -uid "283424B8-4840-B936-A0E4-DD93A894527C";
+	rename -uid "A957A405-4767-EC1E-31BF-8C8A8EF9D102";
 createNode poseInterpolatorManager -n "poseInterpolatorManager3";
-	rename -uid "D435FC86-4A2E-1B5C-E98D-C0A79F387D5A";
+	rename -uid "96F29E58-4C14-B2CE-8E66-DA85AE470F5F";
 createNode renderLayerManager -n "renderLayerManager2";
 	rename -uid "2204E19E-4CC0-AAF8-3205-5FA0D67F8C04";
 createNode renderLayer -n "defaultRenderLayer2";
@@ -953,7 +939,7 @@ createNode VRaySettingsNode -s -n "vraySettings";
 		 1667196782 1801676136 975332453 1936482662 1931619429 1701995892 1685015919 1634885477 577726820 741881658 1702130466 1299146098
 		 1600480367 1667590243 577004907 1818322490 2105369971 ;
 	setAttr ".vfbSyncM" yes;
-	setAttr ".mSceneName" -type "string" "D:/Code/MayaCode/autoRig/guide_rigs/guide_biped_chest.ma";
+	setAttr ".mSceneName" -type "string" "D:/Code/MayaCode/autoRig/guide_rigs/guide_quad_root.ma";
 	setAttr ".rt_cpuRayBundleSize" 4;
 	setAttr ".rt_gpuRayBundleSize" 128;
 	setAttr ".rt_maxPaths" 10000;
@@ -965,14 +951,14 @@ createNode script -n "uiConfigurationScriptNode";
 		"// Maya Mel UI Configuration File.\n//\n//  This script is machine generated.  Edit at your own risk.\n//\n//\n\nglobal string $gMainPane;\nif (`paneLayout -exists $gMainPane`) {\n\n\tglobal int $gUseScenePanelConfig;\n\tint    $useSceneConfig = $gUseScenePanelConfig;\n\tint    $nodeEditorPanelVisible = stringArrayContains(\"nodeEditorPanel1\", `getPanel -vis`);\n\tint    $nodeEditorWorkspaceControlOpen = (`workspaceControl -exists nodeEditorPanel1Window` && `workspaceControl -q -visible nodeEditorPanel1Window`);\n\tint    $menusOkayInPanels = `optionVar -q allowMenusInPanels`;\n\tint    $nVisPanes = `paneLayout -q -nvp $gMainPane`;\n\tint    $nPanes = 0;\n\tstring $editorName;\n\tstring $panelName;\n\tstring $itemFilterName;\n\tstring $panelConfig;\n\n\t//\n\t//  get current state of the UI\n\t//\n\tsceneUIReplacement -update $gMainPane;\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"modelPanel\" (localizedPanelLabel(\"Top View\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\tmodelPanel -edit -l (localizedPanelLabel(\"Top View\")) -mbv $menusOkayInPanels  $panelName;\n"
 		+ "\t\t$editorName = $panelName;\n        modelEditor -e \n            -camera \"|top\" \n            -useInteractiveMode 0\n            -displayLights \"default\" \n            -displayAppearance \"smoothShaded\" \n            -activeOnly 0\n            -ignorePanZoom 0\n            -wireframeOnShaded 0\n            -headsUpDisplay 1\n            -holdOuts 1\n            -selectionHiliteDisplay 1\n            -useDefaultMaterial 0\n            -bufferMode \"double\" \n            -twoSidedLighting 0\n            -backfaceCulling 0\n            -xray 0\n            -jointXray 0\n            -activeComponentsXray 0\n            -displayTextures 0\n            -smoothWireframe 0\n            -lineWidth 1\n            -textureAnisotropic 0\n            -textureHilight 1\n            -textureSampling 2\n            -textureDisplay \"modulate\" \n            -textureMaxSize 32768\n            -fogging 0\n            -fogSource \"fragment\" \n            -fogMode \"linear\" \n            -fogStart 0\n            -fogEnd 100\n            -fogDensity 0.1\n            -fogColor 0.5 0.5 0.5 1 \n"
 		+ "            -depthOfFieldPreview 1\n            -maxConstantTransparency 1\n            -rendererName \"vp2Renderer\" \n            -objectFilterShowInHUD 1\n            -isFiltered 0\n            -colorResolution 256 256 \n            -bumpResolution 512 512 \n            -textureCompression 0\n            -transparencyAlgorithm \"frontAndBackCull\" \n            -transpInShadows 0\n            -cullingOverride \"none\" \n            -lowQualityLighting 0\n            -maximumNumHardwareLights 1\n            -occlusionCulling 0\n            -shadingModel 0\n            -useBaseRenderer 0\n            -useReducedRenderer 0\n            -smallObjectCulling 0\n            -smallObjectThreshold -1 \n            -interactiveDisableShadows 0\n            -interactiveBackFaceCull 0\n            -sortTransparent 1\n            -controllers 1\n            -nurbsCurves 1\n            -nurbsSurfaces 1\n            -polymeshes 1\n            -subdivSurfaces 1\n            -planes 1\n            -lights 1\n            -cameras 1\n            -controlVertices 1\n"
-		+ "            -hulls 1\n            -grid 1\n            -imagePlane 1\n            -joints 1\n            -ikHandles 1\n            -deformers 1\n            -dynamics 1\n            -particleInstancers 1\n            -fluids 1\n            -hairSystems 1\n            -follicles 1\n            -nCloths 1\n            -nParticles 1\n            -nRigids 1\n            -dynamicConstraints 1\n            -locators 1\n            -manipulators 1\n            -pluginShapes 1\n            -dimensions 1\n            -handles 1\n            -pivots 1\n            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 1\n            -height 1\n            -sceneRenderFilter 0\n            $editorName;\n        modelEditor -e -viewSelected 0 $editorName;\n        modelEditor -e \n            -pluginObjects \"gpuCacheDisplayFilter\" 1 \n            $editorName;\n\t\tif (!$useSceneConfig) {\n\t\t\tpanel -e -l $label $panelName;\n"
+		+ "            -hulls 1\n            -grid 1\n            -imagePlane 1\n            -joints 1\n            -ikHandles 1\n            -deformers 1\n            -dynamics 1\n            -particleInstancers 1\n            -fluids 1\n            -hairSystems 1\n            -follicles 1\n            -nCloths 1\n            -nParticles 1\n            -nRigids 1\n            -dynamicConstraints 1\n            -locators 1\n            -manipulators 1\n            -pluginShapes 1\n            -dimensions 1\n            -handles 1\n            -pivots 1\n            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 936\n            -height 524\n            -sceneRenderFilter 0\n            $editorName;\n        modelEditor -e -viewSelected 0 $editorName;\n        modelEditor -e \n            -pluginObjects \"gpuCacheDisplayFilter\" 1 \n            $editorName;\n\t\tif (!$useSceneConfig) {\n\t\t\tpanel -e -l $label $panelName;\n"
 		+ "\t\t}\n\t}\n\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"modelPanel\" (localizedPanelLabel(\"Side View\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\tmodelPanel -edit -l (localizedPanelLabel(\"Side View\")) -mbv $menusOkayInPanels  $panelName;\n\t\t$editorName = $panelName;\n        modelEditor -e \n            -camera \"|side\" \n            -useInteractiveMode 0\n            -displayLights \"default\" \n            -displayAppearance \"smoothShaded\" \n            -activeOnly 0\n            -ignorePanZoom 0\n            -wireframeOnShaded 0\n            -headsUpDisplay 1\n            -holdOuts 1\n            -selectionHiliteDisplay 1\n            -useDefaultMaterial 0\n            -bufferMode \"double\" \n            -twoSidedLighting 0\n            -backfaceCulling 0\n            -xray 0\n            -jointXray 0\n            -activeComponentsXray 0\n            -displayTextures 0\n            -smoothWireframe 0\n            -lineWidth 1\n            -textureAnisotropic 0\n            -textureHilight 1\n            -textureSampling 2\n"
 		+ "            -textureDisplay \"modulate\" \n            -textureMaxSize 32768\n            -fogging 0\n            -fogSource \"fragment\" \n            -fogMode \"linear\" \n            -fogStart 0\n            -fogEnd 100\n            -fogDensity 0.1\n            -fogColor 0.5 0.5 0.5 1 \n            -depthOfFieldPreview 1\n            -maxConstantTransparency 1\n            -rendererName \"vp2Renderer\" \n            -objectFilterShowInHUD 1\n            -isFiltered 0\n            -colorResolution 256 256 \n            -bumpResolution 512 512 \n            -textureCompression 0\n            -transparencyAlgorithm \"frontAndBackCull\" \n            -transpInShadows 0\n            -cullingOverride \"none\" \n            -lowQualityLighting 0\n            -maximumNumHardwareLights 1\n            -occlusionCulling 0\n            -shadingModel 0\n            -useBaseRenderer 0\n            -useReducedRenderer 0\n            -smallObjectCulling 0\n            -smallObjectThreshold -1 \n            -interactiveDisableShadows 0\n            -interactiveBackFaceCull 0\n"
-		+ "            -sortTransparent 1\n            -controllers 1\n            -nurbsCurves 1\n            -nurbsSurfaces 1\n            -polymeshes 1\n            -subdivSurfaces 1\n            -planes 1\n            -lights 1\n            -cameras 1\n            -controlVertices 1\n            -hulls 1\n            -grid 1\n            -imagePlane 1\n            -joints 1\n            -ikHandles 1\n            -deformers 1\n            -dynamics 1\n            -particleInstancers 1\n            -fluids 1\n            -hairSystems 1\n            -follicles 1\n            -nCloths 1\n            -nParticles 1\n            -nRigids 1\n            -dynamicConstraints 1\n            -locators 1\n            -manipulators 1\n            -pluginShapes 1\n            -dimensions 1\n            -handles 1\n            -pivots 1\n            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 1\n            -height 1\n"
+		+ "            -sortTransparent 1\n            -controllers 1\n            -nurbsCurves 1\n            -nurbsSurfaces 1\n            -polymeshes 1\n            -subdivSurfaces 1\n            -planes 1\n            -lights 1\n            -cameras 1\n            -controlVertices 1\n            -hulls 1\n            -grid 1\n            -imagePlane 1\n            -joints 1\n            -ikHandles 1\n            -deformers 1\n            -dynamics 1\n            -particleInstancers 1\n            -fluids 1\n            -hairSystems 1\n            -follicles 1\n            -nCloths 1\n            -nParticles 1\n            -nRigids 1\n            -dynamicConstraints 1\n            -locators 1\n            -manipulators 1\n            -pluginShapes 1\n            -dimensions 1\n            -handles 1\n            -pivots 1\n            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 935\n            -height 524\n"
 		+ "            -sceneRenderFilter 0\n            $editorName;\n        modelEditor -e -viewSelected 0 $editorName;\n        modelEditor -e \n            -pluginObjects \"gpuCacheDisplayFilter\" 1 \n            $editorName;\n\t\tif (!$useSceneConfig) {\n\t\t\tpanel -e -l $label $panelName;\n\t\t}\n\t}\n\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"modelPanel\" (localizedPanelLabel(\"Front View\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\tmodelPanel -edit -l (localizedPanelLabel(\"Front View\")) -mbv $menusOkayInPanels  $panelName;\n\t\t$editorName = $panelName;\n        modelEditor -e \n            -camera \"|front\" \n            -useInteractiveMode 0\n            -displayLights \"default\" \n            -displayAppearance \"smoothShaded\" \n            -activeOnly 0\n            -ignorePanZoom 0\n            -wireframeOnShaded 0\n            -headsUpDisplay 1\n            -holdOuts 1\n            -selectionHiliteDisplay 1\n            -useDefaultMaterial 0\n            -bufferMode \"double\" \n            -twoSidedLighting 0\n            -backfaceCulling 0\n"
 		+ "            -xray 0\n            -jointXray 0\n            -activeComponentsXray 0\n            -displayTextures 0\n            -smoothWireframe 0\n            -lineWidth 1\n            -textureAnisotropic 0\n            -textureHilight 1\n            -textureSampling 2\n            -textureDisplay \"modulate\" \n            -textureMaxSize 32768\n            -fogging 0\n            -fogSource \"fragment\" \n            -fogMode \"linear\" \n            -fogStart 0\n            -fogEnd 100\n            -fogDensity 0.1\n            -fogColor 0.5 0.5 0.5 1 \n            -depthOfFieldPreview 1\n            -maxConstantTransparency 1\n            -rendererName \"vp2Renderer\" \n            -objectFilterShowInHUD 1\n            -isFiltered 0\n            -colorResolution 256 256 \n            -bumpResolution 512 512 \n            -textureCompression 0\n            -transparencyAlgorithm \"frontAndBackCull\" \n            -transpInShadows 0\n            -cullingOverride \"none\" \n            -lowQualityLighting 0\n            -maximumNumHardwareLights 1\n            -occlusionCulling 0\n"
 		+ "            -shadingModel 0\n            -useBaseRenderer 0\n            -useReducedRenderer 0\n            -smallObjectCulling 0\n            -smallObjectThreshold -1 \n            -interactiveDisableShadows 0\n            -interactiveBackFaceCull 0\n            -sortTransparent 1\n            -controllers 1\n            -nurbsCurves 1\n            -nurbsSurfaces 1\n            -polymeshes 1\n            -subdivSurfaces 1\n            -planes 1\n            -lights 1\n            -cameras 1\n            -controlVertices 1\n            -hulls 1\n            -grid 1\n            -imagePlane 1\n            -joints 1\n            -ikHandles 1\n            -deformers 1\n            -dynamics 1\n            -particleInstancers 1\n            -fluids 1\n            -hairSystems 1\n            -follicles 1\n            -nCloths 1\n            -nParticles 1\n            -nRigids 1\n            -dynamicConstraints 1\n            -locators 1\n            -manipulators 1\n            -pluginShapes 1\n            -dimensions 1\n            -handles 1\n            -pivots 1\n"
-		+ "            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 1\n            -height 1\n            -sceneRenderFilter 0\n            $editorName;\n        modelEditor -e -viewSelected 0 $editorName;\n        modelEditor -e \n            -pluginObjects \"gpuCacheDisplayFilter\" 1 \n            $editorName;\n\t\tif (!$useSceneConfig) {\n\t\t\tpanel -e -l $label $panelName;\n\t\t}\n\t}\n\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"modelPanel\" (localizedPanelLabel(\"Persp View\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\tmodelPanel -edit -l (localizedPanelLabel(\"Persp View\")) -mbv $menusOkayInPanels  $panelName;\n\t\t$editorName = $panelName;\n        modelEditor -e \n            -camera \"|persp\" \n            -useInteractiveMode 0\n            -displayLights \"default\" \n            -displayAppearance \"smoothShaded\" \n            -activeOnly 0\n            -ignorePanZoom 0\n"
+		+ "            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 936\n            -height 524\n            -sceneRenderFilter 0\n            $editorName;\n        modelEditor -e -viewSelected 0 $editorName;\n        modelEditor -e \n            -pluginObjects \"gpuCacheDisplayFilter\" 1 \n            $editorName;\n\t\tif (!$useSceneConfig) {\n\t\t\tpanel -e -l $label $panelName;\n\t\t}\n\t}\n\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"modelPanel\" (localizedPanelLabel(\"Persp View\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\tmodelPanel -edit -l (localizedPanelLabel(\"Persp View\")) -mbv $menusOkayInPanels  $panelName;\n\t\t$editorName = $panelName;\n        modelEditor -e \n            -camera \"|persp\" \n            -useInteractiveMode 0\n            -displayLights \"default\" \n            -displayAppearance \"smoothShaded\" \n            -activeOnly 0\n            -ignorePanZoom 0\n"
 		+ "            -wireframeOnShaded 0\n            -headsUpDisplay 1\n            -holdOuts 1\n            -selectionHiliteDisplay 1\n            -useDefaultMaterial 0\n            -bufferMode \"double\" \n            -twoSidedLighting 0\n            -backfaceCulling 0\n            -xray 0\n            -jointXray 0\n            -activeComponentsXray 0\n            -displayTextures 0\n            -smoothWireframe 0\n            -lineWidth 1\n            -textureAnisotropic 0\n            -textureHilight 1\n            -textureSampling 2\n            -textureDisplay \"modulate\" \n            -textureMaxSize 32768\n            -fogging 0\n            -fogSource \"fragment\" \n            -fogMode \"linear\" \n            -fogStart 0\n            -fogEnd 100\n            -fogDensity 0.1\n            -fogColor 0.5 0.5 0.5 1 \n            -depthOfFieldPreview 1\n            -maxConstantTransparency 1\n            -rendererName \"vp2Renderer\" \n            -objectFilterShowInHUD 1\n            -isFiltered 0\n            -colorResolution 256 256 \n            -bumpResolution 512 512 \n"
 		+ "            -textureCompression 0\n            -transparencyAlgorithm \"frontAndBackCull\" \n            -transpInShadows 0\n            -cullingOverride \"none\" \n            -lowQualityLighting 0\n            -maximumNumHardwareLights 1\n            -occlusionCulling 0\n            -shadingModel 0\n            -useBaseRenderer 0\n            -useReducedRenderer 0\n            -smallObjectCulling 0\n            -smallObjectThreshold -1 \n            -interactiveDisableShadows 0\n            -interactiveBackFaceCull 0\n            -sortTransparent 1\n            -controllers 1\n            -nurbsCurves 1\n            -nurbsSurfaces 1\n            -polymeshes 1\n            -subdivSurfaces 1\n            -planes 1\n            -lights 1\n            -cameras 1\n            -controlVertices 1\n            -hulls 1\n            -grid 1\n            -imagePlane 1\n            -joints 1\n            -ikHandles 1\n            -deformers 1\n            -dynamics 1\n            -particleInstancers 1\n            -fluids 1\n            -hairSystems 1\n            -follicles 1\n"
 		+ "            -nCloths 1\n            -nParticles 1\n            -nRigids 1\n            -dynamicConstraints 1\n            -locators 1\n            -manipulators 1\n            -pluginShapes 1\n            -dimensions 1\n            -handles 1\n            -pivots 1\n            -textures 1\n            -strokes 1\n            -motionTrails 1\n            -clipGhosts 1\n            -greasePencils 1\n            -shadows 0\n            -captureSequenceNumber -1\n            -width 1678\n            -height 1092\n            -sceneRenderFilter 0\n            $editorName;\n        modelEditor -e -viewSelected 0 $editorName;\n        modelEditor -e \n            -pluginObjects \"gpuCacheDisplayFilter\" 1 \n            $editorName;\n\t\tif (!$useSceneConfig) {\n\t\t\tpanel -e -l $label $panelName;\n\t\t}\n\t}\n\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"outlinerPanel\" (localizedPanelLabel(\"ToggledOutliner\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\toutlinerPanel -edit -l (localizedPanelLabel(\"ToggledOutliner\")) -mbv $menusOkayInPanels  $panelName;\n"
@@ -1399,9 +1385,12 @@ connectAttr "chest_loc.rpt" "splne1_loc_Grp_pointConstraint1.tg[1].trt";
 connectAttr "chest_loc.pm" "splne1_loc_Grp_pointConstraint1.tg[1].tpm";
 connectAttr "splne1_loc_Grp_pointConstraint1.w1" "splne1_loc_Grp_pointConstraint1.tg[1].tw"
 		;
-connectAttr "neckRoot_loc_Grp_pointConstraint1.ctx" "neckRoot_loc_Grp.tx";
-connectAttr "neckRoot_loc_Grp_pointConstraint1.cty" "neckRoot_loc_Grp.ty";
-connectAttr "neckRoot_loc_Grp_pointConstraint1.ctz" "neckRoot_loc_Grp.tz";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.ctx" "neckRoot_loc_Grp.tx";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.cty" "neckRoot_loc_Grp.ty";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.ctz" "neckRoot_loc_Grp.tz";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.crx" "neckRoot_loc_Grp.rx";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.cry" "neckRoot_loc_Grp.ry";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.crz" "neckRoot_loc_Grp.rz";
 connectAttr "neckRootExtra_loc_Grp_pointConstraint1.ctx" "neckRootExtra_loc_Grp.tx"
 		;
 connectAttr "neckRootExtra_loc_Grp_pointConstraint1.cty" "neckRootExtra_loc_Grp.ty"
@@ -1486,14 +1475,18 @@ connectAttr "neckEnd_loc.rpt" "neck_loc_Grp_pointConstraint1.tg[1].trt";
 connectAttr "neckEnd_loc.pm" "neck_loc_Grp_pointConstraint1.tg[1].tpm";
 connectAttr "neck_loc_Grp_pointConstraint1.w1" "neck_loc_Grp_pointConstraint1.tg[1].tw"
 		;
-connectAttr "neckRoot_loc_Grp.pim" "neckRoot_loc_Grp_pointConstraint1.cpim";
-connectAttr "neckRoot_loc_Grp.rp" "neckRoot_loc_Grp_pointConstraint1.crp";
-connectAttr "neckRoot_loc_Grp.rpt" "neckRoot_loc_Grp_pointConstraint1.crt";
-connectAttr "chest_loc.t" "neckRoot_loc_Grp_pointConstraint1.tg[0].tt";
-connectAttr "chest_loc.rp" "neckRoot_loc_Grp_pointConstraint1.tg[0].trp";
-connectAttr "chest_loc.rpt" "neckRoot_loc_Grp_pointConstraint1.tg[0].trt";
-connectAttr "chest_loc.pm" "neckRoot_loc_Grp_pointConstraint1.tg[0].tpm";
-connectAttr "neckRoot_loc_Grp_pointConstraint1.w0" "neckRoot_loc_Grp_pointConstraint1.tg[0].tw"
+connectAttr "neckRoot_loc_Grp.ro" "neckRoot_loc_Grp_parentConstraint1.cro";
+connectAttr "neckRoot_loc_Grp.pim" "neckRoot_loc_Grp_parentConstraint1.cpim";
+connectAttr "neckRoot_loc_Grp.rp" "neckRoot_loc_Grp_parentConstraint1.crp";
+connectAttr "neckRoot_loc_Grp.rpt" "neckRoot_loc_Grp_parentConstraint1.crt";
+connectAttr "chest_loc.t" "neckRoot_loc_Grp_parentConstraint1.tg[0].tt";
+connectAttr "chest_loc.rp" "neckRoot_loc_Grp_parentConstraint1.tg[0].trp";
+connectAttr "chest_loc.rpt" "neckRoot_loc_Grp_parentConstraint1.tg[0].trt";
+connectAttr "chest_loc.r" "neckRoot_loc_Grp_parentConstraint1.tg[0].tr";
+connectAttr "chest_loc.ro" "neckRoot_loc_Grp_parentConstraint1.tg[0].tro";
+connectAttr "chest_loc.s" "neckRoot_loc_Grp_parentConstraint1.tg[0].ts";
+connectAttr "chest_loc.pm" "neckRoot_loc_Grp_parentConstraint1.tg[0].tpm";
+connectAttr "neckRoot_loc_Grp_parentConstraint1.w0" "neckRoot_loc_Grp_parentConstraint1.tg[0].tw"
 		;
 connectAttr "chestExtra_loc_Grp_pointConstraint1.ctx" "chestExtra_loc_Grp.tx";
 connectAttr "chestExtra_loc_Grp_pointConstraint1.cty" "chestExtra_loc_Grp.ty";
@@ -1557,10 +1550,10 @@ connectAttr "renderLayerManager2.rlmi[0]" "defaultRenderLayer2.rlid";
 connectAttr "defaultRenderLayer.msg" ":defaultRenderingList1.r" -na;
 connectAttr "defaultRenderLayer1.msg" ":defaultRenderingList1.r" -na;
 connectAttr "defaultRenderLayer2.msg" ":defaultRenderingList1.r" -na;
-dataStructure -fmt "raw" -as "name=faceConnectMarkerStructure:bool=faceConnectMarker:string[200]=faceConnectOutputGroups";
-dataStructure -fmt "raw" -as "name=externalContentTablZ:string=nodZ:string=key:string=upath:uint32=upathcrc:string=rpath:string=roles";
-dataStructure -fmt "raw" -as "name=faceConnectOutputStructure:bool=faceConnectOutput:string[200]=faceConnectOutputAttributes:string[200]=faceConnectOutputGroups";
-dataStructure -fmt "raw" -as "name=FBXFastExportSetting_FBX:string=54";
-dataStructure -fmt "raw" -as "name=FBXFastExportSetting_MB:string=19424";
 dataStructure -fmt "raw" -as "name=idStructure:int32=ID";
-// End of guide_biped_chest.ma
+dataStructure -fmt "raw" -as "name=externalContentTablZ:string=nodZ:string=key:string=upath:uint32=upathcrc:string=rpath:string=roles";
+dataStructure -fmt "raw" -as "name=FBXFastExportSetting_FBX:string=54";
+dataStructure -fmt "raw" -as "name=faceConnectMarkerStructure:bool=faceConnectMarker:string[200]=faceConnectOutputGroups";
+dataStructure -fmt "raw" -as "name=FBXFastExportSetting_MB:string=19424";
+dataStructure -fmt "raw" -as "name=faceConnectOutputStructure:bool=faceConnectOutput:string[200]=faceConnectOutputAttributes:string[200]=faceConnectOutputGroups";
+// End of guide_quad_root.ma

@@ -5,24 +5,6 @@ import maya.mel as mel
 import os,sys
 
 
-def pathAppend(log = True):
-    # __file__ 현재 작업중인 파일 위치
-    #os.path.dirname (경로)의 메인폴더 위치
-    st = u"-----"*2 + "{}" + u"-----"*2 +"\n"
-    st = st.format("pathAppend")
-    CurrentDir = os.path.dirname(os.path.abspath(__file__))
-    if not CurrentDir in sys.path:
-        sys.path.append(CurrentDir)
-        st+= u">> sys.path 등록 : {}\n".format(CurrentDir)
-    else:
-        st+= u">> sys.path 이미등록됨 : {}\n".format(CurrentDir)
-
-    if log:
-        print (st)
-
-pathAppend(False)
-
-
 def isDag(node_name):
     '''
     주어진 노드가 DAG(Directed Acyclic Graph) 노드인지, 즉 씬 뷰에 존재하는 오브젝트인지 판별합니다.
@@ -405,7 +387,7 @@ def rebuild_existingCurve(curve, spans=None, degree=None, keepEnd=True, keepRang
     """
     이미 존재하는 curve를 rebuild한다.
     원본 curve를 직접 수정한다.
-
+    CV 적절한 개수 = spans + degree
     keepRange:
         0 = 0 to 1
         1 = original
