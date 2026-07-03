@@ -51,7 +51,7 @@ def guideDetailTemplate():
 def setTags(item , dts ={ "rig_side" : "" , "rig_type" : ""  , "rig_part" : "" , "rig_role" : "" , "rig_data" : "" , "rig_boneType" : ""} ):
     returnDt = {}
     for attrName, stringName in dts.items():
-        attr = controlAttribute.addStringattr(item, attrName, stringName)
+        attr = controlAttribute.addStringAttr(item, attrName, stringName)
         # 키를 어트리뷰트 이름으로 하여 모든 경로를 저장
         returnDt[attrName] = attr 
     return returnDt
@@ -372,9 +372,6 @@ class guideCombine():
             cmds.delete(isConstraint)
         cmds.parentConstraint(self.RightHandPoint , item ,mo =1)
 
-
-
-
     def parentRigGroup(self , item ):
         if not cmds.objExists(item):
             return
@@ -434,6 +431,9 @@ class guideCombine():
             if not key:
                 return False
         return True
+    def _matchPoint(self , matchItem , destnationItem):
+        cmds.matchTransform(matchItem , destnationItem , pos =1 , rot =0 , scl= 0)
+
     
         
 def findKeyValues(dt, targetKey, results=None):

@@ -22,85 +22,103 @@ def pathAppend(log = True):
         print (st)
 
 pathAppend(False)
-import naming , controlObject
+import controlObject
 
 
 class jointCreater():
+    '''
+    두 지점(오브젝트 또는 좌표)을 기반으로 방향 벡터를 계산하고, 
+    원하는 비율(parameter) 위치에 조인트를 생성하는 클래스입니다.
+    '''
     def __init__(self):
-        self.string_type = None
-        try:
-            self.string_type = basestring
-        except NameError:
-            self.string_type = str
-
+        self.string_type = basestring if "basestring" in globals() else str
         self.startVector = None
         self.endVector = None
         self.distance = None
 
+    def setStartEndVector(self, startPoint_or_object, endPoint_or_object):
+        '''
+        조인트를 생성할 기준이 되는 시작점과 끝점을 설정합니다.
 
-    def setStartEndVector(self , startPoint_or_object , endPoint_or_object):
+        Args:
+            startPoint_or_object (str or tuple): 시작 오브젝트 이름 또는 (x, y, z) 좌표.
+            endPoint_or_object (str or tuple): 끝 오브젝트 이름 또는 (x, y, z) 좌표.
+
+        Example:
+            >>> jc = jointCreater()
+            >>> jc.setStartEndVector("loc_start", "loc_end")
+        '''
         startPoint = self._defineData(startPoint_or_object)
         endPoint = self._defineData(endPoint_or_object)
 
         if not startPoint or not endPoint:
-            raise ValueError(u"startPoint 또는 endPoint가 유효하지 않습니다. 입력값: {}, {}".format(startPoint_or_object, endPoint_or_object))
+            raise ValueError(u"startPoint 또는 endPoint가 유효하지 않습니다.")
 
         self.startVector = om.MVector(*startPoint)
         self.endVector = om.MVector(*endPoint)
 
-    def getParameter(self , param):
+    def getParameter(self, param):
+        '''
+        시작점과 끝점 사이의 특정 비율(param)에 해당하는 공간 좌표를 계산합니다.
+
+        Args:
+            param (float): 0.0(시작점) ~ 1.0(끝점) 사이의 비율 값.
+
+        Returns:
+            om.MVector: 계산된 3D 공간 좌표 벡터.
+        '''
         if self.startVector is None or self.endVector is None:
             raise ValueError(u"startVector 또는 endVector가 정의되지 않았습니다.")
-        try:
-            param = float(param)
-        except:
-            raise ValueError(u"param은 숫자여야 합니다. 입력값: {}".format(param))
         
         diffVector = self.endVector - self.startVector
-        resultVector = self.startVector + (diffVector * param)
+        resultVector = self.startVector + (diffVector * float(param))
         return resultVector
     
-    def createJointByParam(self , param , jointName = None , offsetGroupName = None ,parentPoint = None  ):
+    def createJointByParam(self, param, jointName=None, offsetGroupName=None, parentPoint=None):
+        '''
+        계산된 비율 위치에 실제 조인트(및 옵션으로 오프셋 그룹)를 생성합니다.
 
+        Args:
+            param (float): 조인트를 생성할 0.0 ~ 1.0 사이의 위치 비율.
+            jointName (str, optional): 생성할 조인트의 이름.
+            offsetGroupName (str, optional): 조인트를 감쌀 오프셋 그룹의 이름.
+            parentPoint (str, optional): 생성된 노드를 페어런트할 부모 노드 이름.
+
+        Returns:
+            tuple: (생성된 조인트 노드, 오프셋 그룹 노드(없으면 None))
+        '''
         pointVector = self.getParameter(param)
-        jointFlag = {}
-        offsetGroupFlag = {}
+        jointFlag = {"n": naming.uniqueName(jointName)} if jointName else {}
+        offsetGroupFlag = {"n": naming.uniqueName(offsetGroupName)} if offsetGroupName else {}
 
-        if jointName and isinstance(jointName , self.string_type):
-            jointFlag["n"] = naming.uniqueName(jointName)
-        if offsetGroupName and isinstance(offsetGroupName , self.string_type):
-            offsetGroupFlag["n"] = naming.uniqueName(offsetGroupName)
-
-        controlTarget = None
-        offsetGroup = None
-        cmds.select(cl =1)
+        cmds.select(cl=1)
         createJnt = cmds.joint(**jointFlag)
         controlTarget = createJnt
-        if offsetGroupFlag:
-            offsetGroup = cmds.createNode("transform" , **offsetGroupFlag)
-            controlTarget = offsetGroup
-            cmds.parent(createJnt ,controlTarget )
+        offsetGroup = None
 
-        cmds.xform(controlTarget , ws= 1, t= [pointVector.x , pointVector.y , pointVector.z])
+        if offsetGroupFlag:
+            offsetGroup = cmds.createNode("transform", **offsetGroupFlag)
+            controlTarget = offsetGroup
+            cmds.parent(createJnt, controlTarget)
+
+        cmds.xform(controlTarget, ws=1, t=[pointVector.x, pointVector.y, pointVector.z])
         cmds.select(createJnt)
 
         if parentPoint and cmds.objExists(parentPoint):
-            cmds.parent(controlTarget , parentPoint)
-        return createJnt , offsetGroup
-
+            cmds.parent(controlTarget, parentPoint)
+        return createJnt, offsetGroup
 
     def _defineData(self, item):
+        # 내부 헬퍼: 입력값이 오브젝트인지 좌표 튜플인지 판별하여 좌표 반환
         returnPoint = None
-        if isinstance(item , self.string_type) and cmds.objExists(item):
-            returnPoint =  cmds.xform(item , q =1 , ws =1 , t =1)
+        if isinstance(item, self.string_type) and cmds.objExists(item):
+            returnPoint = cmds.xform(item, q=1, ws=1, t=1)
             if all(x == 0 for x in returnPoint):
-                returnPoint = cmds.xform(item , q =1 , ws =1 , rp =1)
+                returnPoint = cmds.xform(item, q=1, ws=1, rp=1)
             return returnPoint
-        if isinstance(item , (list , tuple)) and len(item) == 3 and all(isinstance(x , (int , float)) for x in item):
-            returnPoint = item
-            return returnPoint
+        if isinstance(item, (list, tuple)) and len(item) == 3:
+            return item
         return returnPoint
-
 
 
 
@@ -584,6 +602,269 @@ class jointInserter():
         
         return insertParentJnt, insertChildJnt, closestDistance
 
+class pocifManager():
+    '''
+    NURBS 커브 위의 특정 지점(Parameter) 정보를 추출하는 'pointOnCurveInfo' 노드를 
+    생성, 수정, 연결 및 관리하기 위한 전용 매니저 클래스입니다.
+    '''
+    def __init__(self, curve=None):
+        '''
+        클래스를 초기화하며, 작업의 기준이 될 NURBS 커브를 미리 지정할 수 있습니다.
+
+        Args:
+            curve (str, optional): 기준이 될 NURBS 커브의 트랜스폼 또는 쉐잎 이름.
+        '''
+        try:
+            self.string_type = basestring
+        except NameError:
+            self.string_type = str
+        self.curveShape = None
+
+        if curve:
+            self.curveShape = self._defineCurve(curve)
+
+    def create_pocif(self, name=None, curve=None, param=0, TurnOnPercentage=True):
+        '''
+        새로운 'pointOnCurveInfo' 노드를 생성하고 파라미터 및 커브 연결을 설정합니다.
+
+        Args:
+            name (str, optional): 생성할 pointOnCurveInfo 노드의 이름.
+            curve (str, optional): 연결할 타겟 커브 이름. 지정하지 않으면 __init__에서 설정한 커브를 사용합니다.
+            param (float, optional): 커브 위의 위치를 나타내는 파라미터 값. 기본값은 0.
+            TurnOnPercentage (bool, optional): 파라미터를 0.0 ~ 1.0 사이의 백분율로 계산할지 여부. 기본값은 True.
+
+        Returns:
+            tuple: (생성된 pocif 노드 이름, 해당 노드의 초기 연결 데이터(dict))
+
+        Raises:
+            ValueError: param 또는 TurnOnPercentage의 타입이 잘못되었을 때.
+        '''
+        pocifDict = {}
+        curveShape = None
+        if isinstance(param, bool) or not isinstance(param, (int, float)):
+            raise ValueError(u"create_pocif 에러 : param는 int, float 만 허용됩니다.")
+        if not isinstance(TurnOnPercentage, bool):
+            raise ValueError(u"create_pocif 에러 : TurnOnPercentage는 bool 만 허용됩니다.")
+
+        if isinstance(name, self.string_type):
+            pocifDict["n"] = name
+        
+        if self.curveShape and curve is None:
+            curveShape = self.curveShape
+        if curve:
+            curveShape = self._defineCurve(curve)
+
+        pocif = cmds.createNode('pointOnCurveInfo', **pocifDict)
+        cmds.setAttr("{}.turnOnPercentage".format(pocif), TurnOnPercentage)
+        cmds.setAttr("{}.parameter".format(pocif), param)
+
+        if curveShape:
+            cmds.connectAttr("{}.worldSpace[0]".format(curveShape), "{}.inputCurve".format(pocif), f=True)
+        attrData = self.get_pocifConnectionData(pocif)
+        return pocif, attrData
+
+
+    def edit_pocifOption(self, pocifNode, param=0, TurnOnPercentage=True):
+        '''
+        이미 존재하는 pointOnCurveInfo 노드의 파라미터(Parameter) 속성을 수정합니다.
+
+        Args:
+            pocifNode (str): 수정할 pointOnCurveInfo 노드 이름.
+            param (float, optional): 변경할 파라미터 수치. 기본값은 0.
+            TurnOnPercentage (bool, optional): 백분율 모드 켜기/끄기. 기본값은 True.
+
+        Returns:
+            dict: {"parameter": param, "turnOnPercentage": TurnOnPercentage} 형태의 적용된 데이터.
+        '''
+        if not cmds.objExists(pocifNode):
+            raise ValueError(u"edit_pocifOption 에러 : {} 노드가 존재하지 않습니다.".format(pocifNode))
+        if not cmds.nodeType(pocifNode) == 'pointOnCurveInfo':
+            raise ValueError(u"edit_pocifOption 에려 : {}는 pointOnCurveInfo 노드가 아닙니다.".format(pocifNode))
+        if isinstance(param, bool) or not isinstance(param, (int, float)):
+            raise ValueError(u"_createPocif 에러 : param는 int, float 만 허용됩니다.")
+        if not isinstance(TurnOnPercentage, bool):
+            raise ValueError(u"_createPocif 에러 : TurnOnPercentage는 bool 만 허용됩니다.")
+        
+        cmds.setAttr(pocifNode + ".parameter", param)
+        cmds.setAttr(pocifNode + ".turnOnPercentage", TurnOnPercentage)
+        attrDict = {"parameter": param, "turnOnPercentage": TurnOnPercentage}
+        return attrDict
+    
+    def edit_pocifConnection(self, pocifNode, sourceCntData=None, destinationCntData=None):
+        '''
+        pointOnCurveInfo 노드의 입력(Source) 및 출력(Destination) 연결을 일괄적으로 끊거나 새로 연결합니다.
+
+        Args:
+            pocifNode (str): 수정할 pointOnCurveInfo 노드 이름.
+            sourceCntData (dict, optional): 외부에서 노드로 들어오는(Input) 연결 정보 딕셔너리.
+                예: {"inputCurve": ["curveShape1.worldSpace[0]"]}
+            destinationCntData (dict, optional): 노드에서 외부로 나가는(Output) 연결 정보 딕셔너리.
+                예: {"position": ["locator1.translate"]}
+
+        Returns:
+            tuple: (pocifNode 이름, 처리된 소스/데스티네이션 데이터 dict)
+        '''
+        if not cmds.objExists(pocifNode):
+            raise ValueError(u"edit_pocifConnection 에러 : {} 노드가 존재하지 않습니다.".format(pocifNode))
+
+        if not cmds.nodeType(pocifNode) == 'pointOnCurveInfo':
+            raise ValueError(u"edit_pocifConnection 에러 : {}는 pointOnCurveInfo 노드가 아닙니다.".format(pocifNode))
+        
+        if sourceCntData is None:
+            sourceCntData = {}
+
+        if destinationCntData is None:
+            destinationCntData = {}
+
+        if not isinstance(sourceCntData, dict):
+            raise ValueError(u"edit_pocifConnection 에러 : sourceCntData는 dict만 허용됩니다.")
+
+        if not isinstance(destinationCntData, dict):
+            raise ValueError(u"edit_pocifConnection 에러 : destinationCntData는 dict만 허용됩니다.")
+
+        # sourceCntData 처리 (외부 -> 나)
+        for attr, sourceData in sourceCntData.items():
+            targetPlug = "{}.{}".format(pocifNode, attr)
+
+            if not cmds.objExists(targetPlug):
+                continue
+
+            if not isinstance(sourceData, (list, tuple)):
+                sourceData = [sourceData]
+
+            oldSources = cmds.listConnections(
+                targetPlug, s=True, d=False, p=True
+            ) or []
+
+            for oldSource in oldSources:
+                if cmds.isConnected(oldSource, targetPlug):
+                    cmds.disconnectAttr(oldSource, targetPlug)
+
+            for sourcePlug in sourceData:
+                if not sourcePlug or not cmds.objExists(sourcePlug):
+                    continue
+
+                if not cmds.isConnected(sourcePlug, targetPlug):
+                    cmds.connectAttr(sourcePlug, targetPlug, f=True)
+
+        # destinationCntData 처리 (나 -> 외부)
+        for attr, destinationData in destinationCntData.items():
+            sourcePlug = "{}.{}".format(pocifNode, attr)
+
+            if not cmds.objExists(sourcePlug):
+                continue
+
+            if not isinstance(destinationData, (list, tuple)):
+                destinationData = [destinationData]
+
+            for destinationPlug in destinationData:
+                if not destinationPlug or not cmds.objExists(destinationPlug):
+                    continue
+
+                if not cmds.isConnected(sourcePlug, destinationPlug):
+                    cmds.connectAttr(sourcePlug, destinationPlug, f=True)
+
+        return pocifNode, {
+            "source": sourceCntData,
+            "destination": destinationCntData
+        }
+
+    def get_pocifConnectionData(self, pocifNode):
+        '''
+        지정된 pointOnCurveInfo 노드에 연결된 모든 In/Out 플러그(Plug) 정보를 추출합니다.
+
+        Args:
+            pocifNode (str): 조회할 pointOnCurveInfo 노드 이름.
+
+        Returns:
+            dict: {"source": {속성: [연결노드]}, "destination": {속성: [연결노드]}} 형태의 데이터.
+        '''
+        if not cmds.objExists(pocifNode):
+            raise ValueError(u"get_pocifConnectionData 에러 : {} 노드가 존재하지 않습니다.".format(pocifNode))
+
+        if not cmds.nodeType(pocifNode) == 'pointOnCurveInfo':
+            raise ValueError(u"get_pocifConnectionData 에러 : {}는 pointOnCurveInfo 노드가 아닙니다.".format(pocifNode))
+
+        data = {
+            "source": {},
+            "destination": {}
+        }
+
+        all_attrs = cmds.listAttr(pocifNode, c=True) or []
+
+        for attr in all_attrs:
+            plug = "{}.{}".format(pocifNode, attr)
+
+            source = cmds.listConnections(
+                plug, s=True, d=False, p=True
+            ) or []
+
+            destination = cmds.listConnections(
+                plug, s=False, d=True, p=True
+            ) or []
+
+            if source:
+                data["source"][attr] = source
+
+            if destination:
+                data["destination"][attr] = destination
+
+        return data
+
+    def get_param(self, index, count, includeEnd=True):
+        '''
+        특정 개수(count)의 오브젝트를 커브 위에 일정한 간격으로 배치할 때 필요한 파라미터(Parameter) 값을 계산합니다.
+
+        Args:
+            index (int): 배치될 현재 오브젝트의 인덱스 (0부터 시작).
+            count (int): 전체 배치할 오브젝트의 총 개수.
+            includeEnd (bool, optional): 커브의 양 끝점(0과 1)을 포함하여 배치할지 여부. 기본값은 True.
+
+        Returns:
+            float: 계산된 파라미터 비율 값 (0.0 ~ 1.0).
+
+        Example:
+            >>> manager.get_param(1, 3, True) # 0.5 (양끝 포함 3개 중 중간)
+        '''
+        if count <= 0:
+            raise ValueError(u"get_param 에러 : count는 1 이상이어야 합니다.")
+
+        if count == 1:
+            return 0.5
+
+        if includeEnd:
+            return float(index) / float(count - 1)
+
+        return float(index + 1) / float(count + 1)
+
+    # -- helper 
+    def _defineCurve(self, item):
+        '''
+        (내부 헬퍼) 입력받은 문자열이 올바른 NURBS 커브를 가리키는지 확인하고, 
+        Transform 노드일 경우 하위의 Shape 노드를 반환합니다.
+
+        Args:
+            item (str): 검증할 마야 노드(Transform 또는 Shape) 이름.
+
+        Returns:
+            str or None: 유효한 nurbsCurve Shape 노드 이름. 없으면 None.
+        '''
+        if not cmds.objExists(item):
+            return None
+
+        # item 자체가 nurbsCurve shape인 경우
+        if cmds.nodeType(item) == "nurbsCurve":
+            return item
+            
+        shapes = cmds.listRelatives(item, s=True, ni=True, f=True) or []
+
+        for shape in shapes:
+            if cmds.nodeType(shape) == "nurbsCurve":
+                return shape
+
+        return None
+    
+
 
 
 def create_textCrv_fixed(Name, TextString, CenterPivotBool=True, Font="Lucida Sans Unicode", selected=True):
@@ -693,31 +974,27 @@ def create_foli(Name , Geo = None , ParameterUV = (0.5 , 0.5)): #2025
         
     return returnList
 
-def createCurve(cvList , degree = 3 , curveName = None , keepRange = False):
-    try:
-        string_type = basestring
-    except NameError:
-        string_type = str
-    attrsDict = {}
-    if not isinstance(cvList , (list , tuple)):
-        raise TypeError(u"cvList는 list 또는 tuple만 유효합니다.")
-    if not all(isinstance(cv , (list , tuple)) and len(cv) == 3 for cv in cvList):
-        raise TypeError(u"cvList의 각 요소는 길이 3의 list 또는 tuple이어야 합니다.")
-    if curveName is not None and not isinstance(curveName , string_type):
-        raise TypeError(u"curveName은 문자열만 유효합니다.")
-    if curveName:
-        attrsDict["n"] = curveName
-    #attrsDict["d"] = degree
-    spans = len(cvList) - degree
-    curveItrm = cmds.curve(p = cvList ,d =1 ,  **attrsDict)
-    keepControlPoints = True
-    if degree > 1:
-        keepControlPoints = False
-    curveItrm =cmds.rebuildCurve(curveItrm , d = degree ,s = spans , kcp =  keepControlPoints,  kr = keepRange , rpo = 1 , ch = 0)[0]
-    return curveItrm
+def createCurve(cvList, degree=3, curveName=None, keepRange=False):
+    '''
+    입력받은 3D 좌표(CV) 리스트를 기반으로 NURBS 커브를 생성하고 리빌드(Rebuild)합니다.
 
+    Args:
+        cvList (list): 커브를 구성할 3D 좌표들의 리스트. 예: [(0,0,0), (1,0,0), ...]
+        degree (int, optional): 커브의 차수(1=Linear, 3=Cubic). 기본값 3.
+        curveName (str, optional): 생성할 커브의 이름.
+        keepRange (bool, optional): 리빌드 시 파라미터 범위를 유지할지 여부. 기본값 False.
+
+    Returns:
+        str: 생성된 커브의 Transform 노드 이름.
+    '''
+    attrsDict = {"n": curveName} if curveName else {}
+    spans = len(cvList) - degree
+    curveItrm = cmds.curve(p=cvList, d=1, **attrsDict)
+    keepControlPoints = (degree <= 1)
+    return cmds.rebuildCurve(curveItrm, d=degree, s=spans, kcp=keepControlPoints, kr=keepRange, rpo=1, ch=0)[0]
         
 def create_MeshFeatureEdge_curve(MeshItem, Name, angle_threshold=30, size=1, Position=False):
+
     """
     오브젝트의 외곽 형태(Border) 및 일정 각도 이상 꺾이는 특징적 엣지(Feature Edge)를 
     추출하여 커브 컨트롤러를 생성합니다.
