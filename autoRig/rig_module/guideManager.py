@@ -6,7 +6,7 @@ import  os,copy ,json
 
 
 from autoRig_config import AUTO_RIG_ROOT, GUIDE_RIGS_PATH
-from tools import controlAttribute , controlObject
+from tools import controlAttribute , controlObject , naming
 
 #--------------------------------------------------------------------------
 
@@ -15,14 +15,24 @@ from tools import controlAttribute , controlObject
 
 
 def guideDetailTemplate():
-    templateDetail = {
-        "name": None,
+    return {
+        "id": None,
+        "node": None,
+
+        "rig_type": None,
+        "rig_module": None,
+        "rig_build": None,
+        "rig_side": None,
+        "rig_role": None,
+        "rig_data": None,
+        "rig_part": None,
+        "rig_index": None,
+
         "pos": None,
-        "index": 0,
-        "rig_boneType": None,
-        "side": None,
+        "rot": None,
+        "scale": None,
+        "matrix": None
     }
-    return templateDetail
 
 
 
@@ -48,6 +58,23 @@ def setTags(item, dts={"rig_side": "", "rig_type": "", "rig_part": "", "rig_role
         returnDt[attrName] = attr 
     return returnDt
 
+def setInvertJntAttr(item , value = 2):
+    attrPath = "{}.{}".format(item , "insertJnt")
+    if not cmds.objExists(attrPath):
+        controlAttribute.addCustomAttr(item , "insertJnt" , "int" , **{"min" : 0 , "hnv" : True})
+    if not cmds.getAttr(attrPath, type=True) == "long":
+        cmds.deleteAttr(attrPath)
+        controlAttribute.addCustomAttr(item , "insertJnt" , "int",**{"min" : 0 , "hnv" : True})
+    
+    cmds.setAttr(attrPath , value)
+
+    if cmds.objExists(attrPath):
+        return attrPath
+
+
+        
+
+
 
 
 
@@ -65,15 +92,23 @@ class guideDataManager():
         self.standard_templete = {}
         self.standard_detail_templete = {}
 
-        self.checkPoints = ["rig_side" ,"rig_type" , "rig_part" , "rig_role" , "rig_data" , "rig_boneType" , "rig_index"]
+        self.requiredAttrs = [
+                        "rig_type",
+                        "rig_module",
+                        "rig_side",
+                        "rig_role",
+                        "rig_data",
+                        "rig_part",
+                    ]
+        self.optionalAttrs = [
+                        "rig_build",
+                        "rig_index",
+                        "rig_attachTarget",
+                    ]
+        #base_id = "{rig_module}:{rig_build}:{rig_side}:{rig_role}:{rig_data}:{rig_part}"
 
-        self.dataRules = {
-            #"rig_boneType" : ["{rig_boneType}", "{alp}", "{rig_side}", "rig_boneType"],
-            "rootPoint": ["{rig_boneType}", "{alp}", "{rig_side}", "rootPoint"],
-            "nonParent": ["{rig_boneType}", "{alp}", "{rig_side}", "nonParent"],
-            "mirrorRoot": ["{rig_boneType}", "{alp}", "{rig_side}", "mirrorRoot"],
-            "default": ["{rig_boneType}", "{alp}", "{rig_side}", "{rig_role}", "{rig_data}", "{rig_part}"]
-        }
+        self.checkPoints = self.requiredAttrs + self.optionalAttrs
+
 
 
     #_______________________________________________________
@@ -142,116 +177,103 @@ class guideDataManager():
 
 
 
-    def setDefineData(self, items, buildIndex=0, buildAlp="A"):
-        '''
-        입력된 아이템 리스트를 순회하며 메타데이터를 추출하고, 
-        dataRules에 따라 분류된 다중 중첩 딕셔너리 구조(최종 데이터 트리)를 생성합니다.
+    def setDefineData(self, items, buildIndex=0):
+        finalDict = {
+            "items": {},
+            "containers": {},
+            "invalid": []
+        }
 
-        Args:
-            items (list of str): 분석할 가이드 오브젝트 리스트.
-            buildIndex (int, optional): 현재 빌드 인덱스. 기본값 0.
-            buildAlp (str, optional): 현재 빌드 알파벳. 기본값 "A".
-
-        Returns:
-            dict: 조건에 맞게 분류되고 구조화된 최종 메타데이터 딕셔너리.
-        '''
-        finalDict = {}
+        rig_build = chr(65 + buildIndex)
 
         for item in items:
             metaData = self._getMetaData(item, self.checkPoints)
 
             if not metaData:
                 continue
-
-            if not all(metaData.get(key) for key in ["rig_type", "rig_side", "rig_part", "rig_boneType"]):
+            if not any(metaData.get(attr) for attr in self.checkPoints):
                 continue
 
-            metaData["buildIndex"] = buildIndex
-            metaData["alp"] = buildAlp
-
-            side = metaData.get("rig_side")
-            alp = metaData.get("alp")
-            rig_type = metaData.get("rig_type")
-            rig_boneType = metaData.get("rig_boneType")
-
-            # 필수 data path 데이터 방어
-            if not rig_boneType:
+            missing = [attr for attr in self.requiredAttrs if not metaData.get(attr)]
+            if missing:
+                finalDict["invalid"].append({
+                    "node": item,
+                    "reason": "missing required attrs",
+                    "missing": missing
+                })
                 continue
 
-            if not alp:
+            if not metaData.get("rig_build"):
+                metaData["rig_build"] = rig_build
+
+            detail = self._makeDetailData(item, metaData)
+            guideId = detail.get("id")
+
+            if self._isContainerData(metaData):
+                targetDict = finalDict["containers"]
+            else:
+                targetDict = finalDict["items"]
+
+            if guideId in targetDict:
+                finalDict["invalid"].append({
+                    "node": item,
+                    "reason": "duplicated id",
+                    "id": guideId,
+                    "exists": targetDict[guideId].get("node")
+                })
                 continue
 
-            if not side:
-                continue
-
-            #1단계 : boneType -> alp 까지만 먼저 생성
-            if rig_boneType not in finalDict:
-                finalDict[rig_boneType] = {}
-
-
-            #2단계 : finalDict[rig_boneType] 이후 alp key가 없으면 alp 입력
-            ''' 예시 자료
-            "chest": {
-                    "A": {
-                        "rigType": "biped",
-                        "buildIndex": 0,
-                        "alp": "A",
-                        "rig_boneType": "chest",
-            
-            '''
-            if alp not in finalDict[rig_boneType]:
-                finalDict[rig_boneType][alp] = {
-                    "rigType": rig_type,
-                    "buildIndex": buildIndex,
-                    "alp": alp,
-                    "rig_boneType": rig_boneType
-                }
-
-            path_middle_keys = self._getPathMiddleKey(metaData)
-            detail_data = self._makeDetailData(item, metaData)
-
-            current = finalDict
-
-            # path_middle_keys[:-1]하는 이유 : 
-            # 마지막 key는 detail_data가 들어갈 저장 이름이므로,
-            # 마지막 key를 제외한 중간 경로만 먼저 dict로 생성한다.
-            # finalDict["leg"]["A"]["L"]["main"]["loc"]["knee"] = detail_data 최종적으로 이걸 만들기 위함
-            # 
-            for key in path_middle_keys[:-1]: 
-                # finalDict["leg"] => finalDict["leg"]["A"] => finalDict["leg"]["A"]["L"] => ...["loc"] + detail_data 까지
-                if key not in current:
-                    current[key] = {}
-                current = current[key]
-
-            # finalDict["leg"]...["loc"]["knee"]
-            last_key = path_middle_keys[-1]
-            # finalDict["leg"]...["loc"]["knee"] = detail_data
-            current[last_key] = detail_data
+            targetDict[guideId] = detail
 
         return finalDict
 
 
 
     #__helper
-    def _makeDetailData(self ,item , metaData):
-        '''
-        (내부 헬퍼) 단일 오브젝트에 대한 디테일 정보를 템플릿 딕셔너리에 매핑하여 반환합니다.
+    def _makeGuideId(self, metaData):
+        return "{}:{}:{}:{}:{}:{}".format(
+            metaData.get("rig_module", ""),
+            metaData.get("rig_build", ""),
+            metaData.get("rig_side", ""),
+            metaData.get("rig_role", ""),
+            metaData.get("rig_data", ""),
+            metaData.get("rig_part", "")
+        )
+    def _isContainerData(self, metaData):
+        if metaData.get("rig_role") == "container":
+            return True
 
-        Args:
-            item (str): 오브젝트 이름.
-            metaData (dict): 추출된 메타데이터 딕셔너리.
+        if metaData.get("rig_data") == "group":
+            return True
 
-        Returns:
-            dict: 채워진 디테일 딕셔너리.
-        '''
-        detail = guideDetailTemplate()
-        detail["name"] = item
-        #임시 비활성화
-        
+        return False
+
+    def _makeDetailData(self, item, metaData):
+        detail = {
+            "id": self._makeGuideId(metaData),
+            "node": item,
+
+            "rig_type": metaData.get("rig_type"),
+            "rig_module": metaData.get("rig_module"),
+            "rig_build": metaData.get("rig_build"),
+            "rig_side": metaData.get("rig_side"),
+            "rig_role": metaData.get("rig_role"),
+            "rig_data": metaData.get("rig_data"),
+            "rig_part": metaData.get("rig_part"),
+            "rig_index": metaData.get("rig_index"),
+            "rig_attachTarget": metaData.get("rig_attachTarget"),
+
+            "pos": None,
+            "rot": None,
+            "scale": None,
+            "matrix": None,
+        }
+
         try:
             detail["pos"] = [round(v, 3) for v in cmds.xform(item, ws=1, q=1, t=1)]
         except:
             detail["pos"] = None
+
         try:
             detail["rot"] = [round(v, 3) for v in cmds.xform(item, ws=1, q=1, ro=1)]
         except:
@@ -266,47 +288,9 @@ class guideDataManager():
             detail["matrix"] = [round(v, 5) for v in cmds.xform(item, ws=1, q=1, m=1)]
         except:
             detail["matrix"] = None
-            
-        
-        detail["index"] = metaData.get("rig_index")
-        detail["rig_boneType"] = metaData.get("rig_boneType")
-        detail["side"] = metaData.get("rig_side")
-            
+
         return detail
 
-
-    def _getPathMiddleKey(self, metaData):
-        '''
-        (내부 헬퍼) 오브젝트에서 특정 속성(checkPoints)들의 값을 모두 가져와 딕셔너리로 만듭니다.
-
-        Args:
-            item (str): 오브젝트 이름.
-            checkPoints (list): 조회할 속성 리스트.
-
-        Returns:
-            dict: {속성이름: 속성값} 형태의 딕셔너리.
-        '''
-        path_keys = []
-        # "rig_part" : 부위가 어디인지)
-        part = metaData.get("rig_part")
-
-        if part == "rootPoint":
-            ruleList = self.dataRules["rootPoint"] # ["{rig_boneType}", "{alp}", "{rig_side}", "rootPoint"],
-        elif part == "nonParent":
-            ruleList = self.dataRules["nonParent"] # ["{rig_boneType}", "{alp}", "{rig_side}", "nonParent"],
-        elif part == "mirrorRoot":
-            ruleList = self.dataRules["mirrorRoot"]
-        #elif part == "rig_boneType":
-        #    ruleList = self.dataRules["rig_boneType"]
-        else:
-            ruleList = self.dataRules["default"] # ["{rig_boneType}", "{alp}", "{rig_side}", "{rig_role}", "{rig_data}", "{rig_part}"]
-
-        path_keys = [ rule.format(**metaData) for rule in ruleList ] #포매팅
-
-        ## ex) path_keys = [ "arm" , "A" , "L", "main", "loc", "shoulder"]
-        ##          rule 은 "{rig_boneType}", "{alp}", "{rig_side}", "{rig_role}", "{rig_data}", "{rig_part}"
-
-        return path_keys
 
     def _getMetaData(self , item , checkPoints ):
         '''
@@ -332,23 +316,18 @@ class guideDataManager():
         return metaData
 
 
-    def _getAttrData(self , item , checkitem ):
-        '''
-        (내부 헬퍼) 오브젝트의 특정 속성 하나를 안전하게 조회합니다.
-
-        Args:
-            item (str): 오브젝트 이름.
-            checkitem (str): 속성 이름.
-
-        Returns:
-            any or None: 조회된 속성값. 존재하지 않으면 None.
-        '''
-        objAttrPath = "{}.{}".format(item ,checkitem )
-        if not cmds.objExists(objAttrPath):
+    def _getAttrData(self, item, checkitem):
+        if not cmds.objExists(item):
             return
+
+        userAttrs = cmds.listAttr(item, userDefined=True) or []
+        if checkitem not in userAttrs:
+            return
+
+        objAttrPath = "{}.{}".format(item, checkitem)
+
         try:
-            getValue = cmds.getAttr(objAttrPath )
-            return getValue
+            return cmds.getAttr(objAttrPath)
         except:
             return None
 
@@ -393,6 +372,8 @@ class guideCombine():
             self.string_type = basestring
         except NameError:
             self.string_type =  str
+        self.task = []
+
 
         self.chestPoint = None
         self.rootPoint = None
@@ -400,7 +381,7 @@ class guideCombine():
         self.LeftHandPoint = None
         self.RightHandPoint = None
         self.groups = { "guide_total" : None,
-                        "guide_rigs" : None,
+                        "guide_rig" : None,
                         "guide_nonParent" : None
         }
         
@@ -433,37 +414,56 @@ class guideCombine():
     #----------------------------------------
     def setCombineRoot(self, item):
         '''설정된 Root 기준점 오브젝트가 대상(item)을 제어하도록 Parent Constraint를 설정합니다.'''
-        if not cmds.objExists(item): return
+        if not cmds.objExists(item): 
+            return
+        if not self.rootPoint and not cmds.objExists(self.rootPoint):
+            raise ValueError("Root point is not set. Please set the root point before combining.")
         isConstraint = cmds.listRelatives(item, type="parentConstraint")
         if isConstraint: cmds.delete(isConstraint)
+
+        
         cmds.parentConstraint(self.rootPoint, item, mo=1)
 
     def setCombineChest(self, item):
         '''설정된 Chest 기준점 오브젝트가 대상(item)을 제어하도록 Parent Constraint를 설정합니다.'''
-        if not cmds.objExists(item): return
+        if not cmds.objExists(item): 
+            return
+        if not self.chestPoint or not cmds.objExists(self.chestPoint):
+            raise ValueError("Chest point is not set. Please set the chest point before combining.")
         isConstraint = cmds.listRelatives(item, type="parentConstraint")
         if isConstraint: cmds.delete(isConstraint)
+        
         cmds.parentConstraint(self.chestPoint, item, mo=1)
 
     def setCombineHead(self, item):
         '''설정된 Head 기준점 오브젝트가 대상(item)을 제어하도록 Parent Constraint를 설정합니다.'''
-        if not cmds.objExists(item): return
+        if not cmds.objExists(item): 
+            return
+        if not self.headPoint or not cmds.objExists(self.headPoint):
+            raise ValueError("Head point is not set. Please set the head point before combining.")
         isConstraint = cmds.listRelatives(item, type="parentConstraint")
         if isConstraint: cmds.delete(isConstraint)
         cmds.parentConstraint(self.headPoint, item, mo=1)
 
     def setCombineLeftHand(self, item):
         '''설정된 Left Hand 기준점 오브젝트가 대상(item)을 제어하도록 Parent Constraint를 설정합니다.'''
-        if not cmds.objExists(item): return
+        if not cmds.objExists(item): 
+            return
+        if not self.LeftHandPoint or not cmds.objExists(self.LeftHandPoint):
+            raise ValueError("Left Hand point is not set. Please set the left hand point before combining.")
         isConstraint = cmds.listRelatives(item, type="parentConstraint")
         if isConstraint: cmds.delete(isConstraint)
         cmds.parentConstraint(self.LeftHandPoint, item, mo=1)
 
     def setCombineRightHand(self, item):
         '''설정된 Right Hand 기준점 오브젝트가 대상(item)을 제어하도록 Parent Constraint를 설정합니다.'''
-        if not cmds.objExists(item): return
+        if not cmds.objExists(item): 
+            return
+        if not self.RightHandPoint or not cmds.objExists(self.RightHandPoint):
+            raise ValueError("Right Hand point is not set. Please set the right hand point before combining.")
         isConstraint = cmds.listRelatives(item, type="parentConstraint")
         if isConstraint: cmds.delete(isConstraint)
+        
         cmds.parentConstraint(self.RightHandPoint, item, mo=1)
 
     def parentRigGroup(self, item):
@@ -488,7 +488,8 @@ class guideCombine():
         Args:
             item (str): 페어런트 할 마야 오브젝트 이름.
         '''
-        if not cmds.objExists(item): return
+        if not cmds.objExists(item): 
+            return
         isCheckDt = self._checkDict(self.groups)
         if not isCheckDt: return
         try:
@@ -521,8 +522,91 @@ class guideCombine():
         try: cmds.parent(self.groups["guide_rig"], self.groups["guide_total"])
         except: pass
         
-        try: cmds.parent(groups["guide_nonParent"], self.groups["guide_total"])
+        try: cmds.parent(self.groups["guide_nonParent"], self.groups["guide_total"])
         except: pass
+
+    def set_method_data(self,constraintType = None , flag = None):
+        if not constraintType  in ["parentConstraint" , "pointConstraint" , "orientConstraint" , "scaleConstraint"]:
+            return  None 
+        
+        if flag is None:
+            flag = {}
+        if not isinstance(flag , dict):
+            flag = {}
+        
+        return { "type" : constraintType , "flag" : flag }
+
+    def set_combine_data(self , source , target , method):
+        if not isinstance(source , self.string_type):
+            return None
+        if not isinstance(target , self.string_type):
+            return None
+        if not isinstance(method , dict):
+            return None
+        data = {"source" : source , "target" : target , "operation" :  method }
+        self.task.append( data )
+        return data 
+    
+    def build_task(self):
+        if not len(self.task)>0:
+            return
+        for task in self.task:
+            source = None
+            target = None
+            operater = None
+            flag = None
+            isSource = task.get("source")
+            isTarget = task.get("target")
+            isMethod = task.get("operation")
+            if not all([isSource, isTarget, isMethod]):
+                continue
+            source = isSource
+            target = isTarget
+            operater = isMethod.get("type")
+            flag = isMethod.get("flag")
+
+            if not cmds.objExists(source):
+                continue
+
+            if not cmds.objExists(target):
+                continue
+
+            if not operater in ["parentConstraint" , "pointConstraint" , "orientConstraint" , "scaleConstraint"] or not flag:
+                continue
+            try:
+                if operater == "parentConstraint":
+                    cmds.parentConstraint(source , target , **flag)
+                elif operater == "pointConstraint":
+                    cmds.pointConstraint(source , target , **flag)
+                elif operater == "orientConstraint":
+                    cmds.orientConstraint(source , target , **flag)
+                elif operater == "scaleConstraint":
+                    cmds.scaleConstraint(source , target , **flag)
+            except Exception as e:
+                print ( u"build_task 에러 : {}" .format(e) )
+
+
+
+
+            
+
+
+
+
+            
+            
+            
+
+
+
+            
+        
+
+
+
+
+    def get_data(self):
+        return self.task
         
     # -- helper
     def _checkDict(self, dt):
@@ -600,6 +684,29 @@ def findKeyValues(dt, targetKey, results=None):
                     findKeyValues(item, targetKey, results)
 
     return results
+
+
+
+
+
+
+class guideJointBuilder():
+    def __init__(self):
+        self.data = None
+
+    
+        
+
+
+
+
+
+
+
+
+
+
+
 
 
 

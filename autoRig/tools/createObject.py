@@ -1,12 +1,11 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from Cython import basestring
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 import os,sys
 
 
-from tools import controlObject
+from tools import controlObject , naming 
 
 
 class jointCreater():

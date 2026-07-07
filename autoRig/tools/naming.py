@@ -347,3 +347,182 @@ class nameSetUp:
                 cmds.rename(item, renameString)
             else:
                 print("Warning: Object '{}' does not exist. Skipping.".format(item))
+
+
+
+class namingRule():
+    '''
+    Rig build 과정에서 사용할 이름 규칙을 관리하고, token 기반으로 최종 이름 문자열을 생성합니다.
+
+    기본 token:
+        side, extra_side, item_name, alp, num, rule, obj_type, extra
+
+    Example:
+        >>> rule = namingRule()
+        >>> rule.set_name_field("{side}{extra_side}_{item_name}{alp}{num}_{rule}_{obj_type}")
+        >>> rule.setTokenMap("side", {"left": "L"})
+        >>> rule.setTokenMap("obj_type", {"control": "Ctrl"})
+        >>> rule.build(side="left", extra_side="front", item_name="shoulder", alp="A", num="01", rule="FK", obj_type="control")
+        u"Lfront_shoulderA01_FK_Ctrl"
+    '''
+    def __init__(self):
+        try:
+            self.string_type = basestring
+        except NameError:
+            self.string_type = str
+
+        self.name_field = "{side}{extra_side}_{item_name}{alp}{num}_{rule}_{obj_type}{extra}"
+        self.token_pattern = re.compile(r"\{(.*?)\}")
+
+        self.default_tokens = {
+            "side": "",
+            "extra_side": "",
+            "item_name": "",
+            "alp": "",
+            "num": "",
+            "rule": "",
+            "obj_type": "",
+            "extra": ""
+        }
+
+        self.token_maps = {
+            "side": {},
+            "extra_side": {},
+            "rule": {},
+            "obj_type": {}
+        }
+
+    #---------------------------------------------------------------------set token / map
+    def addToken(self, tokenName, defaultValue=""):
+        '''
+        name_field에서 사용할 custom token을 추가합니다.
+        '''
+        if not isinstance(tokenName, self.string_type):
+            return False
+        if not tokenName:
+            return False
+        if self._checkTokenName(tokenName) is False:
+            return False
+
+        self.default_tokens[tokenName] = defaultValue
+        return True
+
+    def setTokenMap(self, tokenName, dict_item):
+        '''
+        특정 token에 대한 alias map을 설정합니다.
+        예: tokenName="obj_type", {"control": "Ctrl", "joint": "Jnt"}
+        '''
+        if not isinstance(tokenName, self.string_type):
+            return False
+        if not isinstance(dict_item, dict):
+            return False
+        if tokenName not in self.default_tokens:
+            return False
+
+        self.token_maps[tokenName] = dict_item
+        return True
+
+    # 기존 호출 스타일을 유지하기 위한 wrapper
+    def set_objType_map(self, dict_item):
+        return self.setTokenMap("obj_type", dict_item)
+
+    def set_sideType_map(self, dict_item):
+        return self.setTokenMap("side", dict_item)
+
+    def set_extraSideType_map(self, dict_item):
+        return self.setTokenMap("extra_side", dict_item)
+
+    def set_ruleType_map(self, dict_item):
+        return self.setTokenMap("rule", dict_item)
+
+    #---------------------------------------------------------------------set Name field
+    def set_name_field(self, item):
+        '''
+        최종 이름 규칙 문자열을 설정합니다.
+        등록되지 않은 token이 포함되면 ValueError를 발생시킵니다.
+        '''
+        if not isinstance(item, self.string_type):
+            return False
+
+        tokens = self._getTokens(item)
+        if not tokens:
+            return False
+
+        invalidTokens = [x for x in tokens if x not in self.default_tokens]
+        if invalidTokens:
+            raise ValueError(u"지원하지 않는 naming token 입니다: {}".format(invalidTokens))
+
+        self.name_field = item
+        return True
+
+    def build(self, item_name="", side="", extra_side="", alp="", num="", rule="", obj_type="", extra="", unique=False, **kwargs):
+        '''
+        현재 name_field와 token 값을 바탕으로 최종 이름 문자열을 반환합니다.
+        '''
+        if self.name_field is None:
+            return ""
+
+        formatDict = self.default_tokens.copy()
+        formatDict.update({
+            "item_name": item_name,
+            "side": side,
+            "extra_side": extra_side,
+            "alp": alp,
+            "num": num,
+            "rule": rule,
+            "obj_type": obj_type,
+            "extra": extra
+        })
+
+        for key, value in kwargs.items():
+            if key not in self.default_tokens:
+                self.addToken(key)
+            formatDict[key] = value
+
+        for tokenName, mapData in self.token_maps.items():
+            if tokenName in formatDict:
+                formatDict[tokenName] = self._getMapValue(mapData, formatDict[tokenName])
+
+        try:
+            name = self.name_field.format(**formatDict)
+        except KeyError as e:
+            raise ValueError(u"naming build 에러: '{}' token 값이 없습니다.".format(e))
+
+        name = self._cleanupName(name)
+        if unique:
+            name = uniqueName(name)
+
+        return name
+
+    #---------------------------------------------------------------------helper
+    def _getTokens(self, item):
+        if not isinstance(item, self.string_type):
+            return []
+        return self.token_pattern.findall(item)
+
+    def _checkTokenName(self, tokenName):
+        if not isinstance(tokenName, self.string_type):
+            return False
+        if self.token_pattern.search(tokenName):
+            return False
+        if not re.match(r"^[A-Za-z_][A-Za-z0-9_]*$", tokenName):
+            return False
+        return True
+
+    def _getMapValue(self, mapData, value):
+        if isinstance(mapData, dict) and value in mapData:
+            return mapData[value]
+        return value
+
+    def _cleanupName(self, name):
+        if not isinstance(name, self.string_type):
+            return name
+        while "__" in name:
+            name = name.replace("__", "_")
+        return name
+
+
+
+    
+
+

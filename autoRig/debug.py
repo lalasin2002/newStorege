@@ -21,9 +21,9 @@ from rig_module import guideManager
 #print(config.RIG_MODULE_PATH)
 #print(config.GUIDE_RIGS_PATH)
 
-guide_file_format = "guide_biped_{}.ma"
-guide_parts = ["root", "head" , "leg" , "arm"  , "hand"]
-guide_preset_paths = [os.path.join(config.GUIDE_RIGS_PATH ,guide_file_format.format(part) ) for part in guide_parts ]
+guide_file_format = "guide_biped.ma"
+
+guide_preset_path = os.path.join(config.GUIDE_RIGS_PATH , guide_file_format)
 #pprint.pprint(guide_preset_paths)
 
 temp_json_path = os.path.join(config.AUTO_RIG_ROOT , "guide_temp.json")
@@ -33,6 +33,17 @@ guide_combine_manager = guideManager.guideCombine()
 ref_nodes = []
 total_dict = {}
 
+
+name_space = "guide_biped"
+
+ref_node = guide_import_manager.importGuide(guide_preset_path ,name_space )
+guide_objs = guide_import_manager.getReferenceObjects(ref_node)
+data = guide_import_manager.setDefineData(guide_objs)
+
+ref_nodes.append(ref_node)
+total_dict.update(data)
+
+'''
 name_space_foramt = "guide_{}"
 for  i , path in enumerate(guide_preset_paths):
     name_space = name_space_foramt.format(guide_parts[i])
@@ -42,7 +53,9 @@ for  i , path in enumerate(guide_preset_paths):
 for i , ref_item in enumerate(ref_nodes):
     objs = guide_import_manager.getReferenceObjects(ref_item)
     data = guide_import_manager.setDefineData(objs)
-    total_dict.update(data)
+total_dict.update(data)
+'''
+
 
 #pprint.pprint(total_dict)
 if total_dict:
@@ -55,6 +68,8 @@ chest_point = None
 
 
 if total_dict: # 가능하다면 try 사용
+    pass
+    '''
     root_point = total_dict["root_type"]["A"]["C"]["main"]["loc"]["root"]["name"]
     chest_point = total_dict["root_type"]["A"]["C"]["main"]["loc"]["chest"]["name"]
     leftArm_point = total_dict["arm_type"]["A"]["L"]["main"]["loc"]["wrist"]["name"]
@@ -84,7 +99,8 @@ if total_dict: # 가능하다면 try 사용
 
     guide_combine_manager.setCombineLeftHand(leftHand_root)
     guide_combine_manager.setCombineRightHand(rightHand_root)
-
+    '''
+    '''
     total_mirrors =[ x.get("name") for x in guideManager.findKeyValues(total_dict , "mirrorRoot")]
     total_nonParents =[ x.get("name") for x in  guideManager.findKeyValues(total_dict ,"nonParent")]
 
@@ -97,8 +113,7 @@ if total_dict: # 가능하다면 try 사용
     #rint ("chest_point" , chest_point)
     #root_point = total_dict["root"]["A"]["C"]["main"]["loc"]["root"]["name"]
     #chest_point = total_dict["chest"]["A"]["C"]["main"]["loc"]["chest"]["name"]
+    '''
     
-
-
 
 

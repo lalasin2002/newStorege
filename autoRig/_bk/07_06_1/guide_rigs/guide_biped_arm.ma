@@ -1,6 +1,6 @@
 //Maya ASCII 2022 scene
-//Name: guide_biped_leg.ma
-//Last modified: Mon, Jul 06, 2026 08:56:32 PM
+//Name: guide_biped_arm.ma
+//Last modified: Mon, Jul 06, 2026 06:35:05 PM
 //Codeset: 949
 requires maya "2022";
 requires -nodeType "VRaySettingsNode" -dataType "VRaySunParams" -dataType "vrayFloatVectorData"
@@ -13,28 +13,28 @@ fileInfo "product" "Maya 2022";
 fileInfo "version" "2022";
 fileInfo "cutIdentifier" "202303271415-baa69b5798";
 fileInfo "osv" "Windows 10 Pro v2009 (Build: 19045)";
-fileInfo "UUID" "2CB93486-4347-26A6-051C-6A9C4B0A6FCC";
+fileInfo "UUID" "447FB60D-49B3-D062-4A32-C8AFC8A98555";
 createNode transform -s -n "persp";
-	rename -uid "64520AA5-4285-BC4C-2C78-E987B5D0FDAE";
+	rename -uid "48BEC2CC-40AD-3EA9-FEB5-E98EE56E9EC3";
 	setAttr ".v" no;
-	setAttr ".t" -type "double3" 38.970596156994631 33.321567650268229 40.20306895805647 ;
-	setAttr ".r" -type "double3" -17.738352729731577 1124.1999999995326 -2.2182365887023579e-15 ;
+	setAttr ".t" -type "double3" 6.0445044874304941 82.23868563040179 137.19626415466067 ;
+	setAttr ".r" -type "double3" -14.73835273007621 -718.59999999988975 9.9422012282381186e-17 ;
 createNode camera -s -n "perspShape" -p "persp";
-	rename -uid "59B34CF5-45EA-1C59-6467-2991CE534CCC";
+	rename -uid "478970A6-4395-258E-EBAC-D2BDD2DAD9AF";
 	setAttr -k off ".v" no;
 	setAttr ".fl" 34.999999999999993;
-	setAttr ".coi" 61.410423596966126;
+	setAttr ".coi" 146.25978415292215;
 	setAttr ".imn" -type "string" "persp";
 	setAttr ".den" -type "string" "persp_depth";
 	setAttr ".man" -type "string" "persp_mask";
 	setAttr ".hc" -type "string" "viewSet -p %camera";
 createNode transform -s -n "top";
-	rename -uid "65210B20-43AD-015A-B7AF-6DB9A81FEA69";
+	rename -uid "68C2AF05-4A8B-78F5-CF12-05A1D875ABE8";
 	setAttr ".v" no;
 	setAttr ".t" -type "double3" 0 1000.1 0 ;
 	setAttr ".r" -type "double3" -90 0 0 ;
 createNode camera -s -n "topShape" -p "top";
-	rename -uid "3DD3350B-4E4F-E263-E893-0EBA3225786F";
+	rename -uid "F590641F-4A72-5466-41F1-B895A45A60FB";
 	setAttr -k off ".v" no;
 	setAttr ".rnd" no;
 	setAttr ".coi" 1000.1;
@@ -46,11 +46,11 @@ createNode camera -s -n "topShape" -p "top";
 	setAttr ".o" yes;
 	setAttr ".ai_translator" -type "string" "orthographic";
 createNode transform -s -n "front";
-	rename -uid "AD3F2649-4D63-5498-D18E-138FEB5B14E4";
+	rename -uid "6DD508CD-4184-377E-3627-F48827DF93AA";
 	setAttr ".v" no;
 	setAttr ".t" -type "double3" 0 0 1000.1 ;
 createNode camera -s -n "frontShape" -p "front";
-	rename -uid "F6C2F335-4294-0A04-E738-B09D724E364A";
+	rename -uid "D1682D09-4376-A40D-6EC0-EC9DDD8F442E";
 	setAttr -k off ".v" no;
 	setAttr ".rnd" no;
 	setAttr ".coi" 1000.1;
@@ -62,372 +62,436 @@ createNode camera -s -n "frontShape" -p "front";
 	setAttr ".o" yes;
 	setAttr ".ai_translator" -type "string" "orthographic";
 createNode transform -s -n "side";
-	rename -uid "E41FD6A5-4A32-2EBD-FF5C-F9AAD37747EF";
+	rename -uid "E09C2891-4E55-1164-D0A2-2BBA33E14C12";
 	setAttr ".v" no;
-	setAttr ".t" -type "double3" 1000.1412879369842 13.895791057707312 2.271285282864532 ;
+	setAttr ".t" -type "double3" 1000.1 0 0 ;
 	setAttr ".r" -type "double3" 0 90 0 ;
 createNode camera -s -n "sideShape" -p "side";
-	rename -uid "4C1954F2-49A9-A5FA-28E7-A3803A4B3405";
+	rename -uid "C209BB53-4864-7016-7F95-1580ABE3CDD0";
 	setAttr -k off ".v" no;
 	setAttr ".rnd" no;
-	setAttr ".coi" 1000.1412879369842;
-	setAttr ".ow" 44.684711574121764;
+	setAttr ".coi" 1000.1;
+	setAttr ".ow" 30;
 	setAttr ".imn" -type "string" "side";
 	setAttr ".den" -type "string" "side_depth";
 	setAttr ".man" -type "string" "side_mask";
-	setAttr ".tp" -type "double3" 0 0 -1 ;
 	setAttr ".hc" -type "string" "viewSet -s %camera";
 	setAttr ".o" yes;
 	setAttr ".ai_translator" -type "string" "orthographic";
-createNode transform -n "L_leg_nonParent";
-	rename -uid "814818FC-4663-1325-2A29-C3945D5B5C2D";
+createNode transform -n "L_arm_nonParent";
+	rename -uid "619B891D-4023-9A7E-C652-5CAF974AC5F3";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "container";
-	setAttr ".rig_data" -type "string" "group";
 	setAttr ".rig_part" -type "string" "nonParent";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "L_hip_Crv" -p "L_leg_nonParent";
-	rename -uid "73AE9EBF-4898-407D-8B17-E7AB030D3904";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "L_hip_CrvShape" -p "L_hip_Crv";
-	rename -uid "5F61BE36-496B-0F40-468E-6E804BD0790E";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		4 22 0
-		4 12 1
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
 	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "hip";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "L_knee_Crv" -p "L_leg_nonParent";
-	rename -uid "ECA8E0AB-41FA-41A1-026E-B4B7D9292A4D";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "L_knee_CrvShape" -p "L_knee_Crv";
-	rename -uid "2BB8BC9D-4D90-DBB8-74B3-72972D8235C3";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		4 12 1
-		4 3 0
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "knee";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "L_ankle_Crv" -p "L_leg_nonParent";
-	rename -uid "00C44461-4828-9DC5-F403-CCA7D8557753";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "L_ankle_CrvShape" -p "L_ankle_Crv";
-	rename -uid "B70487E6-4BB4-DC72-ED53-1C8AD41B5829";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		4 3 0
-		4 2 3
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "ankle";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "L_toe_Crv" -p "L_leg_nonParent";
-	rename -uid "E3E191D5-41BD-8522-AE4C-B786D8D8AA74";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "L_toe_CrvShape" -p "L_toe_Crv";
-	rename -uid "29725EAC-4A6C-0D7C-5F24-CFAD22FD36B2";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		4 2 3
-		4 2 6
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "toe";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "L_hip_mirror";
-	rename -uid "F2B6A5E9-4DA7-D3B7-1C30-D9947FA93952";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".t" -type "double3" 4 22 0 ;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "mirror";
 	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_scapula_Crv" -p "L_arm_nonParent";
+	rename -uid "6271337E-4F65-4A18-4F18-E8BE6FEAF00E";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_scapula_CrvShape" -p "L_scapula_Crv";
+	rename -uid "8FED7144-43F7-CA93-6C0D-20BCE68ADB74";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		1 44 0
+		5 44 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_shoulder_Crv" -p "L_arm_nonParent";
+	rename -uid "5C0EC677-411A-B80D-9FB4-B1A2DFF84B44";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_shoulder_CrvShape" -p "L_shoulder_Crv";
+	rename -uid "201F4AA4-48E4-2CE6-7358-CE992FCDF6C7";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		5 44 0
+		11 44 -1
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_elbow_Crv" -p "L_arm_nonParent";
+	rename -uid "ED45B9F8-49FB-E166-7086-06A73DB03004";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_elbow_CrvShape" -p "L_elbow_Crv";
+	rename -uid "8C47F21E-4654-36F8-618C-2FBC91A2D986";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		11 44 -1
+		17 44 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_wrist_Crv" -p "L_arm_nonParent";
+	rename -uid "CF6B6EF8-4300-53CC-B474-F0883A119B5D";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wrist";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_wrist_CrvShape" -p "L_wrist_Crv";
+	rename -uid "92B8D397-4C0A-F1D5-D013-BFB77A16253D";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		17 44 0
+		18 44 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wrist";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_shoulderExtra_Crv" -p "L_arm_nonParent";
+	rename -uid "7CDC68EB-4FA6-59D9-5F1D-6783F71215D4";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_shoulderExtra_CrvShape" -p "L_shoulderExtra_Crv";
+	rename -uid "8507221F-412A-4973-6B4C-51BAC6FE9752";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		10.062910067666001 44 -1.8263120498094789
+		11 44 -2
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_elbowExtra_Crv" -p "L_arm_nonParent";
+	rename -uid "4B755881-44E7-13E3-FCCB-9F87F1FDFB46";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_elbowExtra_CrvShape" -p "L_elbowExtra_Crv";
+	rename -uid "C3E2DA02-469D-CE34-C6CB-E5AFCBD29D06";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		11 44 -2
+		11.937083353925061 44 -1.8263942799211668
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_scapula_mirror";
+	rename -uid "1CFE9F3A-4E59-3C9E-FA42-99A8871FA568";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_attachBoneType" -ln "rig_attachBoneType" -dt "string";
+	addAttr -ci true -sn "rig_attachSide" -ln "rig_attachSide" -dt "string";
+	addAttr -ci true -sn "rig_attachAlp" -ln "rig_attachAlp" -dt "string";
+	addAttr -ci true -sn "rig_attachRole" -ln "rig_attachRole" -dt "string";
+	addAttr -ci true -sn "rig_attachData" -ln "rig_attachData" -dt "string";
+	addAttr -ci true -sn "rig_attachPart" -ln "rig_attachPart" -dt "string";
+	setAttr ".t" -type "double3" 1 44 0 ;
+	setAttr ".rig_side" -type "string" "L";
+	setAttr ".rig_type" -type "string" "biped";
 	setAttr ".rig_part" -type "string" "mirrorRoot";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "L_hip_loc_Grp" -p "L_hip_mirror";
-	rename -uid "B2CFA9B0-4EAE-C4BE-A6D0-CFA286AEC192";
-createNode transform -n "L_hip_loc" -p "L_hip_loc_Grp";
-	rename -uid "512F3E41-4FA5-5558-D65F-38B22B743ECD";
-	addAttr -ci true -k true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_attachBoneType" -type "string" "root_type";
+	setAttr ".rig_attachSide" -type "string" "C";
+	setAttr ".rig_attachAlp" -type "string" "A";
+	setAttr ".rig_attachRole" -type "string" "main";
+	setAttr ".rig_attachData" -type "string" "loc";
+	setAttr ".rig_attachPart" -type "string" "chest";
+createNode transform -n "L_scapula_loc_Grp" -p "L_scapula_mirror";
+	rename -uid "0C5835F4-4319-53F8-A24D-A78635FBC5DA";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 16;
-	setAttr -k on ".insertJnt" 2;
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
+	setAttr ".rig_part" -type "string" "rootPoint";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_side" -type "string" "L";
+createNode transform -n "L_scapula_loc" -p "L_scapula_loc_Grp";
+	rename -uid "D0CB5DF2-4AD8-65B6-B8BD-D7A155B5239D";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "hip";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "L_hip_locShape" -p "L_hip_loc";
-	rename -uid "E41E47B1-452F-B041-74C0-C5A00A8810D2";
+	setAttr ".rig_side" -type "string" "L";
+createNode locator -n "L_scapula_locShape" -p "L_scapula_loc";
+	rename -uid "B9E4FB4E-4F69-8767-3514-6B9B549AA82E";
 	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
 	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "L_knee_loc_Grp" -p "L_hip_loc";
-	rename -uid "2D54C2C5-4866-A44E-361F-798F371D08EF";
-	setAttr ".t" -type "double3" 0 -10 1 ;
-createNode transform -n "L_knee_loc" -p "L_knee_loc_Grp";
-	rename -uid "CE18D012-415C-34F0-A754-23B8E0985253";
-	addAttr -ci true -k true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
+createNode transform -n "L_shoulder_loc_Grp" -p "L_scapula_loc";
+	rename -uid "0CA5663F-4A6F-FBE9-AA80-0AA9BFC3B566";
+	setAttr ".t" -type "double3" 4 0 0 ;
+createNode transform -n "L_shoulder_loc" -p "L_shoulder_loc_Grp";
+	rename -uid "6447AF86-4868-96BC-1E9D-1CBE15296B9F";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 16;
-	setAttr -k on ".insertJnt" 2;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
+	setAttr ".rig_part" -type "string" "shoulder";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "knee";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "L_knee_locShape" -p "L_knee_loc";
-	rename -uid "9838A280-4F2D-45F8-2129-FFA9B8DD3026";
+	setAttr ".rig_side" -type "string" "L";
+	setAttr -k on ".insertJnt" 2;
+createNode locator -n "L_shoulder_locShape" -p "L_shoulder_loc";
+	rename -uid "CB193003-4D2E-29E6-D86D-988564F31182";
 	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
 	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "L_hipExtra_loc_Grp" -p "L_knee_loc";
-	rename -uid "1EF38131-4555-2E0D-B17E-8A8A19B7617A";
-createNode transform -n "L_hipExtra_loc" -p "L_hipExtra_loc_Grp";
-	rename -uid "539CC65C-4555-A751-2404-5889174C659B";
+createNode transform -n "L_elbow_loc_Grp" -p "L_shoulder_loc";
+	rename -uid "A79E3468-484D-1085-0233-6C81EAF2CD4B";
+	setAttr ".t" -type "double3" 6 0 -1 ;
+createNode transform -n "L_elbow_loc" -p "L_elbow_loc_Grp";
+	rename -uid "5167D135-409B-7A54-FCA6-EB81D2C07649";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "extra";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "hip";
-	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "L_hipExtra_locShape" -p "L_hipExtra_loc";
-	rename -uid "0EDF614D-4534-3742-170C-36B4A6E6D0B6";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode parentConstraint -n "L_hipExtra_loc_Grp_parentConstraint1" -p "L_hipExtra_loc_Grp";
-	rename -uid "47C53316-466E-B248-383E-C8AE8BDA8405";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_aim_support1W0" -dv 1 -min 
-		0 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".tg[0].tot" -type "double3" 0 2.1416185444889582 0.9950371902099886 ;
-	setAttr ".tg[0].tor" -type "double3" 5.7105931374996324 0 0 ;
-	setAttr ".lr" -type "double3" -7.9513867036587919e-16 0 0 ;
-	setAttr ".rst" -type "double3" 0 2.2299999999999986 0.77699999999999991 ;
-	setAttr ".rsrr" -type "double3" -7.9513867036587919e-16 0 0 ;
-	setAttr -k on ".w0";
-createNode transform -n "L_ankleExtra_loc_Grp" -p "L_knee_loc";
-	rename -uid "3B39E99F-478F-8945-B562-119EDE05BDB3";
-createNode transform -n "L_ankleExtra_loc" -p "L_ankleExtra_loc_Grp";
-	rename -uid "50EE6E7F-48BF-569D-1439-38A5D8EB6A3A";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
 	setAttr ".ove" yes;
-	setAttr ".ovc" 13;
+	setAttr ".ovc" 16;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "ankle";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "L_ankleExtra_locShape" -p "L_ankleExtra_loc";
-	rename -uid "5049139E-4CD8-70DF-A700-CD9D05A95599";
+	setAttr ".rig_side" -type "string" "L";
+	setAttr -k on ".insertJnt" 2;
+createNode locator -n "L_elbow_locShape" -p "L_elbow_loc";
+	rename -uid "9ED3448B-4EB4-36EF-EB81-139BDB6A5CDF";
 	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode parentConstraint -n "L_ankleExtra_loc_Grp_parentConstraint1" -p "L_ankleExtra_loc_Grp";
-	rename -uid "0F0B5748-4A69-8DE7-E6D4-66A76D1BC0D2";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_aim_support2W0" -dv 1 -min 
-		0 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".tg[0].tot" -type "double3" 0 -1.9089193597297989 0.9938837346736189 ;
-	setAttr ".tg[0].tor" -type "double3" -6.3401917459099115 0 0 ;
-	setAttr ".lr" -type "double3" -1.5902773407317584e-15 0 0 ;
-	setAttr ".rst" -type "double3" 0 -2.0070000000000014 0.77699999999999969 ;
-	setAttr ".rsrr" -type "double3" -1.5902773407317584e-15 0 0 ;
-	setAttr -k on ".w0";
-createNode transform -n "L_kneeExtra_loc_Grp" -p "L_knee_loc";
-	rename -uid "3BAFE887-45B9-43D0-D17F-4FBEF7F585D3";
-	setAttr ".t" -type "double3" 0 0 1 ;
-createNode transform -n "L_kneeExtra_loc" -p "L_kneeExtra_loc_Grp";
-	rename -uid "B874EEAC-4065-6760-E1D2-D08C7A267846";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "L_elbowExtra_loc_Grp" -p "L_elbow_loc";
+	rename -uid "DE852668-4C45-FD62-466F-32B5418D3265";
+	setAttr ".t" -type "double3" 0 0 -1 ;
+createNode transform -n "L_elbowExtra_loc" -p "L_elbowExtra_loc_Grp";
+	rename -uid "B32A2AA0-4773-6AEA-A84A-BF970FA4D4AA";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_attachBoneType" -ln "rig_attachBoneType" -dt "string";
+	addAttr -ci true -sn "rig_attachSide" -ln "rig_attachSide" -dt "string";
+	addAttr -ci true -sn "rig_attachAlp" -ln "rig_attachAlp" -dt "string";
+	addAttr -ci true -sn "rig_attachRole" -ln "rig_attachRole" -dt "string";
+	addAttr -ci true -sn "rig_attachData" -ln "rig_attachData" -dt "string";
+	addAttr -ci true -sn "rig_attachPart" -ln "rig_attachPart" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
+	setAttr ".rig_part" -type "string" "elbow";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "knee";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "L_kneeExtra_locShape" -p "L_kneeExtra_loc";
-	rename -uid "5F516FF5-47C4-62F6-1360-FCBE6305F7B3";
+	setAttr ".rig_side" -type "string" "L";
+	setAttr ".rig_attachBoneType" -type "string" "arm_type";
+	setAttr ".rig_attachSide" -type "string" "L";
+	setAttr ".rig_attachAlp" -type "string" "A";
+	setAttr ".rig_attachRole" -type "string" "main";
+	setAttr ".rig_attachData" -type "string" "loc";
+	setAttr ".rig_attachPart" -type "string" "elbow";
+createNode locator -n "L_elbowExtra_locShape" -p "L_elbowExtra_loc";
+	rename -uid "7573A57A-4487-C3A1-1B9B-2CA535D9A243";
 	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
 	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_aim_support2" -p "L_knee_loc";
-	rename -uid "940C5478-41C2-FFF1-EDB8-C792E4038325";
-	setAttr ".v" no;
-createNode aimConstraint -n "L_aim_support2_aimConstraint1" -p "L_aim_support2";
-	rename -uid "6F1D5818-4F9B-B2CD-CEAF-BFBF59D71C90";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_ankle_locW0" -dv 1 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 -1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
-	setAttr ".wut" 2;
-	setAttr ".rsrr" -type "double3" 6.3401917459099097 0 0 ;
-	setAttr -k on ".w0";
-createNode transform -n "L_aim_support1" -p "L_knee_loc";
-	rename -uid "45A0EE85-43E1-8CA8-D3A7-B2AB83EE4FB8";
+createNode transform -n "L_aim_support1" -p "L_elbow_loc";
+	rename -uid "E732E743-4C03-9F8E-293B-14907652C36C";
 	setAttr ".v" no;
 createNode aimConstraint -n "L_aim_support1_aimConstraint1" -p "L_aim_support1";
-	rename -uid "E51F4E23-4D2B-C541-056C-44AB89DA19A3";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_hip_locW0" -dv 1 -at "double";
+	rename -uid "4946DEFA-41A5-BA75-C360-E4871D0EAE22";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_shoulder_locW0" -dv 1 -at "double";
 	setAttr -k on ".nds";
 	setAttr -k off ".v";
 	setAttr -k off ".tx";
@@ -440,257 +504,16 @@ createNode aimConstraint -n "L_aim_support1_aimConstraint1" -p "L_aim_support1";
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
+	setAttr ".a" -type "double3" -1 0 0 ;
 	setAttr ".wut" 2;
-	setAttr ".rsrr" -type "double3" -5.7105931374996333 0 0 ;
+	setAttr ".rsrr" -type "double3" 0 14.036243467926484 0 ;
 	setAttr -k on ".w0";
-createNode transform -n "L_ankle_loc_Grp" -p "L_hip_loc";
-	rename -uid "C1AAA9A6-4FAE-2017-0764-ACAC196AAB9C";
-	setAttr ".t" -type "double3" 0 -19 0 ;
-createNode transform -n "L_ankle_loc" -p "L_ankle_loc_Grp";
-	rename -uid "AEB5FBC7-4ACE-28C5-57B4-D6AB37146CB2";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "ankle";
-	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "L_ankle_locShape" -p "L_ankle_loc";
-	rename -uid "F915A9C7-4303-6F95-5398-5AB76E25E746";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "L_toeEnd_loc_Grp" -p "L_ankle_loc";
-	rename -uid "DEC0F78C-448B-6445-FA7D-7FB8FB72AEB5";
-	setAttr ".t" -type "double3" 0 -1 6 ;
-createNode transform -n "L_toeEnd_loc" -p "L_toeEnd_loc_Grp";
-	rename -uid "70BFF8EE-434C-A5A5-B840-4CB48C12B9AF";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "toeEnd";
-	setAttr ".rig_index" -type "string" "4";
-createNode locator -n "L_toeEnd_locShape" -p "L_toeEnd_loc";
-	rename -uid "76D103B8-42C3-A543-62E2-E3B811BAFF0B";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "L_toe_loc_Grp" -p "L_ankle_loc";
-	rename -uid "355759B8-4697-0317-030D-4A9C478FD77C";
-	setAttr ".t" -type "double3" 0 -1 3 ;
-createNode transform -n "L_toe_loc" -p "L_toe_loc_Grp";
-	rename -uid "6D0B8197-4F63-EA0E-4F09-9DA4B4C6659A";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "toe";
-	setAttr ".rig_index" -type "string" "3";
-createNode locator -n "L_toe_locShape" -p "L_toe_loc";
-	rename -uid "E4C226DF-4BA5-373C-C0CB-BEAFD925E19B";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "L_heelExtra_loc_Grp" -p "L_ankle_loc";
-	rename -uid "5AE58F80-4213-81B6-BD89-ACBD7AE77298";
-	setAttr ".t" -type "double3" 0 -3 -1 ;
-createNode transform -n "L_heelPivot_loc" -p "L_heelExtra_loc_Grp";
-	rename -uid "BF9977AD-497F-B458-F380-69A0E1EE18A9";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "heel";
-	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "L_heelPivot_locShape" -p "L_heelPivot_loc";
-	rename -uid "F4114AC5-46D4-D010-0837-0A931B256BFA";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_toeEndExtra_loc_Grp" -p "L_ankle_loc";
-	rename -uid "7691642D-4E9A-45CE-F19D-E892848BE425";
-	setAttr ".t" -type "double3" 0 -3 6 ;
-createNode transform -n "L_toeEndPivot_loc" -p "L_toeEndExtra_loc_Grp";
-	rename -uid "5111838F-4899-AC19-B816-898850E04EF1";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "toeEnd";
-	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "L_toeEndPivot_locShape" -p "L_toeEndPivot_loc";
-	rename -uid "52C07705-4188-8FA4-9867-899534EB01DD";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_bankRightPivot_loc_Grp" -p "L_ankle_loc";
-	rename -uid "621E47A3-48FC-E3F0-4828-168BA6817A36";
-	setAttr ".t" -type "double3" -2 -3 3 ;
-createNode transform -n "L_bankRightPivot_loc" -p "|L_hip_mirror|L_hip_loc_Grp|L_hip_loc|L_ankle_loc_Grp|L_ankle_loc|L_bankRightPivot_loc_Grp";
-	rename -uid "6B46CFCC-4319-93CC-57FB-F0A050EE4C57";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "bankRight";
-	setAttr ".rig_index" -type "string" "4";
-createNode locator -n "L_bankRightPivot_locShape" -p "L_bankRightPivot_loc";
-	rename -uid "861FE37B-432E-74F7-2696-18A0A2591AA8";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_bankLeftPivot_loc_Grp" -p "L_ankle_loc";
-	rename -uid "D27E8CDE-4523-881F-308C-FCAD0E4C6480";
-	setAttr ".t" -type "double3" 2 -3 3 ;
-createNode transform -n "L_bankLeftPivot_loc" -p "L_bankLeftPivot_loc_Grp";
-	rename -uid "916BDDEC-4DFD-6760-FA24-2DAEE5C6F4D1";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "bankLeft";
-	setAttr ".rig_index" -type "string" "3";
-createNode locator -n "L_bankLeftPivot_locShape" -p "L_bankLeftPivot_loc";
-	rename -uid "586D4CBD-440D-9DFC-947E-5A977C3517E5";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_toeExtra_loc_Grp" -p "L_ankle_loc";
-	rename -uid "38D8158C-441C-D2C6-C150-989D610FEBA3";
-	setAttr ".t" -type "double3" 0 -3 3 ;
-createNode transform -n "L_toePivot_loc" -p "L_toeExtra_loc_Grp";
-	rename -uid "DBF428B4-41C0-214C-2D07-D482DF7EF5F0";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "toe";
-	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "L_toePivot_locShape" -p "L_toePivot_loc";
-	rename -uid "F95B676D-4387-7C7C-2C28-219B47AF0578";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_hip_vector_Grp" -p "L_hip_loc";
-	rename -uid "5573F941-4956-58AF-45CF-639AB98FB378";
-createNode transform -n "L_hip_vector" -p "L_hip_vector_Grp";
-	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -l on -k off ".v";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 6;
-	setAttr -l on -k off ".tx";
-	setAttr -l on -k off ".ty";
-	setAttr -l on -k off ".tz";
-	setAttr -l on -k off ".sx";
-	setAttr -l on -k off ".sy";
-	setAttr -l on -k off ".sz";
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "L";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "aimVector";
-	setAttr ".rig_part" -type "string" "hip";
-	setAttr ".rig_index" -type "string" "";
-createNode nurbsCurve -n "L_hip_vectorShape" -p "L_hip_vector";
-	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
-	setAttr -k off ".v";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 6 0 no 3
-		7 0 1 2 3 4 5 6
-		7
-		1.3877787807814457e-16 3.0531133177191805e-16 0.5
-		-1.3877787807814447e-16 -0.5 3.0531133177191815e-16
-		-1.3877787807814457e-16 -3.0531133177191805e-16 -0.5
-		-2.7755575615628914e-16 -6.106226635438361e-16 -1
-		-2.7755575615628894e-16 -1 6.1062266354383629e-16
-		2.7755575615628914e-16 6.106226635438361e-16 1
-		1.3877787807814457e-16 3.0531133177191805e-16 0.5
-		;
-createNode aimConstraint -n "L_hip_vector_Grp_aimConstraint1" -p "L_hip_vector_Grp";
-	rename -uid "A545E15E-4193-212F-1781-A5B37354E073";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_knee_locW0" -dv 1 -at "double";
+createNode transform -n "L_aim_support2" -p "L_elbow_loc";
+	rename -uid "DE52FD67-4595-BBEE-85E6-6A835796362C";
+	setAttr ".v" no;
+createNode aimConstraint -n "L_aim_support2_aimConstraint1" -p "L_aim_support2";
+	rename -uid "6C6FDF87-45C6-B431-D911-27A737FAEFF4";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_wrist_locW0" -dv 1 -at "double";
 	setAttr -k on ".nds";
 	setAttr -k off ".v";
 	setAttr -k off ".tx";
@@ -703,241 +526,37 @@ createNode aimConstraint -n "L_hip_vector_Grp_aimConstraint1" -p "L_hip_vector_G
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 -1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
 	setAttr ".wut" 2;
-	setAttr ".rsrr" -type "double3" -5.7105931374996333 0 0 ;
+	setAttr ".rsrr" -type "double3" 0 -14.036243467926484 0 ;
 	setAttr -k on ".w0";
-createNode transform -n "R_leg_nonParent";
-	rename -uid "6F6BA713-4471-3B28-3DE0-02A6C38F1749";
+createNode transform -n "L_shoulderExtra_loc_Grp" -p "L_elbow_loc";
+	rename -uid "60266F8D-49D5-EC66-38F5-D781DE28A1F8";
+createNode transform -n "L_shoulderExtra_loc" -p "L_shoulderExtra_loc_Grp";
+	rename -uid "58DC0E03-4E13-E694-F72A-7D84BA14EF08";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "container";
-	setAttr ".rig_data" -type "string" "group";
-	setAttr ".rig_part" -type "string" "nonParent";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "R_hip_Crv" -p "R_leg_nonParent";
-	rename -uid "51013E3D-4C92-8893-0AD1-5E82BA187D07";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "R_hip_CrvShape" -p "R_hip_Crv";
-	rename -uid "01B20A4C-46C4-F4C6-6BD9-4398C6120B80";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		-4 22 0
-		-4 12 1
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "hip";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "R_knee_Crv" -p "R_leg_nonParent";
-	rename -uid "4AB085AA-4559-8BF3-4AFC-A49B0041A4DB";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "R_knee_CrvShape" -p "R_knee_Crv";
-	rename -uid "E410B841-4F6B-D7A3-DBC2-82BFDC4160B3";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		-4 12 1
-		-4 3 0
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "knee";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "R_ankle_Crv" -p "R_leg_nonParent";
-	rename -uid "2E2A8420-4B95-B522-31E4-C7BBE7D198AD";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "R_ankle_CrvShape" -p "R_ankle_Crv";
-	rename -uid "09A4D16C-4B00-BB14-9781-4286F559D27D";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		-4 3 0
-		-4 2 3
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "ankle";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "R_toe_Crv" -p "R_leg_nonParent";
-	rename -uid "E002A64F-444A-7F22-AFAC-79979275B265";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "R_toe_CrvShape" -p "R_toe_Crv";
-	rename -uid "0D782B7C-485E-78E8-4D02-139FB6FA6150";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 2 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 1 0 no 3
-		2 0 1
-		2
-		-4 2 3
-		-4 2 6
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "toe";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "R_hip_mirror";
-	rename -uid "E2B46FC1-4DFA-A4AA-6632-6F93C77BFFD8";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".t" -type "double3" -4 22 0 ;
-	setAttr ".s" -type "double3" -1 1 1 ;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "mirror";
-	setAttr ".rig_data" -type "string" "space";
-	setAttr ".rig_part" -type "string" "mirrorRoot";
-	setAttr ".rig_index" -type "string" "";
-createNode transform -n "R_hip_loc_Grp" -p "R_hip_mirror";
-	rename -uid "3D9D2BA5-4B2F-0EBF-6A4D-C3A3923F734C";
-createNode transform -n "R_hip_loc" -p "R_hip_loc_Grp";
-	rename -uid "69F9362B-4B50-E5D3-3EB7-109FD6758E2A";
-	addAttr -ci true -k true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 16;
-	setAttr -k on ".insertJnt" 2;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "hip";
-	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "R_hip_locShape" -p "R_hip_loc";
-	rename -uid "DC0E15EB-475B-52FE-D50E-A69B492FD47F";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "R_knee_loc_Grp" -p "R_hip_loc";
-	rename -uid "73A56171-4315-B1CE-D89B-3CB7B33E9FB9";
-	setAttr ".t" -type "double3" 0 -10 1 ;
-createNode transform -n "R_knee_loc" -p "R_knee_loc_Grp";
-	rename -uid "86F53CC9-4A19-7335-3EA8-2F9C02DC8C55";
-	addAttr -ci true -k true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 16;
-	setAttr -k on ".insertJnt" 2;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "knee";
-	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "R_knee_locShape" -p "R_knee_loc";
-	rename -uid "B1AE548D-4FC5-EAF2-D451-71A580B54540";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "R_hipExtra_loc_Grp" -p "R_knee_loc";
-	rename -uid "C8C00FC1-45FD-5A1D-7DFF-D9A51ACF4D01";
-createNode transform -n "R_hipExtra_loc" -p "R_hipExtra_loc_Grp";
-	rename -uid "49DB70A1-4363-F7F2-E8C6-5C942E3C199F";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_part" -type "string" "shoulder";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "hip";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "R_hipExtra_locShape" -p "R_hipExtra_loc";
-	rename -uid "76898647-4696-C8CA-842C-5D8C65F31402";
+	setAttr ".rig_side" -type "string" "L";
+createNode locator -n "L_shoulderExtra_locShape" -p "L_shoulderExtra_loc";
+	rename -uid "FC09E6B4-4E3F-0970-3E90-A0AA77A7F6F1";
 	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
 	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode parentConstraint -n "R_hipExtra_loc_Grp_parentConstraint1" -p "R_hipExtra_loc_Grp";
-	rename -uid "5DDFE002-4C09-8D98-DA8E-F9A176C6FB66";
+createNode parentConstraint -n "L_shoulderExtra_loc_Grp_parentConstraint1" -p "L_shoulderExtra_loc_Grp";
+	rename -uid "7E359195-48DE-9CBE-D786-F29816BEB51C";
 	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_aim_support1W0" -dv 1 -min 
 		0 -at "double";
 	setAttr -k on ".nds";
@@ -952,38 +571,40 @@ createNode parentConstraint -n "R_hipExtra_loc_Grp_parentConstraint1" -p "R_hipE
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".tg[0].tot" -type "double3" 0 2.1416185444889582 0.9950371902099886 ;
-	setAttr ".tg[0].tor" -type "double3" 5.7105931374996324 0 0 ;
-	setAttr ".lr" -type "double3" -7.9513867036587919e-16 0 0 ;
-	setAttr ".rst" -type "double3" 0 2.2299999999999986 0.77699999999999991 ;
-	setAttr ".rsrr" -type "double3" -7.9513867036587919e-16 0 0 ;
+	setAttr ".tg[0].tot" -type "double3" -0.78849495115163837 0 -0.96912582101110889 ;
+	setAttr ".tg[0].tor" -type "double3" 0 -14.036243467926484 0 ;
+	setAttr ".lr" -type "double3" 0 -4.5739212599008727 0 ;
+	setAttr ".rst" -type "double3" -1 0 -0.74895203113555908 ;
+	setAttr ".rsrr" -type "double3" 0 -1.5902773407317584e-15 0 ;
 	setAttr -k on ".w0";
-createNode transform -n "R_ankleExtra_loc_Grp" -p "R_knee_loc";
-	rename -uid "55EE8441-43F0-7048-E167-8CBCBB1F9355";
-createNode transform -n "R_ankleExtra_loc" -p "R_ankleExtra_loc_Grp";
-	rename -uid "E0B6A16F-4095-1CFD-3698-649C6D6CFA74";
+createNode transform -n "L_wristExtra_loc_Grp" -p "L_elbow_loc";
+	rename -uid "8E6071E6-4947-94FA-0B7C-9D93A5B1C7B7";
+createNode transform -n "L_wristExtra_loc" -p "L_wristExtra_loc_Grp";
+	rename -uid "7C1A2EC4-43CC-ED35-9728-238D7926B46B";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 13;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_part" -type "string" "wrist";
 	setAttr ".rig_role" -type "string" "extra";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "ankle";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "R_ankleExtra_locShape" -p "R_ankleExtra_loc";
-	rename -uid "D0BDF75E-49A1-1883-2A28-F18801A3459E";
+	setAttr ".rig_side" -type "string" "L";
+createNode locator -n "L_wristExtra_locShape" -p "L_wristExtra_loc";
+	rename -uid "0C350407-4427-2808-A29D-6D9BC43D6CF0";
 	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
 	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode parentConstraint -n "R_ankleExtra_loc_Grp_parentConstraint1" -p "R_ankleExtra_loc_Grp";
-	rename -uid "94D1D2AA-40A2-3E71-945D-DC849BCF4945";
+createNode parentConstraint -n "L_wristExtra_loc_Grp_parentConstraint1" -p "L_wristExtra_loc_Grp";
+	rename -uid "3098E700-4CC5-B7F7-B905-D1B99259BDF9";
 	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_aim_support2W0" -dv 1 -min 
 		0 -at "double";
 	setAttr -k on ".nds";
@@ -998,296 +619,72 @@ createNode parentConstraint -n "R_ankleExtra_loc_Grp_parentConstraint1" -p "R_an
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".tg[0].tot" -type "double3" 0 -1.9089193597297989 0.9938837346736189 ;
-	setAttr ".tg[0].tor" -type "double3" -6.3401917459099115 0 0 ;
-	setAttr ".lr" -type "double3" -1.5902773407317584e-15 0 0 ;
-	setAttr ".rst" -type "double3" 0 -2.0070000000000014 0.77699999999999969 ;
-	setAttr ".rsrr" -type "double3" -1.5902773407317584e-15 0 0 ;
+	setAttr ".tg[0].tot" -type "double3" 0.78847494370194671 0 -0.96920585080986621 ;
+	setAttr ".tg[0].tor" -type "double3" 0 14.036243467926484 0 ;
+	setAttr ".lr" -type "double3" 0 4.5739212599008727 0 ;
+	setAttr ".rst" -type "double3" 0.99999999999999822 0 -0.749034523963928 ;
+	setAttr ".rsrr" -type "double3" 0 1.5902773407317584e-15 0 ;
 	setAttr -k on ".w0";
-createNode transform -n "R_kneeExtra_loc_Grp" -p "R_knee_loc";
-	rename -uid "AB412DDF-4B68-CA9E-1F05-6E93FB4F7F81";
-	setAttr ".t" -type "double3" 0 0 1 ;
-createNode transform -n "R_kneeExtra_loc" -p "R_kneeExtra_loc_Grp";
-	rename -uid "F8B92FFC-46B9-2D62-AF86-94AAA5B08351";
+createNode transform -n "L_wrist_loc_Grp" -p "L_shoulder_loc";
+	rename -uid "792A1CAA-4470-6FD0-4930-9B8D8229586B";
+	setAttr ".t" -type "double3" 12 0 0 ;
+createNode transform -n "L_wrist_loc" -p "L_wrist_loc_Grp";
+	rename -uid "F3AC1B81-4C71-5B06-BAA6-7A9B3FB28F78";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "extra";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "knee";
-	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "R_kneeExtra_locShape" -p "R_kneeExtra_loc";
-	rename -uid "B8240EC1-4B98-F105-75EB-B194530945DA";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "R_aim_support2" -p "R_knee_loc";
-	rename -uid "DF17F597-4C52-449E-3162-95A0F7D4482E";
-	setAttr ".v" no;
-createNode aimConstraint -n "R_aim_support2_aimConstraint1" -p "R_aim_support2";
-	rename -uid "A56DBC35-494A-A5A3-8494-9CB9743E73DA";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_ankle_locW0" -dv 1 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 -1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
-	setAttr ".wut" 2;
-	setAttr ".rsrr" -type "double3" 6.3401917459099097 0 0 ;
-	setAttr -k on ".w0";
-createNode transform -n "R_aim_support1" -p "R_knee_loc";
-	rename -uid "FB60EC1B-4B02-649A-DF5B-4CBD9AEFA3B0";
-	setAttr ".v" no;
-createNode aimConstraint -n "R_aim_support1_aimConstraint1" -p "R_aim_support1";
-	rename -uid "DBB6281A-4318-11AC-2D29-D7B14783EF43";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_hip_locW0" -dv 1 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
-	setAttr ".wut" 2;
-	setAttr ".rsrr" -type "double3" -5.7105931374996333 0 0 ;
-	setAttr -k on ".w0";
-createNode transform -n "R_ankle_loc_Grp" -p "R_hip_loc";
-	rename -uid "53CA8C06-48F7-DCB2-B75E-6EB9E954ADBA";
-	setAttr ".t" -type "double3" 0 -19 0 ;
-createNode transform -n "R_ankle_loc" -p "R_ankle_loc_Grp";
-	rename -uid "DD7BD4ED-44F6-92D9-3DAE-589DCAC955CA";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_part" -type "string" "wrist";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "ankle";
-	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "R_ankle_locShape" -p "R_ankle_loc";
-	rename -uid "E1F476D6-4836-4780-7644-A39227BD1F47";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "R_toeEnd_loc_Grp" -p "R_ankle_loc";
-	rename -uid "4490DF6F-4FEC-3E44-5FF8-EDA9078545FB";
-	setAttr ".t" -type "double3" 0 -1 6 ;
-createNode transform -n "R_toeEnd_loc" -p "R_toeEnd_loc_Grp";
-	rename -uid "712A7454-443D-AF40-775B-448A6EEDD18A";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "toeEnd";
-	setAttr ".rig_index" -type "string" "4";
-createNode locator -n "R_toeEnd_locShape" -p "R_toeEnd_loc";
-	rename -uid "4CE9B995-4C8E-133B-DA3F-C78F5ED25A12";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "R_toe_loc_Grp" -p "R_ankle_loc";
-	rename -uid "F8182114-4267-42D9-9AE9-9CAA8A78FA9F";
-	setAttr ".t" -type "double3" 0 -1 3 ;
-createNode transform -n "R_toe_loc" -p "R_toe_loc_Grp";
-	rename -uid "03F0C662-4030-E753-1321-3886B43269BC";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "toe";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "3";
-createNode locator -n "R_toe_locShape" -p "R_toe_loc";
-	rename -uid "53707AA7-4BF0-C5D7-501A-F19D8D9FF069";
+	setAttr ".rig_side" -type "string" "L";
+createNode locator -n "L_wrist_locShape" -p "L_wrist_loc";
+	rename -uid "4615A63C-4D31-B35F-C62F-64874FC1837B";
 	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
 	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
-createNode transform -n "R_heelExtra_loc_Grp" -p "R_ankle_loc";
-	rename -uid "D4E27D45-4EF1-8291-3229-C78CF5B0C320";
-	setAttr ".t" -type "double3" 0 -3 -1 ;
-createNode transform -n "R_heelPivot_loc" -p "R_heelExtra_loc_Grp";
-	rename -uid "F63BCA48-4080-2519-857E-11B737E79912";
+createNode transform -n "L_wristEnd_loc_Grp" -p "L_wrist_loc";
+	rename -uid "70FE2DD2-4A1A-00CA-264A-6294693CEE1F";
+	setAttr ".t" -type "double3" 1 0 0 ;
+createNode transform -n "L_wristEnd_loc" -p "L_wristEnd_loc_Grp";
+	rename -uid "794C3892-4973-524D-5BAE-BD9D9DA068B6";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "heel";
-	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "R_heelPivot_locShape" -p "R_heelPivot_loc";
-	rename -uid "72741F1F-471D-790C-28E8-899CA873D207";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "R_toeEndExtra_loc_Grp" -p "R_ankle_loc";
-	rename -uid "A69F2FAD-4285-5B7A-C298-22A12219BC9E";
-	setAttr ".t" -type "double3" 0 -3 6 ;
-createNode transform -n "R_toeEndPivot_loc" -p "R_toeEndExtra_loc_Grp";
-	rename -uid "07900117-4A80-1B83-93A4-2586E552997D";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_part" -type "string" "wristEnd";
 	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "toeEnd";
-	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "R_toeEndPivot_locShape" -p "R_toeEndPivot_loc";
-	rename -uid "BF327C5C-4A63-9419-3CB5-CBAED9D6A7B7";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "L_bankRightPivot_loc_Grp" -p "R_ankle_loc";
-	rename -uid "B032418B-4B14-C877-2D2D-7BB628C7726F";
-	setAttr ".t" -type "double3" -2 -3 3 ;
-createNode transform -n "R_bankRightPivot_loc" -p "|R_hip_mirror|R_hip_loc_Grp|R_hip_loc|R_ankle_loc_Grp|R_ankle_loc|L_bankRightPivot_loc_Grp";
-	rename -uid "6E6FAC53-4E87-EA6A-0B86-398ACE2C1A81";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "bankRight";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
 	setAttr ".rig_index" -type "string" "4";
-createNode locator -n "R_bankRightPivot_locShape" -p "R_bankRightPivot_loc";
-	rename -uid "EC97ED38-4800-B5CF-8C95-30BC3B3FF79A";
+	setAttr ".rig_side" -type "string" "L";
+createNode locator -n "L_wristEnd_locShape" -p "L_wristEnd_loc";
+	rename -uid "57F3810C-4300-5FD0-E974-A8A10929AC1F";
 	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "R_bankLeftPivot_loc_Grp" -p "R_ankle_loc";
-	rename -uid "B3FACB3A-447B-C1A9-77C0-90B6E329E8D5";
-	setAttr ".t" -type "double3" 2 -3 3 ;
-createNode transform -n "R_bankLeftPivot_loc" -p "R_bankLeftPivot_loc_Grp";
-	rename -uid "6B3074BB-40AC-C2E6-B5C9-4092E3512741";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
 	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "bankLeft";
-	setAttr ".rig_index" -type "string" "3";
-createNode locator -n "R_bankLeftPivot_locShape" -p "R_bankLeftPivot_loc";
-	rename -uid "EE8EFD41-4B00-399E-DAD5-E6BB2655931A";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "R_toeExtra_loc_Grp" -p "R_ankle_loc";
-	rename -uid "D7A686D0-42E1-8D06-E262-3EAAED1A45A6";
-	setAttr ".t" -type "double3" 0 -3 3 ;
-createNode transform -n "R_toePivot_loc" -p "R_toeExtra_loc_Grp";
-	rename -uid "CA7DC619-4939-0B93-E3EA-289F0F47404C";
+	setAttr ".ovc" 17;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "L_shoulder_vector_Grp" -p "L_shoulder_loc";
+	rename -uid "3DE0CFD8-4601-A3D9-57F8-AA81968DCCCA";
+createNode transform -n "L_shoulder_vector" -p "L_shoulder_vector_Grp";
+	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
 	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
 	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 9;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "pivot";
-	setAttr ".rig_part" -type "string" "toe";
-	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "R_toePivot_locShape" -p "R_toePivot_loc";
-	rename -uid "E6721F25-44C2-E7E6-90F4-7BAA78DC79F5";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "R_hip_vector_Grp" -p "R_hip_loc";
-	rename -uid "E6FA76DC-42E9-D661-CF9C-1080E352AB16";
-createNode transform -n "R_hip_vector" -p "R_hip_vector_Grp";
-	rename -uid "A18389BC-43E7-D748-B593-179A0A05B8CB";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
 	setAttr -l on -k off ".v";
 	setAttr ".ove" yes;
 	setAttr ".ovc" 6;
@@ -1298,30 +695,51 @@ createNode transform -n "R_hip_vector" -p "R_hip_vector_Grp";
 	setAttr -l on -k off ".sy";
 	setAttr -l on -k off ".sz";
 	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "leg_type";
-	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_part" -type "string" "shoulder_aim";
 	setAttr ".rig_role" -type "string" "main";
 	setAttr ".rig_data" -type "string" "aimVector";
-	setAttr ".rig_part" -type "string" "hip";
-	setAttr ".rig_index" -type "string" "";
-createNode nurbsCurve -n "R_hip_vectorShape" -p "R_hip_vector";
-	rename -uid "D90D24B2-40FC-1166-4204-1B99CA385C30";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_shoulder_vectorShape" -p "L_shoulder_vector";
+	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
 	setAttr -k off ".v";
+	setAttr -s 7 ".cp";
+	setAttr -av ".cp[0].xv";
+	setAttr -av ".cp[0].yv";
+	setAttr -av ".cp[0].zv";
+	setAttr -av ".cp[1].xv";
+	setAttr -av ".cp[1].yv";
+	setAttr -av ".cp[1].zv";
+	setAttr -av ".cp[2].xv";
+	setAttr -av ".cp[2].yv";
+	setAttr -av ".cp[2].zv";
+	setAttr -av ".cp[3].xv";
+	setAttr -av ".cp[3].yv";
+	setAttr -av ".cp[3].zv";
+	setAttr -av ".cp[4].xv";
+	setAttr -av ".cp[4].yv";
+	setAttr -av ".cp[4].zv";
+	setAttr -av ".cp[5].xv";
+	setAttr -av ".cp[5].yv";
+	setAttr -av ".cp[5].zv";
+	setAttr -av ".cp[6].xv";
+	setAttr -av ".cp[6].yv";
+	setAttr -av ".cp[6].zv";
 	setAttr ".cc" -type "nurbsCurve" 
 		1 6 0 no 3
 		7 0 1 2 3 4 5 6
 		7
-		1.3877787807814457e-16 3.0531133177191805e-16 0.5
-		-1.3877787807814447e-16 -0.5 3.0531133177191815e-16
-		-1.3877787807814457e-16 -3.0531133177191805e-16 -0.5
-		-2.7755575615628914e-16 -6.106226635438361e-16 -1
-		-2.7755575615628894e-16 -1 6.1062266354383629e-16
-		2.7755575615628914e-16 6.106226635438361e-16 1
-		1.3877787807814457e-16 3.0531133177191805e-16 0.5
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		0.49999999999999989 -1.6653345369377348e-16 1.6653345369377348e-16
+		1.6653345369377348e-16 0.49999999999999983 0
+		3.3306690738754696e-16 0.99999999999999967 0
+		0.99999999999999978 -3.3306690738754696e-16 3.3306690738754696e-16
+		-3.3306690738754696e-16 -0.99999999999999967 0
+		-1.6653345369377348e-16 -0.49999999999999983 0
 		;
-createNode aimConstraint -n "R_hip_vector_Grp_aimConstraint1" -p "R_hip_vector_Grp";
-	rename -uid "B4E7C6B7-447C-99B4-CF51-30BB74E410CC";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_knee_locW0" -dv 1 -at "double";
+createNode aimConstraint -n "L_shoulder_vector_Grp_aimConstraint1" -p "L_shoulder_vector_Grp";
+	rename -uid "93BA9CAA-4CEF-7CE2-1947-B9B0B19AAED7";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_elbow_locW0" -dv 1 -at "double";
 	setAttr -k on ".nds";
 	setAttr -k off ".v";
 	setAttr -k off ".tx";
@@ -1334,53 +752,1086 @@ createNode aimConstraint -n "R_hip_vector_Grp_aimConstraint1" -p "R_hip_vector_G
 	setAttr -k off ".sy";
 	setAttr -k off ".sz";
 	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 -1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
 	setAttr ".wut" 2;
-	setAttr ".rsrr" -type "double3" -5.7105931374996333 0 0 ;
+	setAttr ".rsrr" -type "double3" 0 14.036243467926484 0 ;
+	setAttr -k on ".w0";
+createNode transform -n "L_scapula_vector_Grp" -p "L_scapula_loc";
+	rename -uid "2849F24E-4AC0-5224-977E-6B8FBEFF6408";
+createNode transform -n "L_scapula_vector" -p "L_scapula_vector_Grp";
+	rename -uid "B5A417E5-4236-AC78-5543-63929CE5F9F6";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -l on -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 6;
+	setAttr -l on -k off ".tx";
+	setAttr -l on -k off ".ty";
+	setAttr -l on -k off ".tz";
+	setAttr -l on -k off ".sx";
+	setAttr -l on -k off ".sy";
+	setAttr -l on -k off ".sz";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "aimVector";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "L";
+createNode nurbsCurve -n "L_scapula_vectorShape" -p "L_scapula_vector";
+	rename -uid "0F680832-498C-0712-BD6F-FF9545D42E85";
+	setAttr -k off ".v";
+	setAttr -av ".cp[0].xv";
+	setAttr -av ".cp[0].yv";
+	setAttr -av ".cp[0].zv";
+	setAttr -av ".cp[1].xv";
+	setAttr -av ".cp[1].yv";
+	setAttr -av ".cp[1].zv";
+	setAttr -av ".cp[2].xv";
+	setAttr -av ".cp[2].yv";
+	setAttr -av ".cp[2].zv";
+	setAttr -av ".cp[3].xv";
+	setAttr -av ".cp[3].yv";
+	setAttr -av ".cp[3].zv";
+	setAttr -av ".cp[4].xv";
+	setAttr -av ".cp[4].yv";
+	setAttr -av ".cp[4].zv";
+	setAttr -av ".cp[5].xv";
+	setAttr -av ".cp[5].yv";
+	setAttr -av ".cp[5].zv";
+	setAttr -av ".cp[6].xv";
+	setAttr -av ".cp[6].yv";
+	setAttr -av ".cp[6].zv";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 6 0 no 3
+		7 0 1 2 3 4 5 6
+		7
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		0.49999999999999989 -1.6653345369377348e-16 1.6653345369377348e-16
+		1.6653345369377348e-16 0.49999999999999983 0
+		3.3306690738754696e-16 0.99999999999999967 0
+		0.99999999999999978 -3.3306690738754696e-16 3.3306690738754696e-16
+		-3.3306690738754696e-16 -0.99999999999999967 0
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		;
+createNode aimConstraint -n "L_scapula_vector_Grp_aimConstraint1" -p "L_scapula_vector_Grp";
+	rename -uid "182AA397-43FD-528A-7595-BFA2F282160B";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_shoulder_locW0" -dv 1 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".wut" 2;
+	setAttr -k on ".w0";
+createNode transform -n "R_arm_nonParent";
+	rename -uid "6C59F2B3-452C-7600-9C63-008DC7D74778";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "nonParent";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_scapula_Crv" -p "R_arm_nonParent";
+	rename -uid "E3558B41-4B8C-AE27-7132-0C97F58219A3";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_scapula_CrvShape" -p "R_scapula_Crv";
+	rename -uid "09C09DCD-475B-CD14-F334-ED92CA1BDADD";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		-1 44 0
+		-5 44 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_shoulder_Crv" -p "R_arm_nonParent";
+	rename -uid "4255332C-4F7B-DE70-14E6-50AF44C879D1";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_shoulder_CrvShape" -p "R_shoulder_Crv";
+	rename -uid "013F7AA2-4183-681B-AC6A-ABA08362DB5B";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		-5 44 0
+		-11 44 -1
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_elbow_Crv" -p "R_arm_nonParent";
+	rename -uid "4A37646D-4E3E-D565-88DD-18AEDAA8A860";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_elbow_CrvShape" -p "R_elbow_Crv";
+	rename -uid "2BB16BF4-4E77-53E9-EA24-268D7FCADE11";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		-11 44 -1
+		-17 44 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_wrist_Crv" -p "R_arm_nonParent";
+	rename -uid "E4B9626B-429A-29CE-3BB3-AF9508D609EC";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wrist";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_wrist_CrvShape" -p "R_wrist_Crv";
+	rename -uid "6C8C5208-4DFC-E011-D189-6A92B54F7969";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		-17 44 0
+		-18 44 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wrist";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_shoulderExtra_Crv" -p "R_arm_nonParent";
+	rename -uid "95C81FF0-42B6-FCB3-F2B8-DFA8DB65D6D7";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_shoulderExtra_CrvShape" -p "R_shoulderExtra_Crv";
+	rename -uid "BC9AD895-4C89-7DCC-0B68-2BA876413C36";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		-10.062910067666001 44 -1.8263120498094789
+		-11 44 -2
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_elbowExtra_Crv" -p "R_arm_nonParent";
+	rename -uid "86F83AEB-4D98-5CF4-ED27-96B1AB1EE1CA";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curve";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_elbowExtra_CrvShape" -p "R_elbowExtra_Crv";
+	rename -uid "964D5A79-42E2-7AB3-5CA0-34ADA8B6F4F8";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 2 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 1 0 no 3
+		2 0 1
+		2
+		-11 44 -2
+		-11.937083353925061 44 -1.8263942799211668
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_scapula_mirror";
+	rename -uid "E91B8AE6-4243-6468-587F-BC8AB3EE5736";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_attachBoneType" -ln "rig_attachBoneType" -dt "string";
+	addAttr -ci true -sn "rig_attachSide" -ln "rig_attachSide" -dt "string";
+	addAttr -ci true -sn "rig_attachAlp" -ln "rig_attachAlp" -dt "string";
+	addAttr -ci true -sn "rig_attachRole" -ln "rig_attachRole" -dt "string";
+	addAttr -ci true -sn "rig_attachData" -ln "rig_attachData" -dt "string";
+	addAttr -ci true -sn "rig_attachPart" -ln "rig_attachPart" -dt "string";
+	setAttr ".t" -type "double3" -1 44 0 ;
+	setAttr ".s" -type "double3" -1 1 1 ;
+	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "mirrorRoot";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_attachBoneType" -type "string" "root_type";
+	setAttr ".rig_attachSide" -type "string" "C";
+	setAttr ".rig_attachAlp" -type "string" "A";
+	setAttr ".rig_attachRole" -type "string" "main";
+	setAttr ".rig_attachData" -type "string" "loc";
+	setAttr ".rig_attachPart" -type "string" "chest";
+createNode transform -n "R_scapula_loc_Grp" -p "R_scapula_mirror";
+	rename -uid "5B0AB875-4EE0-E3BD-CC8F-99BCF1821D79";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "rootPoint";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode transform -n "R_scapula_loc" -p "R_scapula_loc_Grp";
+	rename -uid "83CC8C80-4182-BAEB-2D87-D88BB63D71BA";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "0";
+	setAttr ".rig_side" -type "string" "R";
+createNode locator -n "R_scapula_locShape" -p "R_scapula_loc";
+	rename -uid "B6E8CC05-4D5B-BA15-6AE5-43989EF4312A";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "R_shoulder_loc_Grp" -p "R_scapula_loc";
+	rename -uid "F7460078-4174-3D0D-AD2E-6D9845608F03";
+	setAttr ".t" -type "double3" 4 0 0 ;
+createNode transform -n "R_shoulder_loc" -p "R_shoulder_loc_Grp";
+	rename -uid "33A0EF7B-4239-4F81-88DE-999904273661";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "1";
+	setAttr ".rig_side" -type "string" "R";
+	setAttr -k on ".insertJnt" 2;
+createNode locator -n "R_shoulder_locShape" -p "R_shoulder_loc";
+	rename -uid "07DE7CE5-4EC9-E3F7-98DD-559E4ADBC7B8";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "R_elbow_loc_Grp" -p "R_shoulder_loc";
+	rename -uid "E84EEE3F-42D0-F116-731F-9BA8FAA89F89";
+	setAttr ".t" -type "double3" 6 0 -1 ;
+createNode transform -n "R_elbow_loc" -p "R_elbow_loc_Grp";
+	rename -uid "6C047D5E-4E68-91D9-28A0-8A8DFB7D8F42";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "2";
+	setAttr ".rig_side" -type "string" "R";
+	setAttr -k on ".insertJnt" 2;
+createNode locator -n "R_elbow_locShape" -p "R_elbow_loc";
+	rename -uid "19D70C1D-44F3-4A6C-F180-50A556078CC9";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "R_elbowExtra_loc_Grp" -p "R_elbow_loc";
+	rename -uid "199298A8-4815-1996-C29B-DDABB6FC6644";
+	setAttr ".t" -type "double3" 0 0 -1 ;
+createNode transform -n "R_elbowExtra_loc" -p "R_elbowExtra_loc_Grp";
+	rename -uid "E24F1058-4605-5425-68CF-189351A3B87B";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_attachBoneType" -ln "rig_attachBoneType" -dt "string";
+	addAttr -ci true -sn "rig_attachSide" -ln "rig_attachSide" -dt "string";
+	addAttr -ci true -sn "rig_attachAlp" -ln "rig_attachAlp" -dt "string";
+	addAttr -ci true -sn "rig_attachRole" -ln "rig_attachRole" -dt "string";
+	addAttr -ci true -sn "rig_attachData" -ln "rig_attachData" -dt "string";
+	addAttr -ci true -sn "rig_attachPart" -ln "rig_attachPart" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "elbow";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "1";
+	setAttr ".rig_side" -type "string" "R";
+	setAttr ".rig_attachBoneType" -type "string" "arm_type";
+	setAttr ".rig_attachSide" -type "string" "R";
+	setAttr ".rig_attachAlp" -type "string" "A";
+	setAttr ".rig_attachRole" -type "string" "main";
+	setAttr ".rig_attachData" -type "string" "loc";
+	setAttr ".rig_attachPart" -type "string" "elbow";
+createNode locator -n "R_elbowExtra_locShape" -p "R_elbowExtra_loc";
+	rename -uid "3033184A-4E75-92CD-32F5-A884392A1933";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode transform -n "R_aim_support1" -p "R_elbow_loc";
+	rename -uid "74984A87-4398-AAFC-7B60-8BB341314B83";
+	setAttr ".v" no;
+createNode aimConstraint -n "R_aim_support1_aimConstraint1" -p "R_aim_support1";
+	rename -uid "EBDFD698-49C4-725C-3C88-B9917A76D375";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_shoulder_locW0" -dv 1 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".a" -type "double3" -1 0 0 ;
+	setAttr ".wut" 2;
+	setAttr ".rsrr" -type "double3" 0 14.036243467926484 0 ;
+	setAttr -k on ".w0";
+createNode transform -n "R_aim_support2" -p "R_elbow_loc";
+	rename -uid "384B0C6F-415C-3B41-142C-76BAA991A238";
+	setAttr ".v" no;
+createNode aimConstraint -n "R_aim_support2_aimConstraint1" -p "R_aim_support2";
+	rename -uid "AECCBA67-4FDA-500F-EC87-6DB8F18C91D5";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_wrist_locW0" -dv 1 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".wut" 2;
+	setAttr ".rsrr" -type "double3" 0 -14.036243467926484 0 ;
+	setAttr -k on ".w0";
+createNode transform -n "R_shoulderExtra_loc_Grp" -p "R_elbow_loc";
+	rename -uid "0A7A3CEC-429C-2127-198A-CA9D4F2127EB";
+createNode transform -n "R_shoulderExtra_loc" -p "R_shoulderExtra_loc_Grp";
+	rename -uid "61A066C3-41DC-4B93-2D76-47BA90A63577";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "0";
+	setAttr ".rig_side" -type "string" "R";
+createNode locator -n "R_shoulderExtra_locShape" -p "R_shoulderExtra_loc";
+	rename -uid "CB2E0F4B-4ECD-3F9F-DAD0-9F9144CFE69B";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode parentConstraint -n "R_shoulderExtra_loc_Grp_parentConstraint1" -p "R_shoulderExtra_loc_Grp";
+	rename -uid "73903921-4864-601D-1081-F389443192F3";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_aim_support1W0" -dv 1 -min 
+		0 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".tg[0].tot" -type "double3" -0.78849495115163837 0 -0.96912582101110889 ;
+	setAttr ".tg[0].tor" -type "double3" 0 -14.036243467926484 0 ;
+	setAttr ".lr" -type "double3" 0 -4.5739212599008727 0 ;
+	setAttr ".rst" -type "double3" -1 0 -0.74895203113555908 ;
+	setAttr ".rsrr" -type "double3" 0 -1.5902773407317584e-15 0 ;
+	setAttr -k on ".w0";
+createNode transform -n "R_wristExtra_loc_Grp" -p "R_elbow_loc";
+	rename -uid "06A1A806-47D7-CA3F-00C9-A19B685BF7BD";
+createNode transform -n "R_wristExtra_loc" -p "R_wristExtra_loc_Grp";
+	rename -uid "08186CA4-41AC-FBA1-19D6-26B738DFF6B5";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wrist";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "2";
+	setAttr ".rig_side" -type "string" "R";
+createNode locator -n "R_wristExtra_locShape" -p "R_wristExtra_loc";
+	rename -uid "42046E06-4D5A-D6C6-ECD0-A78169800FC8";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode parentConstraint -n "R_wristExtra_loc_Grp_parentConstraint1" -p "R_wristExtra_loc_Grp";
+	rename -uid "EEE524BB-46D9-AB3E-2783-91A90F3573EB";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_aim_support2W0" -dv 1 -min 
+		0 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".tg[0].tot" -type "double3" 0.78847494370194671 0 -0.96920585080986621 ;
+	setAttr ".tg[0].tor" -type "double3" 0 14.036243467926484 0 ;
+	setAttr ".lr" -type "double3" 0 4.5739212599008727 0 ;
+	setAttr ".rst" -type "double3" 0.99999999999999822 0 -0.749034523963928 ;
+	setAttr ".rsrr" -type "double3" 0 1.5902773407317584e-15 0 ;
+	setAttr -k on ".w0";
+createNode transform -n "R_wrist_loc_Grp" -p "R_shoulder_loc";
+	rename -uid "2F295F7F-44A1-B8D3-4C7F-FBAC7465D935";
+	setAttr ".t" -type "double3" 12 0 0 ;
+createNode transform -n "R_wrist_loc" -p "R_wrist_loc_Grp";
+	rename -uid "CCE51FF4-4426-57B1-7B06-EFB6937B0148";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wrist";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "3";
+	setAttr ".rig_side" -type "string" "R";
+createNode locator -n "R_wrist_locShape" -p "R_wrist_loc";
+	rename -uid "A1196C98-432C-C1E4-CCBF-1B814F6E69D9";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "R_wristEnd_loc_Grp" -p "R_wrist_loc";
+	rename -uid "525009D6-4F3A-DD0D-D8CF-54B59A7F7242";
+	setAttr ".t" -type "double3" 1 0 0 ;
+createNode transform -n "R_wristEnd_loc" -p "R_wristEnd_loc_Grp";
+	rename -uid "8856528A-4C52-6787-52BE-49A03F0EA0A8";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "wristEnd";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_index" -type "string" "4";
+	setAttr ".rig_side" -type "string" "R";
+createNode locator -n "R_wristEnd_locShape" -p "R_wristEnd_loc";
+	rename -uid "8EBCDF83-4091-B7C7-C9B4-3F9ED79C17BD";
+	setAttr -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
+	setAttr ".los" -type "double3" 0.5 0.5 0.5 ;
+createNode transform -n "R_shoulder_vector_Grp" -p "R_shoulder_loc";
+	rename -uid "7D0FE805-4EA3-B286-D3AA-3192C9A405D4";
+	setAttr ".t" -type "double3" 8.8817841970012523e-16 0 0 ;
+createNode transform -n "R_shoulder_vector" -p "R_shoulder_vector_Grp";
+	rename -uid "81403F15-48CE-5708-6F31-5296A2606328";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -l on -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 6;
+	setAttr -l on -k off ".tx";
+	setAttr -l on -k off ".ty";
+	setAttr -l on -k off ".tz";
+	setAttr -l on -k off ".sx";
+	setAttr -l on -k off ".sy";
+	setAttr -l on -k off ".sz";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "shoulder";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "aimVector";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_shoulder_vectorShape" -p "R_shoulder_vector";
+	rename -uid "41CD97D4-42EF-2866-EAF7-21BD76812529";
+	setAttr -k off ".v";
+	setAttr -s 7 ".cp";
+	setAttr -av ".cp[0].xv";
+	setAttr -av ".cp[0].yv";
+	setAttr -av ".cp[0].zv";
+	setAttr -av ".cp[1].xv";
+	setAttr -av ".cp[1].yv";
+	setAttr -av ".cp[1].zv";
+	setAttr -av ".cp[2].xv";
+	setAttr -av ".cp[2].yv";
+	setAttr -av ".cp[2].zv";
+	setAttr -av ".cp[3].xv";
+	setAttr -av ".cp[3].yv";
+	setAttr -av ".cp[3].zv";
+	setAttr -av ".cp[4].xv";
+	setAttr -av ".cp[4].yv";
+	setAttr -av ".cp[4].zv";
+	setAttr -av ".cp[5].xv";
+	setAttr -av ".cp[5].yv";
+	setAttr -av ".cp[5].zv";
+	setAttr -av ".cp[6].xv";
+	setAttr -av ".cp[6].yv";
+	setAttr -av ".cp[6].zv";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 6 0 no 3
+		7 0 1 2 3 4 5 6
+		7
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		0.49999999999999989 -1.6653345369377348e-16 1.6653345369377348e-16
+		1.6653345369377348e-16 0.49999999999999983 0
+		3.3306690738754696e-16 0.99999999999999967 0
+		0.99999999999999978 -3.3306690738754696e-16 3.3306690738754696e-16
+		-3.3306690738754696e-16 -0.99999999999999967 0
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		;
+createNode aimConstraint -n "R_shoulder_vector_Grp_aimConstraint1" -p "R_shoulder_vector_Grp";
+	rename -uid "9935D3DA-49AF-C964-0802-17ACEF9A0CD5";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_elbow_locW0" -dv 1 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".wut" 2;
+	setAttr ".rsrr" -type "double3" 0 14.036243467926484 0 ;
+	setAttr -k on ".w0";
+createNode transform -n "R_scapula_vector_Grp" -p "R_scapula_loc";
+	rename -uid "D61EEA46-4B65-59CD-F218-89B24B891A73";
+createNode transform -n "R_scapula_vector" -p "R_scapula_vector_Grp";
+	rename -uid "4240BD26-497B-86D2-E92E-A09D9C53ECC3";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_boneType" -ln "rig_boneType" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	setAttr -l on -k off ".v";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 6;
+	setAttr -l on -k off ".tx";
+	setAttr -l on -k off ".ty";
+	setAttr -l on -k off ".tz";
+	setAttr -l on -k off ".sx";
+	setAttr -l on -k off ".sy";
+	setAttr -l on -k off ".sz";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_part" -type "string" "scapula";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "aimVector";
+	setAttr ".rig_boneType" -type "string" "arm_type";
+	setAttr ".rig_side" -type "string" "R";
+createNode nurbsCurve -n "R_scapula_vectorShape" -p "R_scapula_vector";
+	rename -uid "145E0712-4AA0-DFC3-C7D7-939C060AD6AA";
+	setAttr -k off ".v";
+	setAttr -av ".cp[0].xv";
+	setAttr -av ".cp[0].yv";
+	setAttr -av ".cp[0].zv";
+	setAttr -av ".cp[1].xv";
+	setAttr -av ".cp[1].yv";
+	setAttr -av ".cp[1].zv";
+	setAttr -av ".cp[2].xv";
+	setAttr -av ".cp[2].yv";
+	setAttr -av ".cp[2].zv";
+	setAttr -av ".cp[3].xv";
+	setAttr -av ".cp[3].yv";
+	setAttr -av ".cp[3].zv";
+	setAttr -av ".cp[4].xv";
+	setAttr -av ".cp[4].yv";
+	setAttr -av ".cp[4].zv";
+	setAttr -av ".cp[5].xv";
+	setAttr -av ".cp[5].yv";
+	setAttr -av ".cp[5].zv";
+	setAttr -av ".cp[6].xv";
+	setAttr -av ".cp[6].yv";
+	setAttr -av ".cp[6].zv";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 6 0 no 3
+		7 0 1 2 3 4 5 6
+		7
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		0.49999999999999989 -1.6653345369377348e-16 1.6653345369377348e-16
+		1.6653345369377348e-16 0.49999999999999983 0
+		3.3306690738754696e-16 0.99999999999999967 0
+		0.99999999999999978 -3.3306690738754696e-16 3.3306690738754696e-16
+		-3.3306690738754696e-16 -0.99999999999999967 0
+		-1.6653345369377348e-16 -0.49999999999999983 0
+		;
+createNode aimConstraint -n "R_scapula_vector_Grp_aimConstraint1" -p "R_scapula_vector_Grp";
+	rename -uid "AE87D39A-4A4F-3D1A-AE87-86BBFCF9CED4";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_shoulder_locW0" -dv 1 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".wut" 2;
 	setAttr -k on ".w0";
 createNode lightLinker -s -n "lightLinker1";
-	rename -uid "13AEE0D9-4C7F-92E3-1638-08A6FFB66507";
+	rename -uid "02EBBC05-4CA7-6607-793F-C7A053996D8E";
 	setAttr -s 2 ".lnk";
 	setAttr -s 2 ".slnk";
-createNode shapeEditorManager -n "shapeEditorManager4";
-	rename -uid "901E1FFA-49FE-CCF8-C23D-1BAE36AA26E2";
-createNode poseInterpolatorManager -n "poseInterpolatorManager4";
-	rename -uid "74FB312B-4E25-D04C-5E0D-349F110856EE";
+createNode shapeEditorManager -n "shapeEditorManager2";
+	rename -uid "628ABE79-4BEC-375B-D376-DB8CD41CEC4C";
+createNode poseInterpolatorManager -n "poseInterpolatorManager2";
+	rename -uid "46A7F3FD-4353-7EE2-D879-EFB12C14A291";
 createNode displayLayerManager -n "layerManager";
-	rename -uid "2F229CF0-456E-0790-2AE1-0598BAC009CB";
+	rename -uid "1D1824DA-4227-FC43-CD92-D187AB8503BA";
 createNode displayLayer -n "defaultLayer";
-	rename -uid "CC676D4B-4349-CA4C-E7F5-F795A3B02A19";
+	rename -uid "4836FD42-42CD-F435-6712-54872E23EB67";
 createNode renderLayerManager -n "renderLayerManager";
-	rename -uid "E930BF74-42AA-1F5E-D3E4-5AA45863E3FA";
+	rename -uid "A17ECD5C-46CA-8DE2-C7D7-D2A7753C90B4";
 createNode renderLayer -n "defaultRenderLayer";
-	rename -uid "33B341B9-47DF-CC2A-577A-769CB8197643";
+	rename -uid "9FF8B58F-40B9-DAAC-F268-809E3FE42501";
 	setAttr ".g" yes;
-createNode shapeEditorManager -n "shapeEditorManager5";
+createNode shapeEditorManager -n "shapeEditorManager4";
 	rename -uid "ACB42E0F-414C-E688-98D9-008A20491864";
-createNode poseInterpolatorManager -n "poseInterpolatorManager5";
+createNode poseInterpolatorManager -n "poseInterpolatorManager4";
 	rename -uid "EE0AA319-47D7-0B0D-4363-9B8C668AD435";
 createNode renderLayerManager -n "renderLayerManager1";
 	rename -uid "176C7874-4131-79A0-9A8E-0B9215D7095D";
 createNode renderLayer -n "defaultRenderLayer1";
 	rename -uid "6904B8B9-44D8-89A6-F9F7-CFAB4708A9BB";
 	setAttr ".g" yes;
-createNode shapeEditorManager -n "shapeEditorManager6";
-	rename -uid "E517CDD2-4ACB-DDBD-D4CE-1C9D248B3173";
-createNode poseInterpolatorManager -n "poseInterpolatorManager6";
-	rename -uid "7263EA5F-4D58-6F95-7FFF-23AAD6CF5BAC";
-createNode renderLayerManager -n "renderLayerManager2";
-	rename -uid "593F2969-4831-AA33-2118-1488082CA92B";
-createNode renderLayer -n "defaultRenderLayer2";
-	rename -uid "C2AEF630-40D0-B673-5645-479A4FD709FF";
-	setAttr ".g" yes;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_0__xValue";
+	rename -uid "6A6595DA-45C5-A99F-AD7A-D98DA17AC943";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_0__yValue";
+	rename -uid "5B786052-455F-F86A-9CFA-FE86F14F235C";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_0__zValue";
+	rename -uid "AD4AB1F4-4FB7-4EB5-6C86-1C805F83E3C4";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_1__xValue";
+	rename -uid "5FEBEF4B-4AAB-B8CC-776A-50880797D455";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_1__yValue";
+	rename -uid "5A66540F-4723-0CDC-2895-FA9EA761B2CB";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_1__zValue";
+	rename -uid "E1CA0F4A-46A9-2BCC-C148-D3BFEB3A7B26";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_2__xValue";
+	rename -uid "0C55366F-4223-9577-2A64-9A88DFF87BF5";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_2__yValue";
+	rename -uid "CA199378-4E59-D979-1F6E-B2A8EFD01F2F";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_2__zValue";
+	rename -uid "6B3507AC-46A0-D07B-B15E-3F96E6F65C1E";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_3__xValue";
+	rename -uid "3FD112DE-473D-9ECA-C281-1AB50652A53B";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.99999999999999956;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_3__yValue";
+	rename -uid "703A49FE-4C61-54D2-E929-6A8086486FBC";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_3__zValue";
+	rename -uid "67B1BB33-42C8-FF61-6146-D7B1CA27B139";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_4__xValue";
+	rename -uid "EE43EA5F-4740-3812-A2B7-30B3977BB065";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_4__yValue";
+	rename -uid "F16033C1-46EE-83C1-EE33-F1B3AD24862A";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_4__zValue";
+	rename -uid "1D7BB404-41D8-A96A-DBE2-5489AC087F51";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.99999999999999956;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_5__xValue";
+	rename -uid "78778FC9-4FD2-5E5A-631A-97971DA52DF1";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0.99999999999999956;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_5__yValue";
+	rename -uid "B715BB4F-4993-4BA9-9942-67B70AB00315";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_5__zValue";
+	rename -uid "9E218E8B-4EBF-B299-9529-CFB9790F6B06";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_6__xValue";
+	rename -uid "740B9A1E-4301-C987-BAB0-9DAF0D133306";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_6__yValue";
+	rename -uid "7C04D04B-44FF-1C49-C874-5F84FC3EC667";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_6__zValue";
+	rename -uid "BBA2CCEE-4BF7-B840-538F-3B90E611DD66";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_0__xValue1";
+	rename -uid "253D4C0C-4826-5177-9CA2-83BB245B58FE";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_0__yValue1";
+	rename -uid "BEA03817-4F66-AFBC-FD1A-6490220155DB";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_0__zValue1";
+	rename -uid "97A8B1F1-454F-4E27-BCD0-5FA5AD2841F0";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_1__xValue1";
+	rename -uid "96ADE1D5-4285-89BB-46DC-B488E4E95032";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_1__yValue1";
+	rename -uid "4E31E53B-48D3-3D93-2511-70BE3588255C";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_1__zValue1";
+	rename -uid "D6936967-449F-5BD6-8915-3C9ECD9C362C";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_2__xValue1";
+	rename -uid "4BB7AB03-4BED-5B1B-AD56-94A720A33564";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_2__yValue1";
+	rename -uid "2798F4D0-4F9C-61B8-2445-509D970A3ED0";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_2__zValue1";
+	rename -uid "BE556083-499C-FBDA-010C-81A1D022E18B";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_3__xValue1";
+	rename -uid "4015420F-4D67-3291-4F23-239151463228";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.99999999999999956;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_3__yValue1";
+	rename -uid "2EDE61A6-4B6A-3290-BD08-429756C08FF2";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_3__zValue1";
+	rename -uid "EA293B23-4767-891C-77FF-3F91DEE0316F";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_4__xValue1";
+	rename -uid "52EBEE8E-4EA1-05DF-D52B-43B05EB4732A";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_4__yValue1";
+	rename -uid "E3872FB9-45D4-74B0-C8BD-4C92FE9F5F87";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_4__zValue1";
+	rename -uid "FD0F212C-43FA-4E0D-4D13-0F8F965CC69A";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 -0.99999999999999956;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_5__xValue1";
+	rename -uid "CD0A0D5C-4D1F-2DCE-386C-72A5DE9F3A25";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0.99999999999999956;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_5__yValue1";
+	rename -uid "B1B799FA-42F6-538E-2A7D-A29EAFFAE228";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_5__zValue1";
+	rename -uid "BA8C5266-4A68-F387-9551-17B6E828DC1F";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_6__xValue1";
+	rename -uid "BCE0A9D9-4E7B-101D-E400-97B4CAA2170E";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0.49999999999999978;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_6__yValue1";
+	rename -uid "01350AFA-43C9-B154-823D-02802F34401D";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
+createNode animCurveTL -n "temp_nameShape1_controlPoints_6__zValue1";
+	rename -uid "782A0EAD-4F2B-66E4-1186-E2BBB26CF903";
+	setAttr ".tan" 18;
+	setAttr ".wgt" no;
+	setAttr ".ktv[0]"  1 0;
 createNode script -n "backUp_uiConfigurationScriptNode";
-	rename -uid "BC1E490A-4A25-9EF5-4058-DFA2736529C2";
+	rename -uid "DA711668-4FF2-7E7B-074D-569D057E7B6B";
 	setAttr ".b" -type "string" "// Maya Mel UI Configuration File.\n// No UI generated in batch mode.\n";
 	setAttr ".st" 2;
 createNode VRaySettingsNode -s -n "vraySettings";
-	rename -uid "AFDEF666-404A-AE25-65D0-40A88056E77C";
+	rename -uid "DAD00647-4708-A7BB-B1F3-30966C884575";
 	setAttr ".sver" 1;
 	setAttr ".gi" yes;
 	setAttr ".rfc" yes;
@@ -1533,14 +1984,14 @@ createNode VRaySettingsNode -s -n "vraySettings";
 		 1667196782 1801676136 975332453 1936482662 1931619429 1701995892 1685015919 1634885477 577726820 741881658 1702130466 1299146098
 		 1600480367 1667590243 577004907 1818322490 2105369971 ;
 	setAttr ".vfbSyncM" yes;
-	setAttr ".mSceneName" -type "string" "D:/Code/MayaCode/autoRig/guide_rigs/guide_biped_leg.ma";
+	setAttr ".mSceneName" -type "string" "D:/Code/MayaCode/autoRig/guide_rigs/guide_biped_arm.ma";
 	setAttr ".rt_cpuRayBundleSize" 4;
 	setAttr ".rt_gpuRayBundleSize" 128;
 	setAttr ".rt_maxPaths" 10000;
 	setAttr ".rt_engineType" 3;
 	setAttr ".rt_gpuResizeTextures" 0;
 createNode script -n "uiConfigurationScriptNode";
-	rename -uid "A92CE82A-4A57-671E-4358-169E598173B5";
+	rename -uid "C599CC8F-44AE-60C0-967A-0AA3860DE571";
 	setAttr ".b" -type "string" (
 		"// Maya Mel UI Configuration File.\n//\n//  This script is machine generated.  Edit at your own risk.\n//\n//\n\nglobal string $gMainPane;\nif (`paneLayout -exists $gMainPane`) {\n\n\tglobal int $gUseScenePanelConfig;\n\tint    $useSceneConfig = $gUseScenePanelConfig;\n\tint    $nodeEditorPanelVisible = stringArrayContains(\"nodeEditorPanel1\", `getPanel -vis`);\n\tint    $nodeEditorWorkspaceControlOpen = (`workspaceControl -exists nodeEditorPanel1Window` && `workspaceControl -q -visible nodeEditorPanel1Window`);\n\tint    $menusOkayInPanels = `optionVar -q allowMenusInPanels`;\n\tint    $nVisPanes = `paneLayout -q -nvp $gMainPane`;\n\tint    $nPanes = 0;\n\tstring $editorName;\n\tstring $panelName;\n\tstring $itemFilterName;\n\tstring $panelConfig;\n\n\t//\n\t//  get current state of the UI\n\t//\n\tsceneUIReplacement -update $gMainPane;\n\n\t$panelName = `sceneUIReplacement -getNextPanel \"modelPanel\" (localizedPanelLabel(\"Top View\")) `;\n\tif (\"\" != $panelName) {\n\t\t$label = `panel -q -label $panelName`;\n\t\tmodelPanel -edit -l (localizedPanelLabel(\"Top View\")) -mbv $menusOkayInPanels  $panelName;\n"
 		+ "\t\t$editorName = $panelName;\n        modelEditor -e \n            -camera \"|top\" \n            -useInteractiveMode 0\n            -displayLights \"default\" \n            -displayAppearance \"smoothShaded\" \n            -activeOnly 0\n            -ignorePanZoom 0\n            -wireframeOnShaded 0\n            -headsUpDisplay 1\n            -holdOuts 1\n            -selectionHiliteDisplay 1\n            -useDefaultMaterial 0\n            -bufferMode \"double\" \n            -twoSidedLighting 0\n            -backfaceCulling 0\n            -xray 0\n            -jointXray 0\n            -activeComponentsXray 0\n            -displayTextures 0\n            -smoothWireframe 0\n            -lineWidth 1\n            -textureAnisotropic 0\n            -textureHilight 1\n            -textureSampling 2\n            -textureDisplay \"modulate\" \n            -textureMaxSize 32768\n            -fogging 0\n            -fogSource \"fragment\" \n            -fogMode \"linear\" \n            -fogStart 0\n            -fogEnd 100\n            -fogDensity 0.1\n            -fogColor 0.5 0.5 0.5 1 \n"
@@ -1583,7 +2034,7 @@ createNode script -n "uiConfigurationScriptNode";
 		+ "\t\t\t\t$configName;\n\n            setNamedPanelLayout (localizedPanelLabel(\"Current Layout\"));\n        }\n\n        panelHistory -e -clear mainPanelHistory;\n        sceneUIReplacement -clear;\n\t}\n\n\ngrid -spacing 5 -size 52 -divisions 5 -displayAxes yes -displayGridLines yes -displayDivisionLines yes -displayPerspectiveLabels no -displayOrthographicLabels no -displayAxesBold yes -perspectiveLabelPosition axis -orthographicLabelPosition edge;\nviewManip -drawCompass 0 -compassAngle 0 -frontParameters \"\" -homeParameters \"\" -selectionLockParameters \"\";\n}\n");
 	setAttr ".st" 3;
 createNode script -n "sceneConfigurationScriptNode";
-	rename -uid "69B6681C-4D3E-2660-97B2-4199CC815D78";
+	rename -uid "B6AE9105-4048-CB6E-E0C5-3692E36A281D";
 	setAttr ".b" -type "string" "playbackOptions -min 1 -max 120 -ast 1 -aet 200 ";
 	setAttr ".st" 6;
 select -ne :time1;
@@ -1705,7 +2156,7 @@ select -ne :defaultRenderingList1;
 	setAttr -k on ".ihi";
 	setAttr -av -k on ".nds";
 	setAttr -cb on ".bnm";
-	setAttr -s 3 ".r";
+	setAttr -s 2 ".r";
 select -ne :initialShadingGroup;
 	setAttr -av -k on ".cch";
 	setAttr -k on ".fzn";
@@ -1932,89 +2383,18 @@ select -ne :hardwareRenderGlobals;
 	setAttr -av -k on ".bswa";
 	setAttr -av -k on ".shml";
 	setAttr -av -k on ".hwel";
-connectAttr "L_hip_locShape.wp" "L_hip_CrvShape.cp[0]";
-connectAttr "L_knee_locShape.wp" "L_hip_CrvShape.cp[1]";
-connectAttr "L_knee_locShape.wp" "L_knee_CrvShape.cp[0]";
-connectAttr "L_ankle_locShape.wp" "L_knee_CrvShape.cp[1]";
-connectAttr "L_ankle_locShape.wp" "L_ankle_CrvShape.cp[0]";
-connectAttr "L_toe_locShape.wp" "L_ankle_CrvShape.cp[1]";
-connectAttr "L_toe_locShape.wp" "L_toe_CrvShape.cp[0]";
-connectAttr "L_toeEnd_locShape.wp" "L_toe_CrvShape.cp[1]";
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.ctx" "L_hipExtra_loc_Grp.tx";
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.cty" "L_hipExtra_loc_Grp.ty";
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.ctz" "L_hipExtra_loc_Grp.tz";
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.crx" "L_hipExtra_loc_Grp.rx";
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.cry" "L_hipExtra_loc_Grp.ry";
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.crz" "L_hipExtra_loc_Grp.rz";
-connectAttr "L_hipExtra_loc_Grp.ro" "L_hipExtra_loc_Grp_parentConstraint1.cro";
-connectAttr "L_hipExtra_loc_Grp.pim" "L_hipExtra_loc_Grp_parentConstraint1.cpim"
-		;
-connectAttr "L_hipExtra_loc_Grp.rp" "L_hipExtra_loc_Grp_parentConstraint1.crp";
-connectAttr "L_hipExtra_loc_Grp.rpt" "L_hipExtra_loc_Grp_parentConstraint1.crt";
-connectAttr "L_aim_support1.t" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].tt";
-connectAttr "L_aim_support1.rp" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].trp"
-		;
-connectAttr "L_aim_support1.rpt" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].trt"
-		;
-connectAttr "L_aim_support1.r" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].tr";
-connectAttr "L_aim_support1.ro" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].tro"
-		;
-connectAttr "L_aim_support1.s" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].ts";
-connectAttr "L_aim_support1.pm" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].tpm"
-		;
-connectAttr "L_hipExtra_loc_Grp_parentConstraint1.w0" "L_hipExtra_loc_Grp_parentConstraint1.tg[0].tw"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.ctx" "L_ankleExtra_loc_Grp.tx"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.cty" "L_ankleExtra_loc_Grp.ty"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.ctz" "L_ankleExtra_loc_Grp.tz"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.crx" "L_ankleExtra_loc_Grp.rx"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.cry" "L_ankleExtra_loc_Grp.ry"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.crz" "L_ankleExtra_loc_Grp.rz"
-		;
-connectAttr "L_ankleExtra_loc_Grp.ro" "L_ankleExtra_loc_Grp_parentConstraint1.cro"
-		;
-connectAttr "L_ankleExtra_loc_Grp.pim" "L_ankleExtra_loc_Grp_parentConstraint1.cpim"
-		;
-connectAttr "L_ankleExtra_loc_Grp.rp" "L_ankleExtra_loc_Grp_parentConstraint1.crp"
-		;
-connectAttr "L_ankleExtra_loc_Grp.rpt" "L_ankleExtra_loc_Grp_parentConstraint1.crt"
-		;
-connectAttr "L_aim_support2.t" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].tt"
-		;
-connectAttr "L_aim_support2.rp" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].trp"
-		;
-connectAttr "L_aim_support2.rpt" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].trt"
-		;
-connectAttr "L_aim_support2.r" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].tr"
-		;
-connectAttr "L_aim_support2.ro" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].tro"
-		;
-connectAttr "L_aim_support2.s" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].ts"
-		;
-connectAttr "L_aim_support2.pm" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].tpm"
-		;
-connectAttr "L_ankleExtra_loc_Grp_parentConstraint1.w0" "L_ankleExtra_loc_Grp_parentConstraint1.tg[0].tw"
-		;
-connectAttr "L_aim_support2_aimConstraint1.crx" "L_aim_support2.rx";
-connectAttr "L_aim_support2_aimConstraint1.cry" "L_aim_support2.ry";
-connectAttr "L_aim_support2_aimConstraint1.crz" "L_aim_support2.rz";
-connectAttr "L_aim_support2.pim" "L_aim_support2_aimConstraint1.cpim";
-connectAttr "L_aim_support2.t" "L_aim_support2_aimConstraint1.ct";
-connectAttr "L_aim_support2.rp" "L_aim_support2_aimConstraint1.crp";
-connectAttr "L_aim_support2.rpt" "L_aim_support2_aimConstraint1.crt";
-connectAttr "L_aim_support2.ro" "L_aim_support2_aimConstraint1.cro";
-connectAttr "L_ankle_loc.t" "L_aim_support2_aimConstraint1.tg[0].tt";
-connectAttr "L_ankle_loc.rp" "L_aim_support2_aimConstraint1.tg[0].trp";
-connectAttr "L_ankle_loc.rpt" "L_aim_support2_aimConstraint1.tg[0].trt";
-connectAttr "L_ankle_loc.pm" "L_aim_support2_aimConstraint1.tg[0].tpm";
-connectAttr "L_aim_support2_aimConstraint1.w0" "L_aim_support2_aimConstraint1.tg[0].tw"
-		;
-connectAttr "L_knee_loc.wm" "L_aim_support2_aimConstraint1.wum";
+connectAttr "L_scapula_locShape.wp" "L_scapula_CrvShape.cp[0]";
+connectAttr "L_shoulder_locShape.wp" "L_scapula_CrvShape.cp[1]";
+connectAttr "L_shoulder_locShape.wp" "L_shoulder_CrvShape.cp[0]";
+connectAttr "L_elbow_locShape.wp" "L_shoulder_CrvShape.cp[1]";
+connectAttr "L_elbow_locShape.wp" "L_elbow_CrvShape.cp[0]";
+connectAttr "L_wrist_locShape.wp" "L_elbow_CrvShape.cp[1]";
+connectAttr "L_wrist_locShape.wp" "L_wrist_CrvShape.cp[0]";
+connectAttr "L_wristEnd_locShape.wp" "L_wrist_CrvShape.cp[1]";
+connectAttr "L_shoulderExtra_locShape.wp" "L_shoulderExtra_CrvShape.cp[0]";
+connectAttr "L_elbowExtra_locShape.wp" "L_shoulderExtra_CrvShape.cp[1]";
+connectAttr "L_elbowExtra_locShape.wp" "L_elbowExtra_CrvShape.cp[0]";
+connectAttr "L_wristExtra_locShape.wp" "L_elbowExtra_CrvShape.cp[1]";
 connectAttr "L_aim_support1_aimConstraint1.crx" "L_aim_support1.rx";
 connectAttr "L_aim_support1_aimConstraint1.cry" "L_aim_support1.ry";
 connectAttr "L_aim_support1_aimConstraint1.crz" "L_aim_support1.rz";
@@ -2023,111 +2403,194 @@ connectAttr "L_aim_support1.t" "L_aim_support1_aimConstraint1.ct";
 connectAttr "L_aim_support1.rp" "L_aim_support1_aimConstraint1.crp";
 connectAttr "L_aim_support1.rpt" "L_aim_support1_aimConstraint1.crt";
 connectAttr "L_aim_support1.ro" "L_aim_support1_aimConstraint1.cro";
-connectAttr "L_hip_loc.t" "L_aim_support1_aimConstraint1.tg[0].tt";
-connectAttr "L_hip_loc.rp" "L_aim_support1_aimConstraint1.tg[0].trp";
-connectAttr "L_hip_loc.rpt" "L_aim_support1_aimConstraint1.tg[0].trt";
-connectAttr "L_hip_loc.pm" "L_aim_support1_aimConstraint1.tg[0].tpm";
+connectAttr "L_shoulder_loc.t" "L_aim_support1_aimConstraint1.tg[0].tt";
+connectAttr "L_shoulder_loc.rp" "L_aim_support1_aimConstraint1.tg[0].trp";
+connectAttr "L_shoulder_loc.rpt" "L_aim_support1_aimConstraint1.tg[0].trt";
+connectAttr "L_shoulder_loc.pm" "L_aim_support1_aimConstraint1.tg[0].tpm";
 connectAttr "L_aim_support1_aimConstraint1.w0" "L_aim_support1_aimConstraint1.tg[0].tw"
 		;
-connectAttr "L_knee_loc.wm" "L_aim_support1_aimConstraint1.wum";
-connectAttr "L_hip_vector_Grp_aimConstraint1.crx" "L_hip_vector_Grp.rx";
-connectAttr "L_hip_vector_Grp_aimConstraint1.cry" "L_hip_vector_Grp.ry";
-connectAttr "L_hip_vector_Grp_aimConstraint1.crz" "L_hip_vector_Grp.rz";
-connectAttr "L_hip_vector_Grp.pim" "L_hip_vector_Grp_aimConstraint1.cpim";
-connectAttr "L_hip_vector_Grp.t" "L_hip_vector_Grp_aimConstraint1.ct";
-connectAttr "L_hip_vector_Grp.rp" "L_hip_vector_Grp_aimConstraint1.crp";
-connectAttr "L_hip_vector_Grp.rpt" "L_hip_vector_Grp_aimConstraint1.crt";
-connectAttr "L_hip_vector_Grp.ro" "L_hip_vector_Grp_aimConstraint1.cro";
-connectAttr "L_knee_loc.t" "L_hip_vector_Grp_aimConstraint1.tg[0].tt";
-connectAttr "L_knee_loc.rp" "L_hip_vector_Grp_aimConstraint1.tg[0].trp";
-connectAttr "L_knee_loc.rpt" "L_hip_vector_Grp_aimConstraint1.tg[0].trt";
-connectAttr "L_knee_loc.pm" "L_hip_vector_Grp_aimConstraint1.tg[0].tpm";
-connectAttr "L_hip_vector_Grp_aimConstraint1.w0" "L_hip_vector_Grp_aimConstraint1.tg[0].tw"
+connectAttr "L_elbow_loc.wm" "L_aim_support1_aimConstraint1.wum";
+connectAttr "L_aim_support2_aimConstraint1.crx" "L_aim_support2.rx";
+connectAttr "L_aim_support2_aimConstraint1.cry" "L_aim_support2.ry";
+connectAttr "L_aim_support2_aimConstraint1.crz" "L_aim_support2.rz";
+connectAttr "L_aim_support2.pim" "L_aim_support2_aimConstraint1.cpim";
+connectAttr "L_aim_support2.t" "L_aim_support2_aimConstraint1.ct";
+connectAttr "L_aim_support2.rp" "L_aim_support2_aimConstraint1.crp";
+connectAttr "L_aim_support2.rpt" "L_aim_support2_aimConstraint1.crt";
+connectAttr "L_aim_support2.ro" "L_aim_support2_aimConstraint1.cro";
+connectAttr "L_wrist_loc.t" "L_aim_support2_aimConstraint1.tg[0].tt";
+connectAttr "L_wrist_loc.rp" "L_aim_support2_aimConstraint1.tg[0].trp";
+connectAttr "L_wrist_loc.rpt" "L_aim_support2_aimConstraint1.tg[0].trt";
+connectAttr "L_wrist_loc.pm" "L_aim_support2_aimConstraint1.tg[0].tpm";
+connectAttr "L_aim_support2_aimConstraint1.w0" "L_aim_support2_aimConstraint1.tg[0].tw"
 		;
-connectAttr "L_hip_loc.wm" "L_hip_vector_Grp_aimConstraint1.wum";
-connectAttr "R_hip_locShape.wp" "R_hip_CrvShape.cp[0]";
-connectAttr "R_knee_locShape.wp" "R_hip_CrvShape.cp[1]";
-connectAttr "R_knee_locShape.wp" "R_knee_CrvShape.cp[0]";
-connectAttr "R_ankle_locShape.wp" "R_knee_CrvShape.cp[1]";
-connectAttr "R_ankle_locShape.wp" "R_ankle_CrvShape.cp[0]";
-connectAttr "R_toe_locShape.wp" "R_ankle_CrvShape.cp[1]";
-connectAttr "R_toe_locShape.wp" "R_toe_CrvShape.cp[0]";
-connectAttr "R_toeEnd_locShape.wp" "R_toe_CrvShape.cp[1]";
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.ctx" "R_hipExtra_loc_Grp.tx";
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.cty" "R_hipExtra_loc_Grp.ty";
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.ctz" "R_hipExtra_loc_Grp.tz";
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.crx" "R_hipExtra_loc_Grp.rx";
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.cry" "R_hipExtra_loc_Grp.ry";
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.crz" "R_hipExtra_loc_Grp.rz";
-connectAttr "R_hipExtra_loc_Grp.ro" "R_hipExtra_loc_Grp_parentConstraint1.cro";
-connectAttr "R_hipExtra_loc_Grp.pim" "R_hipExtra_loc_Grp_parentConstraint1.cpim"
+connectAttr "L_elbow_loc.wm" "L_aim_support2_aimConstraint1.wum";
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.ctx" "L_shoulderExtra_loc_Grp.tx"
 		;
-connectAttr "R_hipExtra_loc_Grp.rp" "R_hipExtra_loc_Grp_parentConstraint1.crp";
-connectAttr "R_hipExtra_loc_Grp.rpt" "R_hipExtra_loc_Grp_parentConstraint1.crt";
-connectAttr "R_aim_support1.t" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].tt";
-connectAttr "R_aim_support1.rp" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].trp"
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.cty" "L_shoulderExtra_loc_Grp.ty"
 		;
-connectAttr "R_aim_support1.rpt" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].trt"
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.ctz" "L_shoulderExtra_loc_Grp.tz"
 		;
-connectAttr "R_aim_support1.r" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].tr";
-connectAttr "R_aim_support1.ro" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].tro"
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.crx" "L_shoulderExtra_loc_Grp.rx"
 		;
-connectAttr "R_aim_support1.s" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].ts";
-connectAttr "R_aim_support1.pm" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].tpm"
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.cry" "L_shoulderExtra_loc_Grp.ry"
 		;
-connectAttr "R_hipExtra_loc_Grp_parentConstraint1.w0" "R_hipExtra_loc_Grp_parentConstraint1.tg[0].tw"
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.crz" "L_shoulderExtra_loc_Grp.rz"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.ctx" "R_ankleExtra_loc_Grp.tx"
+connectAttr "L_shoulderExtra_loc_Grp.ro" "L_shoulderExtra_loc_Grp_parentConstraint1.cro"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.cty" "R_ankleExtra_loc_Grp.ty"
+connectAttr "L_shoulderExtra_loc_Grp.pim" "L_shoulderExtra_loc_Grp_parentConstraint1.cpim"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.ctz" "R_ankleExtra_loc_Grp.tz"
+connectAttr "L_shoulderExtra_loc_Grp.rp" "L_shoulderExtra_loc_Grp_parentConstraint1.crp"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.crx" "R_ankleExtra_loc_Grp.rx"
+connectAttr "L_shoulderExtra_loc_Grp.rpt" "L_shoulderExtra_loc_Grp_parentConstraint1.crt"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.cry" "R_ankleExtra_loc_Grp.ry"
+connectAttr "L_aim_support1.t" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tt"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.crz" "R_ankleExtra_loc_Grp.rz"
+connectAttr "L_aim_support1.rp" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].trp"
 		;
-connectAttr "R_ankleExtra_loc_Grp.ro" "R_ankleExtra_loc_Grp_parentConstraint1.cro"
+connectAttr "L_aim_support1.rpt" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].trt"
 		;
-connectAttr "R_ankleExtra_loc_Grp.pim" "R_ankleExtra_loc_Grp_parentConstraint1.cpim"
+connectAttr "L_aim_support1.r" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tr"
 		;
-connectAttr "R_ankleExtra_loc_Grp.rp" "R_ankleExtra_loc_Grp_parentConstraint1.crp"
+connectAttr "L_aim_support1.ro" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tro"
 		;
-connectAttr "R_ankleExtra_loc_Grp.rpt" "R_ankleExtra_loc_Grp_parentConstraint1.crt"
+connectAttr "L_aim_support1.s" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].ts"
 		;
-connectAttr "R_aim_support2.t" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].tt"
+connectAttr "L_aim_support1.pm" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tpm"
 		;
-connectAttr "R_aim_support2.rp" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].trp"
+connectAttr "L_shoulderExtra_loc_Grp_parentConstraint1.w0" "L_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tw"
 		;
-connectAttr "R_aim_support2.rpt" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].trt"
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.ctx" "L_wristExtra_loc_Grp.tx"
 		;
-connectAttr "R_aim_support2.r" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].tr"
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.cty" "L_wristExtra_loc_Grp.ty"
 		;
-connectAttr "R_aim_support2.ro" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].tro"
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.ctz" "L_wristExtra_loc_Grp.tz"
 		;
-connectAttr "R_aim_support2.s" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].ts"
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.crx" "L_wristExtra_loc_Grp.rx"
 		;
-connectAttr "R_aim_support2.pm" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].tpm"
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.cry" "L_wristExtra_loc_Grp.ry"
 		;
-connectAttr "R_ankleExtra_loc_Grp_parentConstraint1.w0" "R_ankleExtra_loc_Grp_parentConstraint1.tg[0].tw"
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.crz" "L_wristExtra_loc_Grp.rz"
 		;
-connectAttr "R_aim_support2_aimConstraint1.crx" "R_aim_support2.rx";
-connectAttr "R_aim_support2_aimConstraint1.cry" "R_aim_support2.ry";
-connectAttr "R_aim_support2_aimConstraint1.crz" "R_aim_support2.rz";
-connectAttr "R_aim_support2.pim" "R_aim_support2_aimConstraint1.cpim";
-connectAttr "R_aim_support2.t" "R_aim_support2_aimConstraint1.ct";
-connectAttr "R_aim_support2.rp" "R_aim_support2_aimConstraint1.crp";
-connectAttr "R_aim_support2.rpt" "R_aim_support2_aimConstraint1.crt";
-connectAttr "R_aim_support2.ro" "R_aim_support2_aimConstraint1.cro";
-connectAttr "R_ankle_loc.t" "R_aim_support2_aimConstraint1.tg[0].tt";
-connectAttr "R_ankle_loc.rp" "R_aim_support2_aimConstraint1.tg[0].trp";
-connectAttr "R_ankle_loc.rpt" "R_aim_support2_aimConstraint1.tg[0].trt";
-connectAttr "R_ankle_loc.pm" "R_aim_support2_aimConstraint1.tg[0].tpm";
-connectAttr "R_aim_support2_aimConstraint1.w0" "R_aim_support2_aimConstraint1.tg[0].tw"
+connectAttr "L_wristExtra_loc_Grp.ro" "L_wristExtra_loc_Grp_parentConstraint1.cro"
 		;
-connectAttr "R_knee_loc.wm" "R_aim_support2_aimConstraint1.wum";
+connectAttr "L_wristExtra_loc_Grp.pim" "L_wristExtra_loc_Grp_parentConstraint1.cpim"
+		;
+connectAttr "L_wristExtra_loc_Grp.rp" "L_wristExtra_loc_Grp_parentConstraint1.crp"
+		;
+connectAttr "L_wristExtra_loc_Grp.rpt" "L_wristExtra_loc_Grp_parentConstraint1.crt"
+		;
+connectAttr "L_aim_support2.t" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].tt"
+		;
+connectAttr "L_aim_support2.rp" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].trp"
+		;
+connectAttr "L_aim_support2.rpt" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].trt"
+		;
+connectAttr "L_aim_support2.r" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].tr"
+		;
+connectAttr "L_aim_support2.ro" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].tro"
+		;
+connectAttr "L_aim_support2.s" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].ts"
+		;
+connectAttr "L_aim_support2.pm" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].tpm"
+		;
+connectAttr "L_wristExtra_loc_Grp_parentConstraint1.w0" "L_wristExtra_loc_Grp_parentConstraint1.tg[0].tw"
+		;
+connectAttr "L_shoulder_vector_Grp_aimConstraint1.crx" "L_shoulder_vector_Grp.rx"
+		;
+connectAttr "L_shoulder_vector_Grp_aimConstraint1.cry" "L_shoulder_vector_Grp.ry"
+		;
+connectAttr "L_shoulder_vector_Grp_aimConstraint1.crz" "L_shoulder_vector_Grp.rz"
+		;
+connectAttr "temp_nameShape1_controlPoints_0__xValue.o" "L_shoulder_vectorShape.cp[0].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_0__yValue.o" "L_shoulder_vectorShape.cp[0].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_0__zValue.o" "L_shoulder_vectorShape.cp[0].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_1__xValue.o" "L_shoulder_vectorShape.cp[1].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_1__yValue.o" "L_shoulder_vectorShape.cp[1].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_1__zValue.o" "L_shoulder_vectorShape.cp[1].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_2__xValue.o" "L_shoulder_vectorShape.cp[2].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_2__yValue.o" "L_shoulder_vectorShape.cp[2].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_2__zValue.o" "L_shoulder_vectorShape.cp[2].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_3__xValue.o" "L_shoulder_vectorShape.cp[3].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_3__yValue.o" "L_shoulder_vectorShape.cp[3].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_3__zValue.o" "L_shoulder_vectorShape.cp[3].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_4__xValue.o" "L_shoulder_vectorShape.cp[4].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_4__yValue.o" "L_shoulder_vectorShape.cp[4].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_4__zValue.o" "L_shoulder_vectorShape.cp[4].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_5__xValue.o" "L_shoulder_vectorShape.cp[5].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_5__yValue.o" "L_shoulder_vectorShape.cp[5].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_5__zValue.o" "L_shoulder_vectorShape.cp[5].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_6__xValue.o" "L_shoulder_vectorShape.cp[6].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_6__yValue.o" "L_shoulder_vectorShape.cp[6].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_6__zValue.o" "L_shoulder_vectorShape.cp[6].zv"
+		;
+connectAttr "L_shoulder_vector_Grp.pim" "L_shoulder_vector_Grp_aimConstraint1.cpim"
+		;
+connectAttr "L_shoulder_vector_Grp.t" "L_shoulder_vector_Grp_aimConstraint1.ct";
+connectAttr "L_shoulder_vector_Grp.rp" "L_shoulder_vector_Grp_aimConstraint1.crp"
+		;
+connectAttr "L_shoulder_vector_Grp.rpt" "L_shoulder_vector_Grp_aimConstraint1.crt"
+		;
+connectAttr "L_shoulder_vector_Grp.ro" "L_shoulder_vector_Grp_aimConstraint1.cro"
+		;
+connectAttr "L_elbow_loc.t" "L_shoulder_vector_Grp_aimConstraint1.tg[0].tt";
+connectAttr "L_elbow_loc.rp" "L_shoulder_vector_Grp_aimConstraint1.tg[0].trp";
+connectAttr "L_elbow_loc.rpt" "L_shoulder_vector_Grp_aimConstraint1.tg[0].trt";
+connectAttr "L_elbow_loc.pm" "L_shoulder_vector_Grp_aimConstraint1.tg[0].tpm";
+connectAttr "L_shoulder_vector_Grp_aimConstraint1.w0" "L_shoulder_vector_Grp_aimConstraint1.tg[0].tw"
+		;
+connectAttr "L_shoulder_loc.wm" "L_shoulder_vector_Grp_aimConstraint1.wum";
+connectAttr "L_scapula_vector_Grp_aimConstraint1.crx" "L_scapula_vector_Grp.rx";
+connectAttr "L_scapula_vector_Grp_aimConstraint1.cry" "L_scapula_vector_Grp.ry";
+connectAttr "L_scapula_vector_Grp_aimConstraint1.crz" "L_scapula_vector_Grp.rz";
+connectAttr "L_scapula_vector_Grp.pim" "L_scapula_vector_Grp_aimConstraint1.cpim"
+		;
+connectAttr "L_scapula_vector_Grp.t" "L_scapula_vector_Grp_aimConstraint1.ct";
+connectAttr "L_scapula_vector_Grp.rp" "L_scapula_vector_Grp_aimConstraint1.crp";
+connectAttr "L_scapula_vector_Grp.rpt" "L_scapula_vector_Grp_aimConstraint1.crt"
+		;
+connectAttr "L_scapula_vector_Grp.ro" "L_scapula_vector_Grp_aimConstraint1.cro";
+connectAttr "L_shoulder_loc.t" "L_scapula_vector_Grp_aimConstraint1.tg[0].tt";
+connectAttr "L_shoulder_loc.rp" "L_scapula_vector_Grp_aimConstraint1.tg[0].trp";
+connectAttr "L_shoulder_loc.rpt" "L_scapula_vector_Grp_aimConstraint1.tg[0].trt"
+		;
+connectAttr "L_shoulder_loc.pm" "L_scapula_vector_Grp_aimConstraint1.tg[0].tpm";
+connectAttr "L_scapula_vector_Grp_aimConstraint1.w0" "L_scapula_vector_Grp_aimConstraint1.tg[0].tw"
+		;
+connectAttr "L_scapula_loc.wm" "L_scapula_vector_Grp_aimConstraint1.wum";
+connectAttr "R_scapula_locShape.wp" "R_scapula_CrvShape.cp[0]";
+connectAttr "R_shoulder_locShape.wp" "R_scapula_CrvShape.cp[1]";
+connectAttr "R_shoulder_locShape.wp" "R_shoulder_CrvShape.cp[0]";
+connectAttr "R_elbow_locShape.wp" "R_shoulder_CrvShape.cp[1]";
+connectAttr "R_elbow_locShape.wp" "R_elbow_CrvShape.cp[0]";
+connectAttr "R_wrist_locShape.wp" "R_elbow_CrvShape.cp[1]";
+connectAttr "R_wrist_locShape.wp" "R_wrist_CrvShape.cp[0]";
+connectAttr "R_wristEnd_locShape.wp" "R_wrist_CrvShape.cp[1]";
+connectAttr "R_shoulderExtra_locShape.wp" "R_shoulderExtra_CrvShape.cp[0]";
+connectAttr "R_elbowExtra_locShape.wp" "R_shoulderExtra_CrvShape.cp[1]";
+connectAttr "R_elbowExtra_locShape.wp" "R_elbowExtra_CrvShape.cp[0]";
+connectAttr "R_wristExtra_locShape.wp" "R_elbowExtra_CrvShape.cp[1]";
 connectAttr "R_aim_support1_aimConstraint1.crx" "R_aim_support1.rx";
 connectAttr "R_aim_support1_aimConstraint1.cry" "R_aim_support1.ry";
 connectAttr "R_aim_support1_aimConstraint1.crz" "R_aim_support1.rz";
@@ -2136,28 +2599,182 @@ connectAttr "R_aim_support1.t" "R_aim_support1_aimConstraint1.ct";
 connectAttr "R_aim_support1.rp" "R_aim_support1_aimConstraint1.crp";
 connectAttr "R_aim_support1.rpt" "R_aim_support1_aimConstraint1.crt";
 connectAttr "R_aim_support1.ro" "R_aim_support1_aimConstraint1.cro";
-connectAttr "R_hip_loc.t" "R_aim_support1_aimConstraint1.tg[0].tt";
-connectAttr "R_hip_loc.rp" "R_aim_support1_aimConstraint1.tg[0].trp";
-connectAttr "R_hip_loc.rpt" "R_aim_support1_aimConstraint1.tg[0].trt";
-connectAttr "R_hip_loc.pm" "R_aim_support1_aimConstraint1.tg[0].tpm";
+connectAttr "R_shoulder_loc.t" "R_aim_support1_aimConstraint1.tg[0].tt";
+connectAttr "R_shoulder_loc.rp" "R_aim_support1_aimConstraint1.tg[0].trp";
+connectAttr "R_shoulder_loc.rpt" "R_aim_support1_aimConstraint1.tg[0].trt";
+connectAttr "R_shoulder_loc.pm" "R_aim_support1_aimConstraint1.tg[0].tpm";
 connectAttr "R_aim_support1_aimConstraint1.w0" "R_aim_support1_aimConstraint1.tg[0].tw"
 		;
-connectAttr "R_knee_loc.wm" "R_aim_support1_aimConstraint1.wum";
-connectAttr "R_hip_vector_Grp_aimConstraint1.crx" "R_hip_vector_Grp.rx";
-connectAttr "R_hip_vector_Grp_aimConstraint1.cry" "R_hip_vector_Grp.ry";
-connectAttr "R_hip_vector_Grp_aimConstraint1.crz" "R_hip_vector_Grp.rz";
-connectAttr "R_hip_vector_Grp.pim" "R_hip_vector_Grp_aimConstraint1.cpim";
-connectAttr "R_hip_vector_Grp.t" "R_hip_vector_Grp_aimConstraint1.ct";
-connectAttr "R_hip_vector_Grp.rp" "R_hip_vector_Grp_aimConstraint1.crp";
-connectAttr "R_hip_vector_Grp.rpt" "R_hip_vector_Grp_aimConstraint1.crt";
-connectAttr "R_hip_vector_Grp.ro" "R_hip_vector_Grp_aimConstraint1.cro";
-connectAttr "R_knee_loc.t" "R_hip_vector_Grp_aimConstraint1.tg[0].tt";
-connectAttr "R_knee_loc.rp" "R_hip_vector_Grp_aimConstraint1.tg[0].trp";
-connectAttr "R_knee_loc.rpt" "R_hip_vector_Grp_aimConstraint1.tg[0].trt";
-connectAttr "R_knee_loc.pm" "R_hip_vector_Grp_aimConstraint1.tg[0].tpm";
-connectAttr "R_hip_vector_Grp_aimConstraint1.w0" "R_hip_vector_Grp_aimConstraint1.tg[0].tw"
+connectAttr "R_elbow_loc.wm" "R_aim_support1_aimConstraint1.wum";
+connectAttr "R_aim_support2_aimConstraint1.crx" "R_aim_support2.rx";
+connectAttr "R_aim_support2_aimConstraint1.cry" "R_aim_support2.ry";
+connectAttr "R_aim_support2_aimConstraint1.crz" "R_aim_support2.rz";
+connectAttr "R_aim_support2.pim" "R_aim_support2_aimConstraint1.cpim";
+connectAttr "R_aim_support2.t" "R_aim_support2_aimConstraint1.ct";
+connectAttr "R_aim_support2.rp" "R_aim_support2_aimConstraint1.crp";
+connectAttr "R_aim_support2.rpt" "R_aim_support2_aimConstraint1.crt";
+connectAttr "R_aim_support2.ro" "R_aim_support2_aimConstraint1.cro";
+connectAttr "R_wrist_loc.t" "R_aim_support2_aimConstraint1.tg[0].tt";
+connectAttr "R_wrist_loc.rp" "R_aim_support2_aimConstraint1.tg[0].trp";
+connectAttr "R_wrist_loc.rpt" "R_aim_support2_aimConstraint1.tg[0].trt";
+connectAttr "R_wrist_loc.pm" "R_aim_support2_aimConstraint1.tg[0].tpm";
+connectAttr "R_aim_support2_aimConstraint1.w0" "R_aim_support2_aimConstraint1.tg[0].tw"
 		;
-connectAttr "R_hip_loc.wm" "R_hip_vector_Grp_aimConstraint1.wum";
+connectAttr "R_elbow_loc.wm" "R_aim_support2_aimConstraint1.wum";
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.ctx" "R_shoulderExtra_loc_Grp.tx"
+		;
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.cty" "R_shoulderExtra_loc_Grp.ty"
+		;
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.ctz" "R_shoulderExtra_loc_Grp.tz"
+		;
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.crx" "R_shoulderExtra_loc_Grp.rx"
+		;
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.cry" "R_shoulderExtra_loc_Grp.ry"
+		;
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.crz" "R_shoulderExtra_loc_Grp.rz"
+		;
+connectAttr "R_shoulderExtra_loc_Grp.ro" "R_shoulderExtra_loc_Grp_parentConstraint1.cro"
+		;
+connectAttr "R_shoulderExtra_loc_Grp.pim" "R_shoulderExtra_loc_Grp_parentConstraint1.cpim"
+		;
+connectAttr "R_shoulderExtra_loc_Grp.rp" "R_shoulderExtra_loc_Grp_parentConstraint1.crp"
+		;
+connectAttr "R_shoulderExtra_loc_Grp.rpt" "R_shoulderExtra_loc_Grp_parentConstraint1.crt"
+		;
+connectAttr "R_aim_support1.t" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tt"
+		;
+connectAttr "R_aim_support1.rp" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].trp"
+		;
+connectAttr "R_aim_support1.rpt" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].trt"
+		;
+connectAttr "R_aim_support1.r" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tr"
+		;
+connectAttr "R_aim_support1.ro" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tro"
+		;
+connectAttr "R_aim_support1.s" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].ts"
+		;
+connectAttr "R_aim_support1.pm" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tpm"
+		;
+connectAttr "R_shoulderExtra_loc_Grp_parentConstraint1.w0" "R_shoulderExtra_loc_Grp_parentConstraint1.tg[0].tw"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.ctx" "R_wristExtra_loc_Grp.tx"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.cty" "R_wristExtra_loc_Grp.ty"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.ctz" "R_wristExtra_loc_Grp.tz"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.crx" "R_wristExtra_loc_Grp.rx"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.cry" "R_wristExtra_loc_Grp.ry"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.crz" "R_wristExtra_loc_Grp.rz"
+		;
+connectAttr "R_wristExtra_loc_Grp.ro" "R_wristExtra_loc_Grp_parentConstraint1.cro"
+		;
+connectAttr "R_wristExtra_loc_Grp.pim" "R_wristExtra_loc_Grp_parentConstraint1.cpim"
+		;
+connectAttr "R_wristExtra_loc_Grp.rp" "R_wristExtra_loc_Grp_parentConstraint1.crp"
+		;
+connectAttr "R_wristExtra_loc_Grp.rpt" "R_wristExtra_loc_Grp_parentConstraint1.crt"
+		;
+connectAttr "R_aim_support2.t" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].tt"
+		;
+connectAttr "R_aim_support2.rp" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].trp"
+		;
+connectAttr "R_aim_support2.rpt" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].trt"
+		;
+connectAttr "R_aim_support2.r" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].tr"
+		;
+connectAttr "R_aim_support2.ro" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].tro"
+		;
+connectAttr "R_aim_support2.s" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].ts"
+		;
+connectAttr "R_aim_support2.pm" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].tpm"
+		;
+connectAttr "R_wristExtra_loc_Grp_parentConstraint1.w0" "R_wristExtra_loc_Grp_parentConstraint1.tg[0].tw"
+		;
+connectAttr "R_shoulder_vector_Grp_aimConstraint1.crx" "R_shoulder_vector_Grp.rx"
+		;
+connectAttr "R_shoulder_vector_Grp_aimConstraint1.cry" "R_shoulder_vector_Grp.ry"
+		;
+connectAttr "R_shoulder_vector_Grp_aimConstraint1.crz" "R_shoulder_vector_Grp.rz"
+		;
+connectAttr "temp_nameShape1_controlPoints_0__xValue1.o" "R_shoulder_vectorShape.cp[0].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_0__yValue1.o" "R_shoulder_vectorShape.cp[0].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_0__zValue1.o" "R_shoulder_vectorShape.cp[0].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_1__xValue1.o" "R_shoulder_vectorShape.cp[1].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_1__yValue1.o" "R_shoulder_vectorShape.cp[1].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_1__zValue1.o" "R_shoulder_vectorShape.cp[1].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_2__xValue1.o" "R_shoulder_vectorShape.cp[2].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_2__yValue1.o" "R_shoulder_vectorShape.cp[2].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_2__zValue1.o" "R_shoulder_vectorShape.cp[2].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_3__xValue1.o" "R_shoulder_vectorShape.cp[3].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_3__yValue1.o" "R_shoulder_vectorShape.cp[3].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_3__zValue1.o" "R_shoulder_vectorShape.cp[3].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_4__xValue1.o" "R_shoulder_vectorShape.cp[4].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_4__yValue1.o" "R_shoulder_vectorShape.cp[4].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_4__zValue1.o" "R_shoulder_vectorShape.cp[4].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_5__xValue1.o" "R_shoulder_vectorShape.cp[5].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_5__yValue1.o" "R_shoulder_vectorShape.cp[5].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_5__zValue1.o" "R_shoulder_vectorShape.cp[5].zv"
+		;
+connectAttr "temp_nameShape1_controlPoints_6__xValue1.o" "R_shoulder_vectorShape.cp[6].xv"
+		;
+connectAttr "temp_nameShape1_controlPoints_6__yValue1.o" "R_shoulder_vectorShape.cp[6].yv"
+		;
+connectAttr "temp_nameShape1_controlPoints_6__zValue1.o" "R_shoulder_vectorShape.cp[6].zv"
+		;
+connectAttr "R_shoulder_vector_Grp.pim" "R_shoulder_vector_Grp_aimConstraint1.cpim"
+		;
+connectAttr "R_shoulder_vector_Grp.t" "R_shoulder_vector_Grp_aimConstraint1.ct";
+connectAttr "R_shoulder_vector_Grp.rp" "R_shoulder_vector_Grp_aimConstraint1.crp"
+		;
+connectAttr "R_shoulder_vector_Grp.rpt" "R_shoulder_vector_Grp_aimConstraint1.crt"
+		;
+connectAttr "R_shoulder_vector_Grp.ro" "R_shoulder_vector_Grp_aimConstraint1.cro"
+		;
+connectAttr "R_elbow_loc.t" "R_shoulder_vector_Grp_aimConstraint1.tg[0].tt";
+connectAttr "R_elbow_loc.rp" "R_shoulder_vector_Grp_aimConstraint1.tg[0].trp";
+connectAttr "R_elbow_loc.rpt" "R_shoulder_vector_Grp_aimConstraint1.tg[0].trt";
+connectAttr "R_elbow_loc.pm" "R_shoulder_vector_Grp_aimConstraint1.tg[0].tpm";
+connectAttr "R_shoulder_vector_Grp_aimConstraint1.w0" "R_shoulder_vector_Grp_aimConstraint1.tg[0].tw"
+		;
+connectAttr "R_shoulder_loc.wm" "R_shoulder_vector_Grp_aimConstraint1.wum";
+connectAttr "R_scapula_vector_Grp_aimConstraint1.crx" "R_scapula_vector_Grp.rx";
+connectAttr "R_scapula_vector_Grp_aimConstraint1.cry" "R_scapula_vector_Grp.ry";
+connectAttr "R_scapula_vector_Grp_aimConstraint1.crz" "R_scapula_vector_Grp.rz";
+connectAttr "R_scapula_vector_Grp.pim" "R_scapula_vector_Grp_aimConstraint1.cpim"
+		;
+connectAttr "R_scapula_vector_Grp.t" "R_scapula_vector_Grp_aimConstraint1.ct";
+connectAttr "R_scapula_vector_Grp.rp" "R_scapula_vector_Grp_aimConstraint1.crp";
+connectAttr "R_scapula_vector_Grp.rpt" "R_scapula_vector_Grp_aimConstraint1.crt"
+		;
+connectAttr "R_scapula_vector_Grp.ro" "R_scapula_vector_Grp_aimConstraint1.cro";
+connectAttr "R_shoulder_loc.t" "R_scapula_vector_Grp_aimConstraint1.tg[0].tt";
+connectAttr "R_shoulder_loc.rp" "R_scapula_vector_Grp_aimConstraint1.tg[0].trp";
+connectAttr "R_shoulder_loc.rpt" "R_scapula_vector_Grp_aimConstraint1.tg[0].trt"
+		;
+connectAttr "R_shoulder_loc.pm" "R_scapula_vector_Grp_aimConstraint1.tg[0].tpm";
+connectAttr "R_scapula_vector_Grp_aimConstraint1.w0" "R_scapula_vector_Grp_aimConstraint1.tg[0].tw"
+		;
+connectAttr "R_scapula_loc.wm" "R_scapula_vector_Grp_aimConstraint1.wum";
 relationship "link" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
 relationship "link" ":lightLinker1" ":initialParticleSE.message" ":defaultLightSet.message";
 relationship "shadowLink" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
@@ -2165,14 +2782,12 @@ relationship "shadowLink" ":lightLinker1" ":initialParticleSE.message" ":default
 connectAttr "layerManager.dli[0]" "defaultLayer.id";
 connectAttr "renderLayerManager.rlmi[0]" "defaultRenderLayer.rlid";
 connectAttr "renderLayerManager1.rlmi[0]" "defaultRenderLayer1.rlid";
-connectAttr "renderLayerManager2.rlmi[0]" "defaultRenderLayer2.rlid";
 connectAttr "defaultRenderLayer.msg" ":defaultRenderingList1.r" -na;
 connectAttr "defaultRenderLayer1.msg" ":defaultRenderingList1.r" -na;
-connectAttr "defaultRenderLayer2.msg" ":defaultRenderingList1.r" -na;
-dataStructure -fmt "raw" -as "name=externalContentTablZ:string=nodZ:string=key:string=upath:uint32=upathcrc:string=rpath:string=roles";
-dataStructure -fmt "raw" -as "name=faceConnectOutputStructure:bool=faceConnectOutput:string[200]=faceConnectOutputAttributes:string[200]=faceConnectOutputGroups";
 dataStructure -fmt "raw" -as "name=faceConnectMarkerStructure:bool=faceConnectMarker:string[200]=faceConnectOutputGroups";
-dataStructure -fmt "raw" -as "name=FBXFastExportSetting_FBX:string=54";
-dataStructure -fmt "raw" -as "name=idStructure:int32=ID";
+dataStructure -fmt "raw" -as "name=faceConnectOutputStructure:bool=faceConnectOutput:string[200]=faceConnectOutputAttributes:string[200]=faceConnectOutputGroups";
 dataStructure -fmt "raw" -as "name=FBXFastExportSetting_MB:string=19424";
-// End of guide_biped_leg.ma
+dataStructure -fmt "raw" -as "name=idStructure:int32=ID";
+dataStructure -fmt "raw" -as "name=externalContentTablZ:string=nodZ:string=key:string=upath:uint32=upathcrc:string=rpath:string=roles";
+dataStructure -fmt "raw" -as "name=FBXFastExportSetting_FBX:string=54";
+// End of guide_biped_arm.ma
