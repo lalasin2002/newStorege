@@ -395,6 +395,9 @@ QLabel {
           <layout class="QHBoxLayout" name="set_guideParent_H">
            <item>
             <widget class="QLineEdit" name="set_guideParent_Le">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="placeholderText">
               <string>-- select parent item -- </string>
              </property>
@@ -443,17 +446,17 @@ QLabel {
              </property>
              <item>
               <property name="text">
-               <string>biped_arm</string>
+               <string>bipad_arm</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>biped_hand</string>
+               <string>bipad_hand</string>
               </property>
              </item>
              <item>
               <property name="text">
-               <string>biped_leg</string>
+               <string>bipad_leg</string>
               </property>
              </item>
              <item>
@@ -1027,8 +1030,6 @@ li.checked::marker { content: &quot;\2612&quot;; }
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;curveInfo&amp;quot; : &amp;quot;CrvInfo&amp;quot;,&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;pointOnCurveInfo&amp;quot; : &amp;quot;Pocif&amp;quot;,&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&amp;quot;nearestPointOnCurve&amp;quot; : &amp;quot;Npoc&amp;quot;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;}&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;
 &lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;

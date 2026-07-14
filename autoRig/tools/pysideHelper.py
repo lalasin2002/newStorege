@@ -38,6 +38,25 @@ def set_existingDirectoryPath(parent, path, string="select folder"):
     
     return options
 
+def set_existingSaveFileNamePath(parent, path, string="select folder", extra = {} ):
+    """
+    사용자가 특정 폴더를 선택할 수 있도록 탐색기 다이얼로그 창을 띄웁니다.
+
+    Args:
+        parent (QWidget): 다이얼로그가 종속될 메인 UI 창 (일반적으로 self를 넘겨줍니다).
+        path (str): 창이 처음 열릴 때 보여줄 기본 시작 경로.
+        string (str, optional): 다이얼로그 창의 상단 제목 텍스트. 기본값은 "select folder".
+
+    Returns:
+        str: 사용자가 최종적으로 선택한 폴더의 절대 경로. 
+             (만약 사용자가 선택을 취소하거나 X 버튼을 누르면 빈 문자열 '' 을 반환합니다)
+    """
+    
+    # QFileDialog를 호출하여 디렉토리 선택 창을 실행
+    options = QFileDialog.getSaveFileName(parent, string, path , **extra)
+    
+    return options
+
 def set_imageToLabel( path , widget):
     if path is None:
         return

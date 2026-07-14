@@ -146,6 +146,8 @@ class orientManager():
             raise ValueError(u"tangentOrientObject 에러 : flag 인자가 유효하지 않습니다. (dict or None)")
 
         # destinationTarget이 curveObj의 tangent 방향을 따르도록 tangentConstraint
+        tangentFlag.pop("mo", None)
+        tangentFlag.pop("maintainOffset", None)
         constraint = cmds.tangentConstraint(
             curveObj,
             destinationTarget,
