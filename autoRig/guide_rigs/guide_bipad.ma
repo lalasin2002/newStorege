@@ -1,6 +1,6 @@
 //Maya ASCII 2022 scene
-//Name: guide_biped.ma
-//Last modified: Tue, Jul 07, 2026 10:47:36 AM
+//Name: guide_bipad.ma
+//Last modified: Wed, Jul 15, 2026 04:43:25 PM
 //Codeset: 949
 requires maya "2022";
 requires -nodeType "VRaySettingsNode" -dataType "VRaySunParams" -dataType "vrayFloatVectorData"
@@ -13,17 +13,17 @@ fileInfo "product" "Maya 2022";
 fileInfo "version" "2022";
 fileInfo "cutIdentifier" "202303271415-baa69b5798";
 fileInfo "osv" "Windows 10 Pro v2009 (Build: 19045)";
-fileInfo "UUID" "82C9C54D-4193-04E0-BE5B-1ABB3155C3EF";
+fileInfo "UUID" "2AAC6C1F-41B0-6C86-2B98-6BB559A7FE08";
 createNode transform -s -n "persp";
 	rename -uid "BA795C28-4794-797F-14AF-18A200F9E273";
 	setAttr ".v" no;
-	setAttr ".t" -type "double3" 19.833844624903652 54.97428914982423 54.592431544747043 ;
-	setAttr ".r" -type "double3" -17.738352729610043 15.000000000000142 0 ;
+	setAttr ".t" -type "double3" 39.476153858405411 44.676449481236546 40.567358810129285 ;
+	setAttr ".r" -type "double3" -9.938352729609564 41.400000000000091 -5.3001395563833174e-16 ;
 createNode camera -s -n "perspShape" -p "persp";
 	rename -uid "CD55FF99-4174-7A25-15C8-8C96B686FB8B";
 	setAttr -k off ".v" no;
 	setAttr ".fl" 34.999999999999993;
-	setAttr ".coi" 54.791031157428243;
+	setAttr ".coi" 59.479182858672431;
 	setAttr ".imn" -type "string" "persp";
 	setAttr ".den" -type "string" "persp_depth";
 	setAttr ".man" -type "string" "persp_mask";
@@ -94,61 +94,6 @@ createNode transform -n "C_root_nonParent";
 	setAttr ".rig_data" -type "string" "group";
 	setAttr ".rig_part" -type "string" "nonParent";
 	setAttr ".rig_index" -type "string" "";
-createNode transform -n "C_neck_Crv" -p "C_root_nonParent";
-	rename -uid "7F835C6E-4ED5-EADC-02AC-A08133A1C975";
-	setAttr ".ovdt" 2;
-	setAttr ".ove" yes;
-createNode nurbsCurve -n "C_neck_CrvShape" -p "C_neck_Crv";
-	rename -uid "92FEEFA1-4299-DB9D-4692-F6AEF3C10091";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr -k off ".v";
-	setAttr -s 5 ".cp";
-	setAttr ".cc" -type "nurbsCurve" 
-		3 2 0 no 3
-		7 0 0 0 0.5 1 1 1
-		5
-		0 45 0
-		0 46 0
-		0 48 0
-		0 50 0
-		0 51 0
-		;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "curveShape";
-	setAttr ".rig_part" -type "string" "neck";
-	setAttr ".rig_index" -type "string" "";
-createNode nurbsCurve -n "C_neck_CrvShape1Orig" -p "C_neck_Crv";
-	rename -uid "EDFC0EE6-41AC-26C1-EAA6-0598EFC80ED1";
-	setAttr -k off ".v";
-	setAttr ".io" yes;
-	setAttr -s 2 ".gtag";
-	setAttr ".gtag[0].gtagnm" -type "string" "cluster1";
-	setAttr ".gtag[0].gtagcmp" -type "componentList" 1 "cv[1]";
-	setAttr ".gtag[1].gtagnm" -type "string" "cluster2";
-	setAttr ".gtag[1].gtagcmp" -type "componentList" 1 "cv[3]";
-	setAttr ".cc" -type "nurbsCurve" 
-		3 2 0 no 3
-		7 0 0 0 0.5 1 1 1
-		5
-		0 45 0
-		0 46.000000001728473 0
-		0 47.999999999999943 0
-		0 49.999999998271583 0
-		0 51 0
-		
-
-		"gtag" 2
-		"cluster1" 1 "cv[1]"
-		"cluster2" 1 "cv[3]";
 createNode transform -n "C_chest_Crv" -p "C_root_nonParent";
 	rename -uid "65941274-4BD6-4E71-060B-15AA80D9AD82";
 	setAttr ".ovdt" 2;
@@ -314,285 +259,6 @@ createNode pointConstraint -n "C_splne1_loc_Grp_pointConstraint1" -p "C_splne1_l
 	setAttr ".rst" -type "double3" 0 29.348000000000003 0 ;
 	setAttr -k on ".w0" 0.666;
 	setAttr -k on ".w1" 0.334;
-createNode transform -n "C_neckRoot_loc_Grp" -p "C_root_loc";
-	rename -uid "FD793313-4242-AEF3-8464-F29CFA93FF7F";
-createNode transform -n "C_neckRoot_loc" -p "C_neckRoot_loc_Grp";
-	rename -uid "C8CBD832-4146-9793-777D-2CA173BF4C74";
-	addAttr -ci true -k true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 16;
-	setAttr -k on ".insertJnt" 4;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "neckRoot";
-	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "C_neckRoot_locShape" -p "C_neckRoot_loc";
-	rename -uid "DD20F9A3-40A4-F3C9-E68F-3FA5314CEEBF";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode transform -n "C_neckRootExtra_loc_Grp" -p "C_neckRoot_loc";
-	rename -uid "3F0F1D5E-4BBE-5ABC-61AC-58A95C62BABF";
-createNode transform -n "C_neckRootExtra_loc" -p "C_neckRootExtra_loc_Grp";
-	rename -uid "DA51EAF0-4F1A-9C0A-F8ED-43ADDA2C2E29";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "extra";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "neckRoot";
-	setAttr ".rig_index" -type "string" "0";
-createNode locator -n "C_neckRootExtra_locShape" -p "C_neckRootExtra_loc";
-	rename -uid "FFC6A147-47BE-0AFC-D6ED-B6A1D64F7969";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode pointConstraint -n "C_neckRootExtra_loc_Grp_pointConstraint1" -p "C_neckRootExtra_loc_Grp";
-	rename -uid "10A961B7-40BF-C265-0ACD-6181BCC82C9C";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_neckRoot_locW0" -dv 1 -min 
-		0 -at "double";
-	addAttr -dcb 0 -ci true -k true -sn "w1" -ln "Guide_neck_locW1" -dv 1 -min 0 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr -s 2 ".tg";
-	setAttr ".o" -type "double3" 0 0.00099999999999766942 0 ;
-	setAttr ".rst" -type "double3" 0 46 0 ;
-	setAttr -k on ".w0" 0.667;
-	setAttr -k on ".w1" 0.333;
-createNode transform -n "C_neckEndExtra_loc_Grp" -p "C_neckRoot_loc";
-	rename -uid "F2923AF7-4C4F-D675-426C-3B9B861634FC";
-createNode transform -n "C_neckEndExtra_loc" -p "C_neckEndExtra_loc_Grp";
-	rename -uid "DFB9BFD4-4E2E-3ADE-D0FC-2792E40495B6";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 13;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "extra";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "neckEnd";
-	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "C_neckEndExtra_locShape" -p "C_neckEndExtra_loc";
-	rename -uid "1B5A7FE6-40AF-BEBE-30B5-96B64AB8110B";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode pointConstraint -n "C_neckEndExtra_loc_Grp_pointConstraint1" -p "C_neckEndExtra_loc_Grp";
-	rename -uid "9D430691-4EED-645B-A6D9-FDA007F67E99";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_neck_locW0" -dv 1 -min 0 -at "double";
-	addAttr -dcb 0 -ci true -k true -sn "w1" -ln "Guide_neckEnd_locW1" -dv 1 -min 0 
-		-at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr -s 2 ".tg";
-	setAttr ".o" -type "double3" 0 -0.0010000000000047748 0 ;
-	setAttr ".rst" -type "double3" 0 50 0 ;
-	setAttr -k on ".w0" 0.333;
-	setAttr -k on ".w1" 0.667;
-createNode transform -n "C_neckEnd_loc_Grp" -p "C_neckRoot_loc";
-	rename -uid "741A0674-44D8-A914-323E-ED8B94658960";
-	setAttr ".t" -type "double3" 0 6 0 ;
-createNode transform -n "C_neckEnd_loc" -p "C_neckEnd_loc_Grp";
-	rename -uid "3C15D887-4273-C2DA-2244-75866412FA64";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".v" no;
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "neckEnd";
-	setAttr ".rig_index" -type "string" "2";
-createNode locator -n "C_neckEnd_locShape" -p "C_neckEnd_loc";
-	rename -uid "79794180-485E-C96A-04A6-E098AEB1A961";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode pointConstraint -n "C_neckEnd_loc_pointConstraint1" -p "C_neckEnd_loc";
-	rename -uid "09E42F29-4D30-8383-4FFC-6A9C16F01802";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "C_head_locW0" -dv 1 -min 0 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr -k on ".w0";
-createNode transform -n "C_neckRoot_vector_Grp" -p "C_neckRoot_loc";
-	rename -uid "EC1A814B-439E-1E6C-9E2E-9085EDF90B1A";
-createNode transform -n "C_neckRoot_vector" -p "C_neckRoot_vector_Grp";
-	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 6;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "aimVector";
-	setAttr ".rig_part" -type "string" "neckRoot";
-	setAttr ".rig_index" -type "string" "";
-createNode nurbsCurve -n "C_neckRoot_vectorShape" -p "C_neckRoot_vector";
-	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
-	setAttr -k off ".v";
-	setAttr ".cc" -type "nurbsCurve" 
-		1 6 0 no 3
-		7 0 1 2 3 4 5 6
-		7
-		-1.6653345369377348e-16 0 0.49999999999999983
-		-1.6653345369377348e-16 0.5 -3.6977854932234928e-32
-		1.6653345369377348e-16 0 -0.49999999999999983
-		3.3306690738754696e-16 0 -0.99999999999999967
-		-3.3306690738754696e-16 1 -7.3955709864469857e-32
-		-3.3306690738754696e-16 0 0.99999999999999967
-		-1.6653345369377348e-16 0 0.49999999999999983
-		;
-createNode aimConstraint -n "C_neckRoot_vector_Grp_aimConstraint1" -p "C_neckRoot_vector_Grp";
-	rename -uid "65892559-4FD6-039D-E794-269DB70333AB";
-	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_neck_locW0" -dv 1 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".a" -type "double3" 0 1 0 ;
-	setAttr ".u" -type "double3" 0 0 1 ;
-	setAttr ".wu" -type "double3" 0 0 1 ;
-	setAttr ".wut" 2;
-	setAttr -k on ".w0";
-createNode transform -n "C_neck_loc_Grp" -p "C_neckRoot_loc";
-	rename -uid "353BD92A-46A8-DC68-A0DD-11A648F60EA2";
-createNode transform -n "C_neck_loc" -p "C_neck_loc_Grp";
-	rename -uid "90932617-46CC-FE78-BA0F-E485A350BFB1";
-	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
-	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
-	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
-	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
-	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
-	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
-	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
-	setAttr ".ove" yes;
-	setAttr ".ovc" 17;
-	setAttr ".rig_type" -type "string" "biped";
-	setAttr ".rig_module" -type "string" "root_type";
-	setAttr ".rig_side" -type "string" "C";
-	setAttr ".rig_role" -type "string" "main";
-	setAttr ".rig_data" -type "string" "loc";
-	setAttr ".rig_part" -type "string" "neck";
-	setAttr ".rig_index" -type "string" "1";
-createNode locator -n "C_neck_locShape" -p "C_neck_loc";
-	rename -uid "BEF061A5-47E2-7969-B932-DD93C86A03E6";
-	setAttr -k off ".v";
-	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
-createNode pointConstraint -n "C_neck_loc_Grp_pointConstraint1" -p "C_neck_loc_Grp";
-	rename -uid "C59F3DE6-42D5-6A8B-4380-32893D91D729";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_neckRoot_locW0" -dv 1 -min 
-		0 -at "double";
-	addAttr -dcb 0 -ci true -k true -sn "w1" -ln "Guide_neckEnd_locW1" -dv 1 -min 0 
-		-at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr -s 2 ".tg";
-	setAttr ".rst" -type "double3" 0 48 0 ;
-	setAttr -k on ".w0";
-	setAttr -k on ".w1";
-createNode pointConstraint -n "C_neckRoot_loc_Grp_pointConstraint1" -p "C_neckRoot_loc_Grp";
-	rename -uid "33503C85-4127-DDAD-912E-61BF2DBCAE58";
-	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_chest_locW0" -dv 1 -min 0 -at "double";
-	setAttr -k on ".nds";
-	setAttr -k off ".v";
-	setAttr -k off ".tx";
-	setAttr -k off ".ty";
-	setAttr -k off ".tz";
-	setAttr -k off ".rx";
-	setAttr -k off ".ry";
-	setAttr -k off ".rz";
-	setAttr -k off ".sx";
-	setAttr -k off ".sy";
-	setAttr -k off ".sz";
-	setAttr ".erp" yes;
-	setAttr ".o" -type "double3" 0 1 0 ;
-	setAttr ".rst" -type "double3" 0 23 0 ;
-	setAttr -k on ".w0";
 createNode transform -n "C_chest_loc_Grp" -p "C_root_loc";
 	rename -uid "8DC482D6-4DE0-5B1C-8914-2EBB6C8B331B";
 	setAttr ".t" -type "double3" 0 22 0 ;
@@ -1334,7 +1000,7 @@ createNode locator -n "L_toePivot_locShape" -p "L_toePivot_loc";
 createNode transform -n "L_hip_vector_Grp" -p "L_hip_loc";
 	rename -uid "5573F941-4956-58AF-45CF-639AB98FB378";
 createNode transform -n "L_hip_vector" -p "L_hip_vector_Grp";
-	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
+	rename -uid "93781724-44EF-A5CE-1C4E-60A3FFD47B6F";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
 	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
@@ -1359,7 +1025,7 @@ createNode transform -n "L_hip_vector" -p "L_hip_vector_Grp";
 	setAttr ".rig_part" -type "string" "hip";
 	setAttr ".rig_index" -type "string" "";
 createNode nurbsCurve -n "L_hip_vectorShape" -p "L_hip_vector";
-	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
+	rename -uid "4B4C7E42-4697-5B3B-8966-E3B5B5D93688";
 	setAttr -k off ".v";
 	setAttr ".cc" -type "nurbsCurve" 
 		1 6 0 no 3
@@ -2567,7 +2233,7 @@ createNode locator -n "L_wristEnd_locShape" -p "L_wristEnd_loc";
 createNode transform -n "L_shoulder_vector_Grp" -p "L_shoulder_loc";
 	rename -uid "3DE0CFD8-4601-A3D9-57F8-AA81968DCCCA";
 createNode transform -n "L_shoulder_vector" -p "L_shoulder_vector_Grp";
-	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
+	rename -uid "CA7AC72B-4E62-F994-FA95-8590F4ABA8DF";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
 	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
@@ -2592,7 +2258,7 @@ createNode transform -n "L_shoulder_vector" -p "L_shoulder_vector_Grp";
 	setAttr ".rig_part" -type "string" "shoulder";
 	setAttr ".rig_index" -type "string" "";
 createNode nurbsCurve -n "L_shoulder_vectorShape" -p "L_shoulder_vector";
-	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
+	rename -uid "6BF5CD38-490F-A9F9-529B-9E98E0D380C1";
 	setAttr -k off ".v";
 	setAttr -s 7 ".cp";
 	setAttr -av ".cp[0].xv";
@@ -3754,7 +3420,7 @@ createNode locator -n "L_thumb3_locShape" -p "L_thumb3_loc";
 createNode transform -n "L_thumb_vector_Grp" -p "L_thumb1_loc";
 	rename -uid "2F43A7A9-46E0-9561-933A-87BDB3830857";
 createNode transform -n "L_thumb_vector" -p "L_thumb_vector_Grp";
-	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
+	rename -uid "828250A3-4613-EA97-A9BE-35812123C21A";
 	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
 	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
 	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
@@ -3772,7 +3438,7 @@ createNode transform -n "L_thumb_vector" -p "L_thumb_vector_Grp";
 	setAttr ".rig_part" -type "string" "thumb";
 	setAttr ".rig_index" -type "string" "";
 createNode nurbsCurve -n "L_thumb_vectorShape" -p "L_thumb_vector";
-	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
+	rename -uid "305502D2-4639-9514-0C1F-5893BB9173BC";
 	setAttr -k off ".v";
 	setAttr ".cc" -type "nurbsCurve" 
 		1 6 0 no 3
@@ -6832,8 +6498,375 @@ createNode parentConstraint -n "C_head_mirror_parentConstraint1" -p "C_head_mirr
 	setAttr ".tg[0].tot" -type "double3" 0 6 0 ;
 	setAttr ".rst" -type "double3" 0 51 0 ;
 	setAttr -k on ".w0";
+createNode transform -n "C_neck_nonParent";
+	rename -uid "8B45574A-42C9-B4B7-7780-699B041B6B22";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "container";
+	setAttr ".rig_data" -type "string" "group";
+	setAttr ".rig_part" -type "string" "nonParent";
+	setAttr ".rig_index" -type "string" "";
+createNode transform -n "C_neck_Crv" -p "C_neck_nonParent";
+	rename -uid "7F835C6E-4ED5-EADC-02AC-A08133A1C975";
+	setAttr ".ovdt" 2;
+	setAttr ".ove" yes;
+createNode nurbsCurve -n "C_neck_CrvShape" -p "C_neck_Crv";
+	rename -uid "92FEEFA1-4299-DB9D-4692-F6AEF3C10091";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr -k off ".v";
+	setAttr -s 5 ".cp";
+	setAttr ".cc" -type "nurbsCurve" 
+		3 2 0 no 3
+		7 0 0 0 0.5 1 1 1
+		5
+		0 45 0
+		0 46 0
+		0 48 0
+		0 50 0
+		0 51 0
+		;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "curveShape";
+	setAttr ".rig_part" -type "string" "neck";
+	setAttr ".rig_index" -type "string" "";
+createNode nurbsCurve -n "C_neck_CrvShape1Orig" -p "C_neck_Crv";
+	rename -uid "EDFC0EE6-41AC-26C1-EAA6-0598EFC80ED1";
+	setAttr -k off ".v";
+	setAttr ".io" yes;
+	setAttr -s 2 ".gtag";
+	setAttr ".gtag[0].gtagnm" -type "string" "cluster1";
+	setAttr ".gtag[0].gtagcmp" -type "componentList" 1 "cv[1]";
+	setAttr ".gtag[1].gtagnm" -type "string" "cluster2";
+	setAttr ".gtag[1].gtagcmp" -type "componentList" 1 "cv[3]";
+	setAttr ".cc" -type "nurbsCurve" 
+		3 2 0 no 3
+		7 0 0 0 0.5 1 1 1
+		5
+		0 45 0
+		0 46.000000001728473 0
+		0 47.999999999999943 0
+		0 49.999999998271583 0
+		0 51 0
+		
+
+		"gtag" 2
+		"cluster1" 1 "cv[1]"
+		"cluster2" 1 "cv[3]";
+createNode transform -n "C_neckRoot_mirror";
+	rename -uid "66676DB8-4B07-7E85-0970-7585CAD8E078";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "mirror";
+	setAttr ".rig_data" -type "string" "space";
+	setAttr ".rig_part" -type "string" "mirrorRoot";
+	setAttr ".rig_index" -type "string" "";
+createNode transform -n "C_neckRoot_loc_Grp" -p "C_neckRoot_mirror";
+	rename -uid "FD793313-4242-AEF3-8464-F29CFA93FF7F";
+	setAttr ".t" -type "double3" 0 23 0 ;
+createNode transform -n "C_neckRoot_loc" -p "C_neckRoot_loc_Grp";
+	rename -uid "C8CBD832-4146-9793-777D-2CA173BF4C74";
+	addAttr -ci true -k true -sn "insertJnt" -ln "insertJnt" -min 0 -at "long";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 16;
+	setAttr -k on ".insertJnt" 4;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_part" -type "string" "neckRoot";
+	setAttr ".rig_index" -type "string" "0";
+createNode locator -n "C_neckRoot_locShape" -p "C_neckRoot_loc";
+	rename -uid "DD20F9A3-40A4-F3C9-E68F-3FA5314CEEBF";
+	setAttr -k off ".v";
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode transform -n "C_neckRootExtra_loc_Grp" -p "C_neckRoot_loc";
+	rename -uid "3F0F1D5E-4BBE-5ABC-61AC-58A95C62BABF";
+createNode transform -n "C_neckRootExtra_loc" -p "C_neckRootExtra_loc_Grp";
+	rename -uid "DA51EAF0-4F1A-9C0A-F8ED-43ADDA2C2E29";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_part" -type "string" "neckRoot";
+	setAttr ".rig_index" -type "string" "0";
+createNode locator -n "C_neckRootExtra_locShape" -p "C_neckRootExtra_loc";
+	rename -uid "FFC6A147-47BE-0AFC-D6ED-B6A1D64F7969";
+	setAttr -k off ".v";
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode pointConstraint -n "C_neckRootExtra_loc_Grp_pointConstraint1" -p "C_neckRootExtra_loc_Grp";
+	rename -uid "10A961B7-40BF-C265-0ACD-6181BCC82C9C";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_neckRoot_locW0" -dv 1 -min 
+		0 -at "double";
+	addAttr -dcb 0 -ci true -k true -sn "w1" -ln "Guide_neck_locW1" -dv 1 -min 0 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr -s 2 ".tg";
+	setAttr ".o" -type "double3" 0 0.00099999999999766942 0 ;
+	setAttr ".rst" -type "double3" 0 46 0 ;
+	setAttr -k on ".w0" 0.667;
+	setAttr -k on ".w1" 0.333;
+createNode transform -n "C_neckEndExtra_loc_Grp" -p "C_neckRoot_loc";
+	rename -uid "F2923AF7-4C4F-D675-426C-3B9B861634FC";
+createNode transform -n "C_neckEndExtra_loc" -p "C_neckEndExtra_loc_Grp";
+	rename -uid "DFB9BFD4-4E2E-3ADE-D0FC-2792E40495B6";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 13;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "extra";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_part" -type "string" "neckEnd";
+	setAttr ".rig_index" -type "string" "1";
+createNode locator -n "C_neckEndExtra_locShape" -p "C_neckEndExtra_loc";
+	rename -uid "1B5A7FE6-40AF-BEBE-30B5-96B64AB8110B";
+	setAttr -k off ".v";
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode pointConstraint -n "C_neckEndExtra_loc_Grp_pointConstraint1" -p "C_neckEndExtra_loc_Grp";
+	rename -uid "9D430691-4EED-645B-A6D9-FDA007F67E99";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_neck_locW0" -dv 1 -min 0 -at "double";
+	addAttr -dcb 0 -ci true -k true -sn "w1" -ln "Guide_neckEnd_locW1" -dv 1 -min 0 
+		-at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr -s 2 ".tg";
+	setAttr ".o" -type "double3" 0 -0.0010000000000047748 0 ;
+	setAttr ".rst" -type "double3" 0 50 0 ;
+	setAttr -k on ".w0" 0.333;
+	setAttr -k on ".w1" 0.667;
+createNode transform -n "C_neckEnd_loc_Grp" -p "C_neckRoot_loc";
+	rename -uid "741A0674-44D8-A914-323E-ED8B94658960";
+	setAttr ".t" -type "double3" 0 6 0 ;
+createNode transform -n "C_neckEnd_loc" -p "C_neckEnd_loc_Grp";
+	rename -uid "3C15D887-4273-C2DA-2244-75866412FA64";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".v" no;
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_part" -type "string" "neckEnd";
+	setAttr ".rig_index" -type "string" "2";
+createNode locator -n "C_neckEnd_locShape" -p "C_neckEnd_loc";
+	rename -uid "79794180-485E-C96A-04A6-E098AEB1A961";
+	setAttr -k off ".v";
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode pointConstraint -n "C_neckEnd_loc_pointConstraint1" -p "C_neckEnd_loc";
+	rename -uid "09E42F29-4D30-8383-4FFC-6A9C16F01802";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "C_head_locW0" -dv 1 -min 0 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr -k on ".w0";
+createNode transform -n "C_neckRoot_vector_Grp" -p "C_neckRoot_loc";
+	rename -uid "EC1A814B-439E-1E6C-9E2E-9085EDF90B1A";
+createNode transform -n "C_neckRoot_vector" -p "C_neckRoot_vector_Grp";
+	rename -uid "3F4E2448-4C02-6E0D-A035-269F027A3FA0";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 6;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "aimVector";
+	setAttr ".rig_part" -type "string" "neckRoot";
+	setAttr ".rig_index" -type "string" "";
+createNode nurbsCurve -n "C_neckRoot_vectorShape" -p "C_neckRoot_vector";
+	rename -uid "27CD6502-4552-B1AD-B701-CC9057AD26B0";
+	setAttr -k off ".v";
+	setAttr ".cc" -type "nurbsCurve" 
+		1 6 0 no 3
+		7 0 1 2 3 4 5 6
+		7
+		-1.6653345369377348e-16 0 0.49999999999999983
+		-1.6653345369377348e-16 0.5 -3.6977854932234928e-32
+		1.6653345369377348e-16 0 -0.49999999999999983
+		3.3306690738754696e-16 0 -0.99999999999999967
+		-3.3306690738754696e-16 1 -7.3955709864469857e-32
+		-3.3306690738754696e-16 0 0.99999999999999967
+		-1.6653345369377348e-16 0 0.49999999999999983
+		;
+createNode aimConstraint -n "C_neckRoot_vector_Grp_aimConstraint1" -p "C_neckRoot_vector_Grp";
+	rename -uid "65892559-4FD6-039D-E794-269DB70333AB";
+	addAttr -dcb 0 -ci true -sn "w0" -ln "Guide_neck_locW0" -dv 1 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".a" -type "double3" 0 1 0 ;
+	setAttr ".u" -type "double3" 0 0 1 ;
+	setAttr ".wu" -type "double3" 0 0 1 ;
+	setAttr ".wut" 2;
+	setAttr -k on ".w0";
+createNode transform -n "C_neck_loc_Grp" -p "C_neckRoot_loc";
+	rename -uid "353BD92A-46A8-DC68-A0DD-11A648F60EA2";
+createNode transform -n "C_neck_loc" -p "C_neck_loc_Grp";
+	rename -uid "90932617-46CC-FE78-BA0F-E485A350BFB1";
+	addAttr -ci true -sn "rig_type" -ln "rig_type" -dt "string";
+	addAttr -ci true -sn "rig_module" -ln "rig_module" -dt "string";
+	addAttr -ci true -sn "rig_side" -ln "rig_side" -dt "string";
+	addAttr -ci true -sn "rig_role" -ln "rig_role" -dt "string";
+	addAttr -ci true -sn "rig_data" -ln "rig_data" -dt "string";
+	addAttr -ci true -sn "rig_part" -ln "rig_part" -dt "string";
+	addAttr -ci true -sn "rig_index" -ln "rig_index" -dt "string";
+	setAttr ".ove" yes;
+	setAttr ".ovc" 17;
+	setAttr ".rig_type" -type "string" "biped";
+	setAttr ".rig_module" -type "string" "neck_type";
+	setAttr ".rig_side" -type "string" "C";
+	setAttr ".rig_role" -type "string" "main";
+	setAttr ".rig_data" -type "string" "loc";
+	setAttr ".rig_part" -type "string" "neck";
+	setAttr ".rig_index" -type "string" "1";
+createNode locator -n "C_neck_locShape" -p "C_neck_loc";
+	rename -uid "BEF061A5-47E2-7969-B932-DD93C86A03E6";
+	setAttr -k off ".v";
+	setAttr ".los" -type "double3" 0.25 0.25 0.25 ;
+createNode pointConstraint -n "C_neck_loc_Grp_pointConstraint1" -p "C_neck_loc_Grp";
+	rename -uid "C59F3DE6-42D5-6A8B-4380-32893D91D729";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "Guide_neckRoot_locW0" -dv 1 -min 
+		0 -at "double";
+	addAttr -dcb 0 -ci true -k true -sn "w1" -ln "Guide_neckEnd_locW1" -dv 1 -min 0 
+		-at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr -s 2 ".tg";
+	setAttr ".rst" -type "double3" 0 48 0 ;
+	setAttr -k on ".w0";
+	setAttr -k on ".w1";
+createNode parentConstraint -n "C_neckRoot_mirror_parentConstraint1" -p "C_neckRoot_mirror";
+	rename -uid "620DBABF-4970-05C4-2DDE-8BA3BC319F2D";
+	addAttr -dcb 0 -ci true -k true -sn "w0" -ln "C_chest_locW0" -dv 1 -min 0 -at "double";
+	setAttr -k on ".nds";
+	setAttr -k off ".v";
+	setAttr -k off ".tx";
+	setAttr -k off ".ty";
+	setAttr -k off ".tz";
+	setAttr -k off ".rx";
+	setAttr -k off ".ry";
+	setAttr -k off ".rz";
+	setAttr -k off ".sx";
+	setAttr -k off ".sy";
+	setAttr -k off ".sz";
+	setAttr ".erp" yes;
+	setAttr ".tg[0].tot" -type "double3" 0 -22 0 ;
+	setAttr ".rst" -type "double3" 0 22 0 ;
+	setAttr -k on ".w0";
 createNode lightLinker -s -n "lightLinker1";
-	rename -uid "CED20669-4B6E-B95E-0FC9-86BD32A7BC16";
+	rename -uid "42E39F0D-43DC-DF5E-ADAC-56946FA6AE2A";
 	setAttr -s 2 ".lnk";
 	setAttr -s 2 ".slnk";
 createNode VRaySettingsNode -s -n "vraySettings";
@@ -6990,22 +7023,22 @@ createNode VRaySettingsNode -s -n "vraySettings";
 		 1667196782 1801676136 975332453 1936482662 1931619429 1701995892 1685015919 1634885477 577726820 741881658 1702130466 1299146098
 		 1600480367 1667590243 577004907 1818322490 2105369971 ;
 	setAttr ".vfbSyncM" yes;
-	setAttr ".mSceneName" -type "string" "D:/Code/MayaCode/autoRig/guide_rigs/guide_biped.ma";
+	setAttr ".mSceneName" -type "string" "D:/Code/MayaCode/autoRig/guide_rigs/guide_bipad.ma";
 	setAttr ".rt_cpuRayBundleSize" 4;
 	setAttr ".rt_gpuRayBundleSize" 128;
 	setAttr ".rt_maxPaths" 10000;
 	setAttr ".rt_engineType" 3;
 	setAttr ".rt_gpuResizeTextures" 0;
 createNode shapeEditorManager -n "shapeEditorManager";
-	rename -uid "09219D91-4446-36F3-DFAD-B69CA02749FE";
+	rename -uid "6B32BA4D-42BE-0136-DCA6-F9AECC728874";
 createNode poseInterpolatorManager -n "poseInterpolatorManager";
-	rename -uid "5C9244BF-4F76-5265-C4C1-B9A59E6C0144";
+	rename -uid "CEAA4373-4C22-3EA9-5B68-F1900BF7E4F4";
 createNode displayLayerManager -n "layerManager";
-	rename -uid "8103AC68-4EC7-68D2-73D5-0A8A1052132A";
+	rename -uid "C7E9FE90-497B-D2BA-525C-5F84236A2B2D";
 createNode displayLayer -n "defaultLayer";
 	rename -uid "3D79FB48-45FC-677C-1C34-D4B836994C99";
 createNode renderLayerManager -n "renderLayerManager";
-	rename -uid "88138F71-4A77-B348-8C7C-08BF3CA38846";
+	rename -uid "C13A6FE5-4DF5-6E53-2640-60BD6CAA3971";
 createNode renderLayer -n "defaultRenderLayer";
 	rename -uid "6ADEFCF9-48AB-1256-B684-25B3F7736254";
 	setAttr ".g" yes;
@@ -7093,9 +7126,9 @@ createNode shapeEditorManager -n "shapeEditorManager5";
 createNode poseInterpolatorManager -n "poseInterpolatorManager5";
 	rename -uid "EE0AA319-47D7-0B0D-4363-9B8C668AD435";
 createNode renderLayerManager -n "renderLayerManager10";
-	rename -uid "176C7874-4131-79A0-9A8E-0B9215D7095D";
+	rename -uid "C198A924-4B98-7664-91C8-BE937B5408CB";
 createNode renderLayer -n "defaultRenderLayer10";
-	rename -uid "6904B8B9-44D8-89A6-F9F7-CFAB4708A9BB";
+	rename -uid "D84B0881-4F05-C33A-DB15-92BEF064A2A1";
 	setAttr ".g" yes;
 createNode shapeEditorManager -n "shapeEditorManager8";
 	rename -uid "E517CDD2-4ACB-DDBD-D4CE-1C9D248B3173";
@@ -7120,13 +7153,13 @@ createNode renderLayer -n "defaultRenderLayer1";
 	rename -uid "9FF8B58F-40B9-DAAC-F268-809E3FE42501";
 	setAttr ".g" yes;
 createNode shapeEditorManager -n "shapeEditorManager4";
-	rename -uid "ACB42E0F-414C-E688-98D9-008A20491864";
+	rename -uid "48F42703-4121-BCB5-76DD-70AE5300EB39";
 createNode poseInterpolatorManager -n "poseInterpolatorManager4";
-	rename -uid "EE0AA319-47D7-0B0D-4363-9B8C668AD435";
+	rename -uid "5218F82E-42F6-C108-0AA6-C89AF45469EA";
 createNode renderLayerManager -n "renderLayerManager2";
-	rename -uid "176C7874-4131-79A0-9A8E-0B9215D7095D";
+	rename -uid "52F592D3-4DFD-240E-91DB-4F9BBBEC973C";
 createNode renderLayer -n "defaultRenderLayer2";
-	rename -uid "6904B8B9-44D8-89A6-F9F7-CFAB4708A9BB";
+	rename -uid "C454F2D2-4B70-B0DF-CFE0-508D60DAFFDF";
 	setAttr ".g" yes;
 createNode animCurveTL -n "temp_nameShape1_controlPoints_0__xValue";
 	rename -uid "6A6595DA-45C5-A99F-AD7A-D98DA17AC943";
@@ -7348,9 +7381,9 @@ createNode renderLayer -n "defaultRenderLayer3";
 	rename -uid "782FAD52-4D0C-4283-2878-E1A235A5814C";
 	setAttr ".g" yes;
 createNode renderLayerManager -n "renderLayerManager4";
-	rename -uid "176C7874-4131-79A0-9A8E-0B9215D7095D";
+	rename -uid "62DAC7C8-41B3-4E30-5AB7-4BA3320BC72D";
 createNode renderLayer -n "defaultRenderLayer4";
-	rename -uid "6904B8B9-44D8-89A6-F9F7-CFAB4708A9BB";
+	rename -uid "8B31A181-4AB6-7C69-ED36-1EAAF3273526";
 	setAttr ".g" yes;
 createNode renderLayerManager -n "renderLayerManager5";
 	rename -uid "573B5091-4070-0CB9-0906-1B8A09A9EF62";
@@ -7383,21 +7416,21 @@ createNode script -n "backUp_uiConfigurationScriptNode1";
 createNode renderLayerManager -n "renderLayerManager15";
 	rename -uid "1ECDF3E6-402D-F519-B0B3-9DAD99C62122";
 createNode renderLayer -n "defaultRenderLayer15";
-	rename -uid "F04BB8FA-4375-B4F3-1D64-59B7C4140232";
+	rename -uid "B577D779-43F2-D618-1D39-8B82688425AE";
 	setAttr ".g" yes;
 createNode renderLayerManager -n "renderLayerManager16";
-	rename -uid "176C7874-4131-79A0-9A8E-0B9215D7095D";
+	rename -uid "9D93FF09-4CFC-DC70-AF6E-CFAD3399B19F";
 createNode renderLayer -n "defaultRenderLayer16";
-	rename -uid "6904B8B9-44D8-89A6-F9F7-CFAB4708A9BB";
+	rename -uid "6EE9A781-4FDB-2F11-28E1-4A84FFCCED55";
 	setAttr ".g" yes;
 createNode shapeEditorManager -n "shapeEditorManager10";
 	rename -uid "69EEC230-4FE7-7607-1D06-ADBB0018CF83";
 createNode poseInterpolatorManager -n "poseInterpolatorManager10";
 	rename -uid "F1608DB2-4537-FA27-9CF9-28985AA5279A";
 createNode renderLayerManager -n "renderLayerManager17";
-	rename -uid "2204E19E-4CC0-AAF8-3205-5FA0D67F8C04";
+	rename -uid "BB625C02-4CAC-576D-DD12-74835F48E9B1";
 createNode renderLayer -n "defaultRenderLayer17";
-	rename -uid "6817F74C-491A-16D8-CF48-E1A2A60FB2C6";
+	rename -uid "78971AE4-4C55-E086-2421-37929F1790BD";
 	setAttr ".g" yes;
 createNode script -n "backUp_uiConfigurationScriptNode4";
 	rename -uid "A72189A9-4189-A6FD-578B-E38A4343B8A4";
@@ -7755,13 +7788,6 @@ select -ne :hardwareRenderGlobals;
 	setAttr -av -k on ".bswa";
 	setAttr -av -k on ".shml";
 	setAttr -av -k on ".hwel";
-select -ne :ikSystem;
-	setAttr -s 4 ".sol";
-connectAttr "C_neckRoot_locShape.wp" "C_neck_CrvShape.cp[0]";
-connectAttr "C_neckRootExtra_locShape.wp" "C_neck_CrvShape.cp[1]";
-connectAttr "C_neck_locShape.wp" "C_neck_CrvShape.cp[2]";
-connectAttr "C_neckEndExtra_locShape.wp" "C_neck_CrvShape.cp[3]";
-connectAttr "C_neckEnd_locShape.wp" "C_neck_CrvShape.cp[4]";
 connectAttr "C_root_locShape.wp" "C_chest_CrvShape.cp[0]";
 connectAttr "C_rootExtra_locShape.wp" "C_chest_CrvShape.cp[1]";
 connectAttr "C_splne1_locShape.wp" "C_chest_CrvShape.cp[2]";
@@ -7803,130 +7829,6 @@ connectAttr "C_chest_loc.rp" "C_splne1_loc_Grp_pointConstraint1.tg[1].trp";
 connectAttr "C_chest_loc.rpt" "C_splne1_loc_Grp_pointConstraint1.tg[1].trt";
 connectAttr "C_chest_loc.pm" "C_splne1_loc_Grp_pointConstraint1.tg[1].tpm";
 connectAttr "C_splne1_loc_Grp_pointConstraint1.w1" "C_splne1_loc_Grp_pointConstraint1.tg[1].tw"
-		;
-connectAttr "C_neckRoot_loc_Grp_pointConstraint1.ctx" "C_neckRoot_loc_Grp.tx";
-connectAttr "C_neckRoot_loc_Grp_pointConstraint1.cty" "C_neckRoot_loc_Grp.ty";
-connectAttr "C_neckRoot_loc_Grp_pointConstraint1.ctz" "C_neckRoot_loc_Grp.tz";
-connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.ctx" "C_neckRootExtra_loc_Grp.tx"
-		;
-connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.cty" "C_neckRootExtra_loc_Grp.ty"
-		;
-connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.ctz" "C_neckRootExtra_loc_Grp.tz"
-		;
-connectAttr "C_neckRootExtra_loc_Grp.pim" "C_neckRootExtra_loc_Grp_pointConstraint1.cpim"
-		;
-connectAttr "C_neckRootExtra_loc_Grp.rp" "C_neckRootExtra_loc_Grp_pointConstraint1.crp"
-		;
-connectAttr "C_neckRootExtra_loc_Grp.rpt" "C_neckRootExtra_loc_Grp_pointConstraint1.crt"
-		;
-connectAttr "C_neckRoot_loc.t" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].tt"
-		;
-connectAttr "C_neckRoot_loc.rp" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].trp"
-		;
-connectAttr "C_neckRoot_loc.rpt" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].trt"
-		;
-connectAttr "C_neckRoot_loc.pm" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].tpm"
-		;
-connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.w0" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].tw"
-		;
-connectAttr "C_neck_loc.t" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].tt";
-connectAttr "C_neck_loc.rp" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].trp"
-		;
-connectAttr "C_neck_loc.rpt" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].trt"
-		;
-connectAttr "C_neck_loc.pm" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].tpm"
-		;
-connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.w1" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].tw"
-		;
-connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.ctx" "C_neckEndExtra_loc_Grp.tx"
-		;
-connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.cty" "C_neckEndExtra_loc_Grp.ty"
-		;
-connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.ctz" "C_neckEndExtra_loc_Grp.tz"
-		;
-connectAttr "C_neckEndExtra_loc_Grp.pim" "C_neckEndExtra_loc_Grp_pointConstraint1.cpim"
-		;
-connectAttr "C_neckEndExtra_loc_Grp.rp" "C_neckEndExtra_loc_Grp_pointConstraint1.crp"
-		;
-connectAttr "C_neckEndExtra_loc_Grp.rpt" "C_neckEndExtra_loc_Grp_pointConstraint1.crt"
-		;
-connectAttr "C_neck_loc.t" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].tt";
-connectAttr "C_neck_loc.rp" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].trp";
-connectAttr "C_neck_loc.rpt" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].trt"
-		;
-connectAttr "C_neck_loc.pm" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].tpm";
-connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.w0" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].tw"
-		;
-connectAttr "C_neckEnd_loc.t" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].tt"
-		;
-connectAttr "C_neckEnd_loc.rp" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].trp"
-		;
-connectAttr "C_neckEnd_loc.rpt" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].trt"
-		;
-connectAttr "C_neckEnd_loc.pm" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].tpm"
-		;
-connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.w1" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].tw"
-		;
-connectAttr "C_neckEnd_loc_pointConstraint1.ctx" "C_neckEnd_loc.tx";
-connectAttr "C_neckEnd_loc_pointConstraint1.cty" "C_neckEnd_loc.ty";
-connectAttr "C_neckEnd_loc_pointConstraint1.ctz" "C_neckEnd_loc.tz";
-connectAttr "C_neckEnd_loc.pim" "C_neckEnd_loc_pointConstraint1.cpim";
-connectAttr "C_neckEnd_loc.rp" "C_neckEnd_loc_pointConstraint1.crp";
-connectAttr "C_neckEnd_loc.rpt" "C_neckEnd_loc_pointConstraint1.crt";
-connectAttr "C_head_loc.t" "C_neckEnd_loc_pointConstraint1.tg[0].tt";
-connectAttr "C_head_loc.rp" "C_neckEnd_loc_pointConstraint1.tg[0].trp";
-connectAttr "C_head_loc.rpt" "C_neckEnd_loc_pointConstraint1.tg[0].trt";
-connectAttr "C_head_loc.pm" "C_neckEnd_loc_pointConstraint1.tg[0].tpm";
-connectAttr "C_neckEnd_loc_pointConstraint1.w0" "C_neckEnd_loc_pointConstraint1.tg[0].tw"
-		;
-connectAttr "C_neckRoot_vector_Grp_aimConstraint1.crx" "C_neckRoot_vector_Grp.rx"
-		;
-connectAttr "C_neckRoot_vector_Grp_aimConstraint1.cry" "C_neckRoot_vector_Grp.ry"
-		;
-connectAttr "C_neckRoot_vector_Grp_aimConstraint1.crz" "C_neckRoot_vector_Grp.rz"
-		;
-connectAttr "C_neckRoot_vector_Grp.pim" "C_neckRoot_vector_Grp_aimConstraint1.cpim"
-		;
-connectAttr "C_neckRoot_vector_Grp.t" "C_neckRoot_vector_Grp_aimConstraint1.ct";
-connectAttr "C_neckRoot_vector_Grp.rp" "C_neckRoot_vector_Grp_aimConstraint1.crp"
-		;
-connectAttr "C_neckRoot_vector_Grp.rpt" "C_neckRoot_vector_Grp_aimConstraint1.crt"
-		;
-connectAttr "C_neckRoot_vector_Grp.ro" "C_neckRoot_vector_Grp_aimConstraint1.cro"
-		;
-connectAttr "C_neck_loc.t" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].tt";
-connectAttr "C_neck_loc.rp" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].trp";
-connectAttr "C_neck_loc.rpt" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].trt";
-connectAttr "C_neck_loc.pm" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].tpm";
-connectAttr "C_neckRoot_vector_Grp_aimConstraint1.w0" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].tw"
-		;
-connectAttr "C_neckRoot_loc.wm" "C_neckRoot_vector_Grp_aimConstraint1.wum";
-connectAttr "C_neck_loc_Grp_pointConstraint1.ctx" "C_neck_loc_Grp.tx";
-connectAttr "C_neck_loc_Grp_pointConstraint1.cty" "C_neck_loc_Grp.ty";
-connectAttr "C_neck_loc_Grp_pointConstraint1.ctz" "C_neck_loc_Grp.tz";
-connectAttr "C_neck_loc_Grp.pim" "C_neck_loc_Grp_pointConstraint1.cpim";
-connectAttr "C_neck_loc_Grp.rp" "C_neck_loc_Grp_pointConstraint1.crp";
-connectAttr "C_neck_loc_Grp.rpt" "C_neck_loc_Grp_pointConstraint1.crt";
-connectAttr "C_neckRoot_loc.t" "C_neck_loc_Grp_pointConstraint1.tg[0].tt";
-connectAttr "C_neckRoot_loc.rp" "C_neck_loc_Grp_pointConstraint1.tg[0].trp";
-connectAttr "C_neckRoot_loc.rpt" "C_neck_loc_Grp_pointConstraint1.tg[0].trt";
-connectAttr "C_neckRoot_loc.pm" "C_neck_loc_Grp_pointConstraint1.tg[0].tpm";
-connectAttr "C_neck_loc_Grp_pointConstraint1.w0" "C_neck_loc_Grp_pointConstraint1.tg[0].tw"
-		;
-connectAttr "C_neckEnd_loc.t" "C_neck_loc_Grp_pointConstraint1.tg[1].tt";
-connectAttr "C_neckEnd_loc.rp" "C_neck_loc_Grp_pointConstraint1.tg[1].trp";
-connectAttr "C_neckEnd_loc.rpt" "C_neck_loc_Grp_pointConstraint1.tg[1].trt";
-connectAttr "C_neckEnd_loc.pm" "C_neck_loc_Grp_pointConstraint1.tg[1].tpm";
-connectAttr "C_neck_loc_Grp_pointConstraint1.w1" "C_neck_loc_Grp_pointConstraint1.tg[1].tw"
-		;
-connectAttr "C_neckRoot_loc_Grp.pim" "C_neckRoot_loc_Grp_pointConstraint1.cpim";
-connectAttr "C_neckRoot_loc_Grp.rp" "C_neckRoot_loc_Grp_pointConstraint1.crp";
-connectAttr "C_neckRoot_loc_Grp.rpt" "C_neckRoot_loc_Grp_pointConstraint1.crt";
-connectAttr "C_chest_loc.t" "C_neckRoot_loc_Grp_pointConstraint1.tg[0].tt";
-connectAttr "C_chest_loc.rp" "C_neckRoot_loc_Grp_pointConstraint1.tg[0].trp";
-connectAttr "C_chest_loc.rpt" "C_neckRoot_loc_Grp_pointConstraint1.tg[0].trt";
-connectAttr "C_chest_loc.pm" "C_neckRoot_loc_Grp_pointConstraint1.tg[0].tpm";
-connectAttr "C_neckRoot_loc_Grp_pointConstraint1.w0" "C_neckRoot_loc_Grp_pointConstraint1.tg[0].tw"
 		;
 connectAttr "C_chestExtra_loc_Grp_pointConstraint1.ctx" "C_chestExtra_loc_Grp.tx"
 		;
@@ -9512,6 +9414,139 @@ connectAttr "C_neckRoot_loc.s" "C_head_mirror_parentConstraint1.tg[0].ts";
 connectAttr "C_neckRoot_loc.pm" "C_head_mirror_parentConstraint1.tg[0].tpm";
 connectAttr "C_head_mirror_parentConstraint1.w0" "C_head_mirror_parentConstraint1.tg[0].tw"
 		;
+connectAttr "C_neckRoot_locShape.wp" "C_neck_CrvShape.cp[0]";
+connectAttr "C_neckRootExtra_locShape.wp" "C_neck_CrvShape.cp[1]";
+connectAttr "C_neck_locShape.wp" "C_neck_CrvShape.cp[2]";
+connectAttr "C_neckEndExtra_locShape.wp" "C_neck_CrvShape.cp[3]";
+connectAttr "C_neckEnd_locShape.wp" "C_neck_CrvShape.cp[4]";
+connectAttr "C_neckRoot_mirror_parentConstraint1.ctx" "C_neckRoot_mirror.tx";
+connectAttr "C_neckRoot_mirror_parentConstraint1.cty" "C_neckRoot_mirror.ty";
+connectAttr "C_neckRoot_mirror_parentConstraint1.ctz" "C_neckRoot_mirror.tz";
+connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.ctx" "C_neckRootExtra_loc_Grp.tx"
+		;
+connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.cty" "C_neckRootExtra_loc_Grp.ty"
+		;
+connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.ctz" "C_neckRootExtra_loc_Grp.tz"
+		;
+connectAttr "C_neckRootExtra_loc_Grp.pim" "C_neckRootExtra_loc_Grp_pointConstraint1.cpim"
+		;
+connectAttr "C_neckRootExtra_loc_Grp.rp" "C_neckRootExtra_loc_Grp_pointConstraint1.crp"
+		;
+connectAttr "C_neckRootExtra_loc_Grp.rpt" "C_neckRootExtra_loc_Grp_pointConstraint1.crt"
+		;
+connectAttr "C_neckRoot_loc.t" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].tt"
+		;
+connectAttr "C_neckRoot_loc.rp" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].trp"
+		;
+connectAttr "C_neckRoot_loc.rpt" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].trt"
+		;
+connectAttr "C_neckRoot_loc.pm" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].tpm"
+		;
+connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.w0" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[0].tw"
+		;
+connectAttr "C_neck_loc.t" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].tt";
+connectAttr "C_neck_loc.rp" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].trp"
+		;
+connectAttr "C_neck_loc.rpt" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].trt"
+		;
+connectAttr "C_neck_loc.pm" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].tpm"
+		;
+connectAttr "C_neckRootExtra_loc_Grp_pointConstraint1.w1" "C_neckRootExtra_loc_Grp_pointConstraint1.tg[1].tw"
+		;
+connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.ctx" "C_neckEndExtra_loc_Grp.tx"
+		;
+connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.cty" "C_neckEndExtra_loc_Grp.ty"
+		;
+connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.ctz" "C_neckEndExtra_loc_Grp.tz"
+		;
+connectAttr "C_neckEndExtra_loc_Grp.pim" "C_neckEndExtra_loc_Grp_pointConstraint1.cpim"
+		;
+connectAttr "C_neckEndExtra_loc_Grp.rp" "C_neckEndExtra_loc_Grp_pointConstraint1.crp"
+		;
+connectAttr "C_neckEndExtra_loc_Grp.rpt" "C_neckEndExtra_loc_Grp_pointConstraint1.crt"
+		;
+connectAttr "C_neck_loc.t" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].tt";
+connectAttr "C_neck_loc.rp" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].trp";
+connectAttr "C_neck_loc.rpt" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].trt"
+		;
+connectAttr "C_neck_loc.pm" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].tpm";
+connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.w0" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[0].tw"
+		;
+connectAttr "C_neckEnd_loc.t" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].tt"
+		;
+connectAttr "C_neckEnd_loc.rp" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].trp"
+		;
+connectAttr "C_neckEnd_loc.rpt" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].trt"
+		;
+connectAttr "C_neckEnd_loc.pm" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].tpm"
+		;
+connectAttr "C_neckEndExtra_loc_Grp_pointConstraint1.w1" "C_neckEndExtra_loc_Grp_pointConstraint1.tg[1].tw"
+		;
+connectAttr "C_neckEnd_loc_pointConstraint1.ctx" "C_neckEnd_loc.tx";
+connectAttr "C_neckEnd_loc_pointConstraint1.cty" "C_neckEnd_loc.ty";
+connectAttr "C_neckEnd_loc_pointConstraint1.ctz" "C_neckEnd_loc.tz";
+connectAttr "C_neckEnd_loc.pim" "C_neckEnd_loc_pointConstraint1.cpim";
+connectAttr "C_neckEnd_loc.rp" "C_neckEnd_loc_pointConstraint1.crp";
+connectAttr "C_neckEnd_loc.rpt" "C_neckEnd_loc_pointConstraint1.crt";
+connectAttr "C_head_loc.t" "C_neckEnd_loc_pointConstraint1.tg[0].tt";
+connectAttr "C_head_loc.rp" "C_neckEnd_loc_pointConstraint1.tg[0].trp";
+connectAttr "C_head_loc.rpt" "C_neckEnd_loc_pointConstraint1.tg[0].trt";
+connectAttr "C_head_loc.pm" "C_neckEnd_loc_pointConstraint1.tg[0].tpm";
+connectAttr "C_neckEnd_loc_pointConstraint1.w0" "C_neckEnd_loc_pointConstraint1.tg[0].tw"
+		;
+connectAttr "C_neckRoot_vector_Grp_aimConstraint1.crx" "C_neckRoot_vector_Grp.rx"
+		;
+connectAttr "C_neckRoot_vector_Grp_aimConstraint1.cry" "C_neckRoot_vector_Grp.ry"
+		;
+connectAttr "C_neckRoot_vector_Grp_aimConstraint1.crz" "C_neckRoot_vector_Grp.rz"
+		;
+connectAttr "C_neckRoot_vector_Grp.pim" "C_neckRoot_vector_Grp_aimConstraint1.cpim"
+		;
+connectAttr "C_neckRoot_vector_Grp.t" "C_neckRoot_vector_Grp_aimConstraint1.ct";
+connectAttr "C_neckRoot_vector_Grp.rp" "C_neckRoot_vector_Grp_aimConstraint1.crp"
+		;
+connectAttr "C_neckRoot_vector_Grp.rpt" "C_neckRoot_vector_Grp_aimConstraint1.crt"
+		;
+connectAttr "C_neckRoot_vector_Grp.ro" "C_neckRoot_vector_Grp_aimConstraint1.cro"
+		;
+connectAttr "C_neck_loc.t" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].tt";
+connectAttr "C_neck_loc.rp" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].trp";
+connectAttr "C_neck_loc.rpt" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].trt";
+connectAttr "C_neck_loc.pm" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].tpm";
+connectAttr "C_neckRoot_vector_Grp_aimConstraint1.w0" "C_neckRoot_vector_Grp_aimConstraint1.tg[0].tw"
+		;
+connectAttr "C_neckRoot_loc.wm" "C_neckRoot_vector_Grp_aimConstraint1.wum";
+connectAttr "C_neck_loc_Grp_pointConstraint1.ctx" "C_neck_loc_Grp.tx";
+connectAttr "C_neck_loc_Grp_pointConstraint1.cty" "C_neck_loc_Grp.ty";
+connectAttr "C_neck_loc_Grp_pointConstraint1.ctz" "C_neck_loc_Grp.tz";
+connectAttr "C_neck_loc_Grp.pim" "C_neck_loc_Grp_pointConstraint1.cpim";
+connectAttr "C_neck_loc_Grp.rp" "C_neck_loc_Grp_pointConstraint1.crp";
+connectAttr "C_neck_loc_Grp.rpt" "C_neck_loc_Grp_pointConstraint1.crt";
+connectAttr "C_neckRoot_loc.t" "C_neck_loc_Grp_pointConstraint1.tg[0].tt";
+connectAttr "C_neckRoot_loc.rp" "C_neck_loc_Grp_pointConstraint1.tg[0].trp";
+connectAttr "C_neckRoot_loc.rpt" "C_neck_loc_Grp_pointConstraint1.tg[0].trt";
+connectAttr "C_neckRoot_loc.pm" "C_neck_loc_Grp_pointConstraint1.tg[0].tpm";
+connectAttr "C_neck_loc_Grp_pointConstraint1.w0" "C_neck_loc_Grp_pointConstraint1.tg[0].tw"
+		;
+connectAttr "C_neckEnd_loc.t" "C_neck_loc_Grp_pointConstraint1.tg[1].tt";
+connectAttr "C_neckEnd_loc.rp" "C_neck_loc_Grp_pointConstraint1.tg[1].trp";
+connectAttr "C_neckEnd_loc.rpt" "C_neck_loc_Grp_pointConstraint1.tg[1].trt";
+connectAttr "C_neckEnd_loc.pm" "C_neck_loc_Grp_pointConstraint1.tg[1].tpm";
+connectAttr "C_neck_loc_Grp_pointConstraint1.w1" "C_neck_loc_Grp_pointConstraint1.tg[1].tw"
+		;
+connectAttr "C_neckRoot_mirror.ro" "C_neckRoot_mirror_parentConstraint1.cro";
+connectAttr "C_neckRoot_mirror.pim" "C_neckRoot_mirror_parentConstraint1.cpim";
+connectAttr "C_neckRoot_mirror.rp" "C_neckRoot_mirror_parentConstraint1.crp";
+connectAttr "C_neckRoot_mirror.rpt" "C_neckRoot_mirror_parentConstraint1.crt";
+connectAttr "C_chest_loc.t" "C_neckRoot_mirror_parentConstraint1.tg[0].tt";
+connectAttr "C_chest_loc.rp" "C_neckRoot_mirror_parentConstraint1.tg[0].trp";
+connectAttr "C_chest_loc.rpt" "C_neckRoot_mirror_parentConstraint1.tg[0].trt";
+connectAttr "C_chest_loc.r" "C_neckRoot_mirror_parentConstraint1.tg[0].tr";
+connectAttr "C_chest_loc.ro" "C_neckRoot_mirror_parentConstraint1.tg[0].tro";
+connectAttr "C_chest_loc.s" "C_neckRoot_mirror_parentConstraint1.tg[0].ts";
+connectAttr "C_chest_loc.pm" "C_neckRoot_mirror_parentConstraint1.tg[0].tpm";
+connectAttr "C_neckRoot_mirror_parentConstraint1.w0" "C_neckRoot_mirror_parentConstraint1.tg[0].tw"
+		;
 relationship "link" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
 relationship "link" ":lightLinker1" ":initialParticleSE.message" ":defaultLightSet.message";
 relationship "shadowLink" ":lightLinker1" ":initialShadingGroup.message" ":defaultLightSet.message";
@@ -9553,10 +9588,10 @@ connectAttr "defaultRenderLayer8.msg" ":defaultRenderingList1.r" -na;
 connectAttr "defaultRenderLayer15.msg" ":defaultRenderingList1.r" -na;
 connectAttr "defaultRenderLayer16.msg" ":defaultRenderingList1.r" -na;
 connectAttr "defaultRenderLayer17.msg" ":defaultRenderingList1.r" -na;
-dataStructure -fmt "raw" -as "name=idStructure:int32=ID";
 dataStructure -fmt "raw" -as "name=externalContentTablZ:string=nodZ:string=key:string=upath:uint32=upathcrc:string=rpath:string=roles";
-dataStructure -fmt "raw" -as "name=FBXFastExportSetting_MB:string=19424";
-dataStructure -fmt "raw" -as "name=FBXFastExportSetting_FBX:string=54";
-dataStructure -fmt "raw" -as "name=faceConnectOutputStructure:bool=faceConnectOutput:string[200]=faceConnectOutputAttributes:string[200]=faceConnectOutputGroups";
 dataStructure -fmt "raw" -as "name=faceConnectMarkerStructure:bool=faceConnectMarker:string[200]=faceConnectOutputGroups";
-// End of guide_biped.ma
+dataStructure -fmt "raw" -as "name=FBXFastExportSetting_MB:string=19424";
+dataStructure -fmt "raw" -as "name=faceConnectOutputStructure:bool=faceConnectOutput:string[200]=faceConnectOutputAttributes:string[200]=faceConnectOutputGroups";
+dataStructure -fmt "raw" -as "name=idStructure:int32=ID";
+dataStructure -fmt "raw" -as "name=FBXFastExportSetting_FBX:string=54";
+// End of guide_bipad.ma

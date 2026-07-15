@@ -196,22 +196,39 @@ class DesignerUI(QtWidgets.QDialog):
         
         self.ui.create_main_guideJnt_Btn.clicked.connect(self.debug)
 
-    def set_name_rule(self):
-        self._namingRule = naming.namingRule()
-        data = self._read_namning_data()
-        
-        self._namingRule.set_name_field(data.get("nameField"))
-        tokens = {}
 
+    def debug2(self):
+        self._read_guide_data()
+        self._read_namning_data()
+        guideJointManager = guideManager.guideJointManager()
+        total_organizing_data = guideJointManager.group_modules(self.guide_data)
         
-        tokens.update( data.get("objType"))
-        tokens.update( data.get("nodeType"))
+        root_module = total_organizing_data.get(('root_type','A','C'))
+        neck_module = total_organizing_data.get(('neck_type','A','C'))
+        head_module = total_organizing_data.get(('head_type','A','C'))
 
-        
-        self._namingRule.set_objType_map(tokens)
-        self._namingRule.set_sideType_map(data.get("side"))
-        self._namingRule.set_extraSideType_map(data.get("extraSide"))
-        self._namingRule.set_ruleType_map(data.get("rule"))
+        left_arm_modules = []
+        right_arm_modueles = []
+        left_leg_modules = []
+        right_leg_modules = []
+
+        for key_path_data , detail_data in total_organizing_data.items():
+
+            key_type , alp , side = key_path_data
+            if key_type == "arm_type":
+                if side == "L":
+                    left_arm_modules.append(detail_data)
+                if side == "R":
+                    right_arm_modueles.append(detail_data)
+            if key_type == "leg_type":
+                if side == "L":
+                    left_leg_modules.append(detail_data)
+                if side == "R":
+                    right_leg_modules.append(detail_data)
+
+        pprint.pprint(left_arm_modules)
+
+
 
 
 
@@ -246,14 +263,40 @@ class DesignerUI(QtWidgets.QDialog):
 
 
         
-        jointBuilder.set_curve(curve)
-        jointBuilder.set_aimData((1,0,0) , (0,1,0) , (0,1,0))
-        jointBuilder.set_orientatinVector(aimVector)
         for index in range(insertJnt + 2):
             jntName = self._namingRule.build(item_name = "shoulder" ,side =  "left" ,extra_side = "" , alp = "" , num = str(index+1).zfill(2) ,rule = "" , obj_type= "joint")
-            pocifNams = self._namingRule.build(item_name = "shoulder" ,side =  "left" ,extra_side = "" , alp = "" , num = str(index+1).zfill(2) ,rule = "" , obj_type= "pointOnCurveInfo")
+            pocifName = self._namingRule.build(item_name = "shoulder" ,side =  "left" ,extra_side = "" , alp = "" , num = str(index+1).zfill(2) ,rule = "" , obj_type= "pointOnCurveInfo")
+            pointMM_name = self._namingRule.build(item_name = "shoulder" ,side =  "left" ,extra_side = "" , alp = "" , num = str(index+1).zfill(2) ,rule = "" , obj_type= "pointMatrixMult")
             param = div * index
-            jointBuilder.set_joint_data(jntName , param ,jntName +"_Grp" , pocifNams , index)
+
+            # 새 JointBuilder에서 현재 joint task 작성을 시작합니다.
+            jointBuilder.define_joint_planData(
+                jntName,
+                jntName + "_Grp"
+            )
+
+            # 현재 joint의 위치를 shoulder curve 위의 parameter로 정의합니다.
+            jointBuilder.define_pointOnCurve_planData(
+                curve,
+                param,
+                pocifName,
+                pointMM_name
+            )
+
+            # 기존 debug와 동일하게 shoulder aimVector를
+            # tangent constraint의 world-up object로 사용합니다.
+            jointBuilder.define_tangent_planData(
+                curve,
+                (1, 0, 0),
+                (0, 1, 0),
+                worldV=(0, 1, 0),
+                worldUpObject=aimVector,
+                worldUpType="objectrotation"
+            )
+
+            # 기존 index를 저장하고 완성된 task를 build_plan에 등록합니다.
+            jointBuilder.define_index_planData(index)
+            jointBuilder.add_current_plan_task()
         
         jointBuilder.build()
 
@@ -263,8 +306,22 @@ class DesignerUI(QtWidgets.QDialog):
         #print (aimVector)
         print (insertJnt)
 
+    def set_name_rule(self):
+        self._namingRule = naming.namingRule()
+        data = self._read_namning_data()
+        
+        self._namingRule.set_name_field(data.get("nameField"))
+        tokens = {}
 
+        
+        tokens.update( data.get("objType"))
+        tokens.update( data.get("nodeType"))
 
+        
+        self._namingRule.set_objType_map(tokens)
+        self._namingRule.set_sideType_map(data.get("side"))
+        self._namingRule.set_extraSideType_map(data.get("extraSide"))
+        self._namingRule.set_ruleType_map(data.get("rule"))
 
 
     def import_namingData(self):

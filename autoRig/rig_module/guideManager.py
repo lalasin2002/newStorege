@@ -6,7 +6,7 @@ import  os,copy ,json
 
 
 from autoRig_config import AUTO_RIG_ROOT, GUIDE_RIGS_PATH
-from tools import controlAttribute , controlObject , naming , createObject , match
+from tools import controlAttribute , controlObject , naming , createObject , match , grouping
 
 #--------------------------------------------------------------------------
 
@@ -91,7 +91,7 @@ class guideDataManager():
             self.string_type = basestring
         except NameError:
             self.string_type =  str
-        
+
         self.standard_templete = {}
         self.standard_detail_templete = {}
 
@@ -415,12 +415,12 @@ class guideDataManager():
             "rig_index": metaData.get("rig_index"),
             "rig_attachTarget": metaData.get("rig_attachTarget"),
 
-            "pos": None,
-            "rot": None,
-            "scale": None,
-            "matrix": None,
+            #"pos": None,
+            #"rot": None,
+            #"scale": None,
+            "matrix": None
         }
-
+        '''
         try:
             detail["pos"] = [round(v, 3) for v in cmds.xform(item, ws=1, q=1, t=1)]
         except:
@@ -435,7 +435,7 @@ class guideDataManager():
             detail["scale"] = [round(v, 3) for v in cmds.xform(item, r=1, q=1, s=1)]
         except:
             detail["scale"] = None
-
+        '''
         try:
             detail["matrix"] = [round(v, 5) for v in cmds.xform(item, ws=1, q=1, m=1)]
         except:
@@ -820,10 +820,6 @@ def findKeyValues(dt, targetKey, results=None):
     return results
 
 
-
-
-
-
 class JointBuilder():
     def __init__(self):
         try:
@@ -831,171 +827,1246 @@ class JointBuilder():
         except NameError:
             self.string_type =  str
 
-        #self.data = None
-        self.naming_rule = None
-        self.build_plan = {"joints" : {},
-                           "curve" : None,
-                           "vectorPoint" : None,
-                           "aimData" : None,
-                           "rootParent"  : None,
-                           }
-        self.return_data = {"joints" : {} ,
-                            "curve" : None,
-                            "rootParent"  : None
+        try:
+            self.integer_type = (int, long)
+        except NameError:
+            self.integer_type = (int,)
+        self.number_type = self.integer_type + (float,)
+
+        self.build_plan  = {"joints" : [],
+                            "rootParent" : None
                             }
+        self.joint_data_temp = {"joint_name" : None ,
+                                "group_name" : None ,
+                                           #"curve" / "point"
+                                "position" : {"mode" : None , "source" : None , "parameter" : None  },
+                                            #"orient" / "aim" / "tangent"
+                                "orientation" : {"mode" : None ,
+                                                 "source" : None ,
+                                                 "maintainOffset" : None ,
+                                                 "aimVector" : None ,
+                                                 "upVector" : None ,
+                                                 "worldUpVector" : None ,
+                                                 "worldUpType" : None  ,
+                                                 "worldUpObject": None },
+                                "node_names" : {"pocif" : None , "pointMatrix" : None },
+                                "index" : None
+                                }
+        self.check_task = ["joint_name" , "group_name" , "position" , "orientation" ,"node_names" , "index" ]
+        self.check_position_task = ["mode" , "source"  , "parameter"  ]
+        self.check_orientation_task = ["mode" ,"source" , "maintainOffset" , "aimVector" , "upVector" , "worldUpVector" ,"worldUpType", "worldUpObject" ]
+        #self.check_nodeName_task = ["pocif" , "pointMatrix" , "mulMatrix" , "decomposeMatrix" , "orientConstraint" ]
+        # 현재 position 연결은 POCIF 또는 locator의 point 값과
+        # pointMatrixMult를 사용하므로 아래 두 이름만 검사합니다.
+        self.check_nodeName_task = ["pocif" , "pointMatrix"]
+
+        self.check_position_mode = ["curve" , "point"]
+        self.check_orientation_mode = ["orient" , "aim" , "tangent", "inherit", "none"]
+        self.check_orientConstraint_type = ["scene", "object", "objectrotation", "vector", "none"]
+
+
+        self.current_plan_data = None
+
+
+
+
+
+    def define_joint_planData(self, joint_name, group_name=None, data=None):
+        '''
+        현재 작성 중인 task에 생성할 joint와 group 이름을 정의합니다.
+
+        data를 전달하면 해당 dictionary 자체를 수정합니다.
+        data를 생략하면 current_plan_data를 사용하고, 현재 데이터도 없으면
+        joint_data_temp을 복사하여 새로운 task 작성을 시작합니다.
+        '''
+        if not isinstance(joint_name, self.string_type):
+            raise ValueError(
+                u"define_joint_planData: {}은 문자열이어야 합니다.".format(joint_name)
+            )
+
+        if group_name is not None:
+            if not isinstance(group_name, self.string_type):
+                raise ValueError(
+                    u"define_joint_planData: group_name은 문자열 또는 None이어야 합니다."
+                )
+
+        joint_data = self._resolve_plan_data(data)
+        joint_data["joint_name"] = joint_name
+        joint_data["group_name"] = group_name
+        return joint_data
+
+
+    def define_point_planData(self, source, pointMatrix_name=None,
+                              live=True, data=None):
+        '''
+        현재 task의 위치를 locator 또는 DAG object의 위치로 정의합니다.
+
+        source의 world position은 build 단계에서 pointMatrixMult를 통해
+        joint group 부모 공간의 translate 값으로 변환될 예정입니다.
+        '''
+        self._validate_dag_object(source, "define_point_planData")
+        self._validate_optional_name(pointMatrix_name,
+                                     "define_point_planData",
+                                     "pointMatrix_name")
+        self._validate_bool(live, "define_point_planData", "live")
+
+        joint_data = self._resolve_plan_data(data)
+        joint_data["position"]["mode"] = "point"
+        joint_data["position"]["source"] = source
+        joint_data["position"]["parameter"] = None
+        joint_data["position"]["live"] = live
+
+        # point 위치에서는 POCIF가 필요하지 않습니다.
+        joint_data["node_names"]["pocif"] = None
+        joint_data["node_names"]["pointMatrix"] = pointMatrix_name
+        return joint_data
+
+
+    def define_pointOnCurve_planData(self, curveShape, param, pocif_name,
+                                     pointMatrix_name=None, live=True,
+                                     data=None):
+        '''
+        현재 task의 위치를 NURBS curve 위의 parameter 위치로 정의합니다.
+
+        curveShape에는 nurbsCurve shape 또는 해당 shape을 가진 transform을
+        전달할 수 있습니다. build 단계에서는 POCIF가 curve 위치를 구하고,
+        pointMatrixMult가 그 위치를 joint group 부모 공간으로 변환합니다.
+        '''
+        self._validate_curve(curveShape, "define_pointOnCurve_planData")
+
+        if not isinstance(param, self.number_type) or isinstance(param, bool):
+            raise ValueError(
+                u"define_pointOnCurve_planData: {}는 숫자여야 합니다.".format(param)
+            )
+
+        if not isinstance(pocif_name, self.string_type):
+            raise ValueError(
+                u"define_pointOnCurve_planData: pocif_name은 문자열이어야 합니다."
+            )
+
+        self._validate_optional_name(pointMatrix_name,
+                                     "define_pointOnCurve_planData",
+                                     "pointMatrix_name")
+        self._validate_bool(live,
+                            "define_pointOnCurve_planData",
+                            "live")
+
+        joint_data = self._resolve_plan_data(data)
+        joint_data["position"]["mode"] = "curve"
+        joint_data["position"]["source"] = curveShape
+        joint_data["position"]["parameter"] = param
+        joint_data["position"]["live"] = live
+        joint_data["node_names"]["pocif"] = pocif_name
+        joint_data["node_names"]["pointMatrix"] = pointMatrix_name
+        return joint_data
+
+
+    def define_orient_planData(self, source, maintainOffset=False, data=None):
+        '''
+        현재 task의 회전을 source의 회전값을 따라가도록 정의합니다.
+
+        이 mode는 build 단계에서 orientConstraint 또는 동일한 회전 연결
+        방식으로 처리하기 위한 데이터입니다.
+        '''
+        self._validate_dag_object(source, "define_orient_planData")
+        self._validate_bool(maintainOffset,
+                            "define_orient_planData",
+                            "maintainOffset")
+
+        joint_data = self._resolve_plan_data(data)
+        self._set_orientation_data(
+            joint_data,
+            mode="orient",
+            source=source,
+            maintainOffset=maintainOffset
+        )
+        return joint_data
+
+
+    def define_aim_planData(self, source, aimV, upV, worldV=None,
+                            worldUpObject=None, worldUpType="scene",
+                            maintainOffset=False, data=None):
+        '''
+        현재 task의 회전을 source를 바라보는 aim 방식으로 정의합니다.
+
+        예를 들어 ankle task의 source에 toe locator를 전달하면 ankle이
+        toe 방향을 바라보도록 만드는 데 사용할 수 있습니다.
+        '''
+        #참고용
+        # orientation 데이터에는 mode/source와 Maya constraint에 필요한
+        # 방향 vector 및 world-up 설정이 함께 저장됩니다.
+        self._validate_dag_object(source, "define_aim_planData")
+        aim_vector = self._validate_vector(aimV,
+                                           "define_aim_planData",
+                                           "aimV")
+        up_vector = self._validate_vector(upV,
+                                          "define_aim_planData",
+                                          "upV")
+        world_vector = self._validate_optional_vector(
+            worldV,
+            "define_aim_planData",
+            "worldV"
+        )
+        self._validate_world_up(worldUpType,
+                                worldUpObject,
+                                "define_aim_planData")
+        self._validate_bool(maintainOffset,
+                            "define_aim_planData",
+                            "maintainOffset")
+
+        joint_data = self._resolve_plan_data(data)
+        self._set_orientation_data(
+            joint_data,
+            mode="aim",
+            source=source,
+            maintainOffset=maintainOffset,
+            aimVector=aim_vector,
+            upVector=up_vector,
+            worldUpVector=world_vector,
+            worldUpType=worldUpType,
+            worldUpObject=worldUpObject
+        )
+        return joint_data
+
+
+    def define_tangent_planData(self, curveShape, aimV, upV, worldV=None,
+                                worldUpObject=None, worldUpType="scene",
+                                data=None):
+        '''
+        현재 task의 회전을 curve tangent 방향으로 정의합니다.
+
+        curve 위치는 define_pointOnCurve_planData에서 정의하고,
+        tangent 회전은 이 메서드에서 별도로 정의하므로 위치 방식과
+        회전 방식을 독립적으로 조합할 수 있습니다.
+        '''
+        self._validate_curve(curveShape, "define_tangent_planData")
+        aim_vector = self._validate_vector(aimV,
+                                           "define_tangent_planData",
+                                           "aimV")
+        up_vector = self._validate_vector(upV,
+                                          "define_tangent_planData",
+                                          "upV")
+        world_vector = self._validate_optional_vector(
+            worldV,
+            "define_tangent_planData",
+            "worldV"
+        )
+        self._validate_world_up(worldUpType,
+                                worldUpObject,
+                                "define_tangent_planData")
+
+        joint_data = self._resolve_plan_data(data)
+        self._set_orientation_data(
+            joint_data,
+            mode="tangent",
+            source=curveShape,
+            maintainOffset=False,
+            aimVector=aim_vector,
+            upVector=up_vector,
+            worldUpVector=world_vector,
+            worldUpType=worldUpType,
+            worldUpObject=worldUpObject
+        )
+        return joint_data
+
+
+    def define_inherit_planData(self, data=None):
+        '''
+        현재 task가 별도의 회전 연결 없이 부모 회전을 상속하도록 정의합니다.
+
+        다음 aim 대상이 없는 toeEnd 같은 마지막 조인트에 사용할 수 있습니다.
+        '''
+        joint_data = self._resolve_plan_data(data)
+        self._set_orientation_data(joint_data, mode="inherit")
+        return joint_data
+
+
+    def define_noneOrient_planData(self, data=None):
+        '''현재 task에 회전 작업을 만들지 않도록 정의합니다.'''
+        joint_data = self._resolve_plan_data(data)
+        self._set_orientation_data(joint_data, mode="none")
+        return joint_data
+
+
+    def define_index_planData(self, index, data=None):
+        '''현재 task가 build될 순서를 나타내는 index를 정의합니다.'''
+        if not isinstance(index, self.integer_type) or isinstance(index, bool):
+            raise ValueError(
+                u"define_index_planData: {}는 정수여야 합니다.".format(index)
+            )
+        if index < 0:
+            raise ValueError(
+                u"define_index_planData: index는 0 이상이어야 합니다."
+            )
+
+        joint_data = self._resolve_plan_data(data)
+        joint_data["index"] = index
+        return joint_data
+
+    def define_rootParent(self, source , force = True):
+        item = None 
+        if force:
+            item  = self._validate_dag_object(source, "define_rootParent")
+        else:
+            if isinstance(source , self.string_type):
+                item = source 
         
+        self.build_plan["rootParent"] = item 
+
+    def add_current_plan_task(self, data=None):
+        '''
+        현재 작성이 끝난 joint task를 build_plan의 joints 목록에 등록합니다.
+
+        등록이 끝나면 current_plan_data를 비웁니다. 다음 define 호출이
+        이미 등록한 task를 다시 수정하지 않도록 하기 위한 처리입니다.
+        '''
+        joint_data = self._resolve_plan_data(data)
+
+        # index를 따로 정의하지 않은 경우에는 현재 사용하지 않는
+        # 가장 작은 index를 자동으로 부여합니다.
+        if joint_data.get("index") is None:
+            used_index = [
+                task.get("index") for task in self.build_plan["joints"]
+            ]
+            index = 0
+            while index in used_index:
+                index += 1
+            joint_data["index"] = index
+
+        self._validate_completed_plan_data(joint_data)
+
+        index = joint_data.get("index")
+        for current_data in self.build_plan["joints"]:
+            if current_data.get("index") == index:
+                raise ValueError(
+                    u"add_current_plan_task: 중복된 index입니다: {}".format(index)
+                )
+
+        # 전달받은 data 자체를 task로 사용하는 현재 설계를 유지합니다.
+        # 이곳에서는 deepcopy하지 않습니다.
+        self.build_plan["joints"].append(joint_data)
+        self.current_plan_data = None
+        return joint_data
 
 
-    #def define_guide_data(self , date):
-    #    if not isinstance(date , dict):
-    #        return
-        
-    def set_curve(self, curve):
-        if not isinstance(curve , self.string_type):
-            return
-        if not cmds.objectType(curve) == "nurbsCurve":
-            return
-        self.build_plan["curve"] = curve
-
-    def set_aimData(self , aim  , upVector , wouldVector = None):
-        aim = self._check_vector(aim)
-        upVector = self._check_vector(upVector)
-        wouldVector = self._check_vector(wouldVector)
-
-        if not aim:
-            return
-        if not upVector:
-            return
-
-        data = { "aim" : aim , "u" : upVector , "wu" : wouldVector}
-        self.build_plan["aimData"] = data
+    def clear_current_plan_data(self):
+        '''작성 중인 task를 등록하지 않고 취소합니다.'''
+        self.current_plan_data = None
 
 
+    def build(self , radius = 0.25):
+        #check
+        joint_plans = self.build_plan.get("joints")
+        if not isinstance(joint_plans, (list, tuple)):
+            raise ValueError(
+                u"build: build_plan['joints']는 list 또는 tuple이어야 합니다."
+            )
+        if not joint_plans:
+            raise ValueError(u"build: 만들어진 plan Data가 없습니다")
 
-    def set_joint_data(self , jointName , parameter , grpName = None ,pocifNodeName = None, index = None):
-        
-        if not isinstance(jointName, self.string_type):
-            return
-        if not isinstance(parameter, (int, float)) or isinstance(parameter, bool):
-            return
-        if grpName and not isinstance(grpName, self.string_type):
-            return
-        if pocifNodeName and not isinstance(pocifNodeName, self.string_type):
-            return
+        # Maya node를 만들기 전에 모든 task를 먼저 검사합니다.
+        # 잘못된 task 때문에 build 도중 일부 node만 남는 상황을 줄입니다.
+        checked_indexes = []
+        planned_node_names = []
 
+        for task_order, plan_data in enumerate(joint_plans):
+            if not isinstance(plan_data, dict):
+                raise ValueError(
+                    u"build: {}번째 plan Data가 dictionary가 아닙니다.".format(
+                        task_order
+                    )
+                )
 
-        count = 0
+            try:
+                self._validate_completed_plan_data(plan_data)
+            except ValueError as error:
+                raise ValueError(
+                    u"build: index {} task 검증 실패 - {}".format(
+                        plan_data.get("index", task_order),
+                        error
+                    )
+                )
 
-        if index is None:
-            max = len(self.build_plan["joints"])
-            count = max +1
-        if isinstance(index , int):
-            if index in self.build_plan["joints"]:
-                self.build_plan["joints"][index] = {} 
-            count = index 
+            plan_index = plan_data.get("index")
+            if plan_index in checked_indexes:
+                raise ValueError(
+                    u"build: 중복된 task index입니다: {}".format(plan_index)
+                )
+            checked_indexes.append(plan_index)
 
+            # Maya가 중복 이름에 숫자를 자동으로 붙이지 않도록
+            # 실제 생성 전에 plan 내부와 scene의 이름 충돌을 검사합니다.
+            node_names = plan_data.get("node_names") or {}
+            create_names = [
+                plan_data.get("joint_name"),
+                plan_data.get("group_name"),
+                node_names.get("pocif"),
+                node_names.get("pointMatrix")
+            ]
 
-        joint_data = { "name"      : jointName  , 
-                       "parameter" : parameter  ,
-                       "jointGrp"  : grpName    ,
-                       "pocifNode" : pocifNodeName
-                      }
-        self.build_plan["joints"][count] = joint_data 
+            for create_name in create_names:
+                if not create_name:
+                    continue
+                if create_name in planned_node_names:
+                    raise ValueError(
+                        u"build: plan 안에서 생성 이름이 중복됩니다: {}".format(
+                            create_name
+                        )
+                    )
+                if cmds.objExists(create_name):
+                    raise ValueError(
+                        u"build: 이미 존재하는 Maya node 이름입니다: {}".format(
+                            create_name
+                        )
+                    )
+                planned_node_names.append(create_name)
 
-    def set_orientatinVector(self ,vectorName ):
-        if not isinstance(vectorName, self.string_type):
-            return
-        if not cmds.objExists(vectorName):
-            return
-        self.build_plan["vectorPoint"] = vectorName 
-    
-    def set_rootParent(self , item ):
-        if not isinstance( item , self.string_type):
-            return
-        if not cmds.objExists( item ):
-            return
-        self.build_plan["rootParent"] = item  
-        
-    def build(self ):
-        curve = self.build_plan.get("curve")
-        joints = self.build_plan.get("joints")
-        vector = self.build_plan.get("vectorPoint")
-        aimData = self.build_plan.get("aimData")
-        rootParent = self.build_plan.get("rootParent")
-        if not aimData:
-            return
-        if curve is None or not cmds.objExists(curve):
-            return
-        if not  len(joints) > 0 :
-            return
-        curve_tranform = cmds.listRelatives(curve , p =1)[0]
-        cvs = cmds.ls("{}.cv[*]".format(curve_tranform) ,fl=1 )
+        plans = sorted(joint_plans, key=lambda data: data["index"])
 
-        first_xform = cmds.xform(cvs[0] , ws =1 , q= 1, t =1 )
-        last_xform = cmds.xform(cvs[-1] , ws =1 , q= 1, t =1 )
-
-        jntBulider = createObject.jointCreater()
-        orientManager = match.orientManager()
-        tangent_flag = orientManager.makeOrientFlag(self.build_plan["aimData"]["aim"] , self.build_plan["aimData"]["u"] ,self.build_plan["aimData"]["wu"],vector)
-        jntBulider.setStartEndVector(first_xform , last_xform)
         parent = None
-        #joint_data = {"name" : None , "group" : None , "pocif" : None }
-        self.return_data["curve"] = curve
-        self.return_data["rootParent"] = rootParent
-        
-        for index in sorted(self.build_plan["joints"]):
-            data = self.build_plan["joints"][index]
-            param =  data.get("parameter")
-            joint_name = data.get("name")
-            joint_group_name = data.get("jointGrp" )
-            pocifNode = None
-            pocif_name = data.get("pocifNode" )
-            
+        root = None
+        for plan_data in plans:
+
+            #초기화
+            Jnt = None
+            Jnt_grp = None
             target = None
 
-            Jnt, JntGrp = jntBulider.createJointByParam(param ,joint_name ,joint_group_name ,parent  )
+            Jnt_name = plan_data.get("joint_name")
+            grp_name = plan_data.get("group_name")
+
+            position_mode =None
+            position_source = None
+
+            position_parameter = None
+            position_pocif_node = None
+            position_pointMatrix_node = None
+
+            orient_mode = None
+            orient_source = None
+            orient_maintainOffset = None
+            orient_rotData_flag = {}
+
+
+
+
+            # 조인트/그룹/ target 지정 및 생성
+            cmds.select(cl =1)
+            Jnt = cmds.joint(n = Jnt_name )
+            cmds.setAttr(Jnt + ".radius" , radius)
+            if not Jnt or not cmds.objExists(Jnt):
+                raise RuntimeError(
+                    u"build: joint 생성에 실패했습니다: {}".format(Jnt_name)
+                )
             target = Jnt
-            if JntGrp:
-                target = JntGrp
 
-            if parent is None:
-                parent = target
+            if grp_name:
+                Jnt_grp = grouping.insertGrp(Jnt , [grp_name])
+                if not Jnt_grp or not cmds.objExists(Jnt_grp[0]):
+                    raise RuntimeError(
+                        u"build: joint group 생성에 실패했습니다: {}".format(
+                            grp_name
+                        )
+                    )
+                target = Jnt_grp[0]
+            if root is None:
+                root = target
+            # 일차 검증
+            if target is None or not cmds.objExists(target):
+                raise RuntimeError(
+                    u"build: position/orientation을 적용할 target이 없습니다: {}".format(
+                        Jnt_name
+                    )
+                )
 
-            if pocif_name:
-                cntData = []
-                for ax in "XYZ":
-                    task = ("position{}" .format( ax) , "{}.translate{}" .format(target ,ax) )
-                    cntData.append(task )
-                pocifNode = createObject.createPocif( pocif_name , curve , param , True , cntData)
-            orientManager.tangentOrientObject(curve , target , False , tangent_flag)
 
-            joint_data = {
-                "name": Jnt,
-                "group": JntGrp,
-                "pocif": pocifNode
-            }
-            self.return_data["joints"][index] = joint_data
+            # position 세팅
+            position_mode = plan_data["position"].get("mode")
+            position_source = plan_data["position"].get("source")
+            if position_mode not in self.check_position_mode:
+                raise ValueError(
+                    u"build: 유효하지 않은 position mode입니다: {}".format(
+                        position_mode
+                    )
+                )
+            if not position_source or not cmds.objExists(position_source):
+                raise ValueError(
+                    u"build: position source가 존재하지 않습니다: {}".format(
+                        position_source
+                    )
+                )
 
-            
-            
-    # helper
+            if position_mode == "point":
+                point_constraint = cmds.pointConstraint(
+                    position_source,
+                    target,
+                    mo=0
+                )
+                if not point_constraint:
+                    raise RuntimeError(
+                        u"build: pointConstraint 생성에 실패했습니다: {} -> {}".format(
+                            position_source,
+                            target
+                        )
+                    )
+
+            elif position_mode == "curve":
+                position_parameter = plan_data["position"].get("parameter")
+                position_pocif_name = plan_data["node_names"].get("pocif")
+                position_pointMatrix_name = plan_data["node_names"].get("pointMatrix")
+
+                if (
+                    not isinstance(position_parameter, self.number_type)
+                    or isinstance(position_parameter, bool)
+                ):
+                    raise ValueError(
+                        u"build: curve parameter가 올바르지 않습니다: {}".format(
+                            position_parameter
+                        )
+                    )
+                if not position_pocif_name:
+                    raise ValueError(
+                        u"build: curve mode에는 POCIF 이름이 필요합니다: {}".format(
+                            Jnt_name
+                        )
+                    )
+
+                position_pocif_node = createObject.createPocif(
+                    position_pocif_name,
+                    position_source,
+                    position_parameter,
+                    True
+                )
+                if not position_pocif_node or not cmds.objExists(position_pocif_node):
+                    raise RuntimeError(
+                        u"build: POCIF 생성에 실패했습니다: {}".format(
+                            position_pocif_name
+                        )
+                    )
+
+                connect_task = [
+                    (
+                        "{}.position".format(position_pocif_node),
+                        "{}.translate".format(target)
+                    )
+                ]
+
+                if position_pointMatrix_name:
+                    position_pointMatrix_node = cmds.createNode(
+                        "pointMatrixMult",
+                        n=position_pointMatrix_name
+                    )
+                    if (
+                        not position_pointMatrix_node
+                        or not cmds.objExists(position_pointMatrix_node)
+                    ):
+                        raise RuntimeError(
+                            u"build: pointMatrixMult 생성에 실패했습니다: {}".format(
+                                position_pointMatrix_name
+                            )
+                        )
+
+                    cmds.setAttr(
+                        "{}.vectorMultiply".format(position_pointMatrix_node),
+                        False
+                    )
+
+                    # pointMatrixMult를 사용하면 POCIF의 world position을
+                    # target 부모 공간의 translate 값으로 변환합니다.
+                    connect_task = [
+                        (
+                            "{}.position".format(position_pocif_node),
+                            "{}.inPoint".format(position_pointMatrix_node)
+                        ),
+                        (
+                            "{}.parentInverseMatrix[0]".format(target),
+                            "{}.inMatrix".format(position_pointMatrix_node)
+                        ),
+                        (
+                            "{}.output".format(position_pointMatrix_node),
+                            "{}.translate".format(target)
+                        )
+                    ]
+
+                if not connect_task:
+                    raise RuntimeError(
+                        u"build: curve position 연결 작업이 만들어지지 않았습니다: {}".format(
+                            Jnt_name
+                        )
+                    )
+
+                for cnt_source, cnt_destination in connect_task:
+                    cmds.connectAttr(cnt_source, cnt_destination, f=1)
+
+            # orient 세팅
+            orient_mode = plan_data["orientation"].get("mode")
+            orient_source = plan_data["orientation"].get("source")
+            if orient_mode not in self.check_orientation_mode:
+                raise ValueError(
+                    u"build: 유효하지 않은 orientation mode입니다: {}".format(
+                        orient_mode
+                    )
+                )
+
+            if orient_mode in ["inherit", "none"]:
+                # inherit와 none은 별도의 constraint를 생성하지 않습니다.
+                pass
+
+            elif orient_mode == "orient":
+                if not orient_source or not cmds.objExists(orient_source):
+                    raise ValueError(
+                        u"build: orient source가 존재하지 않습니다: {}".format(
+                            orient_source
+                        )
+                    )
+                orient_maintainOffset = plan_data["orientation"].get("maintainOffset")
+                if not isinstance(orient_maintainOffset, bool):
+                    raise ValueError(
+                        u"build: orient maintainOffset은 bool이어야 합니다."
+                    )
+                orient_constraint = cmds.orientConstraint(
+                    orient_source,
+                    target,
+                    mo=orient_maintainOffset
+                )
+                if not orient_constraint:
+                    raise RuntimeError(
+                        u"build: orientConstraint 생성에 실패했습니다: {} -> {}".format(
+                            orient_source,
+                            target
+                        )
+                    )
+
+            elif orient_mode in ["aim", "tangent"]:
+                if not orient_source or not cmds.objExists(orient_source):
+                    raise ValueError(
+                        u"build: {} source가 존재하지 않습니다: {}".format(
+                            orient_mode,
+                            orient_source
+                        )
+                    )
+
+                orientation_data = plan_data["orientation"]
+                aim_vector = orientation_data.get("aimVector")
+                up_vector = orientation_data.get("upVector")
+                world_up_vector = orientation_data.get("worldUpVector")
+                world_up_type = orientation_data.get("worldUpType") or "scene"
+                world_up_object = orientation_data.get("worldUpObject")
+
+                if self._check_vector(aim_vector) is None:
+                    raise ValueError(
+                        u"build: {} aimVector가 올바르지 않습니다: {}".format(
+                            orient_mode,
+                            aim_vector
+                        )
+                    )
+                if self._check_vector(up_vector) is None:
+                    raise ValueError(
+                        u"build: {} upVector가 올바르지 않습니다: {}".format(
+                            orient_mode,
+                            up_vector
+                        )
+                    )
+                if (
+                    world_up_vector is not None
+                    and self._check_vector(world_up_vector) is None
+                ):
+                    raise ValueError(
+                        u"build: {} worldUpVector가 올바르지 않습니다: {}".format(
+                            orient_mode,
+                            world_up_vector
+                        )
+                    )
+                if world_up_type not in self.check_orientConstraint_type:
+                    raise ValueError(
+                        u"build: 유효하지 않은 worldUpType입니다: {}".format(
+                            world_up_type
+                        )
+                    )
+                if (
+                    world_up_type in ["object", "objectrotation"]
+                    and not world_up_object
+                ):
+                    raise ValueError(
+                        u"build: worldUpType이 {}이면 worldUpObject가 필요합니다.".format(
+                            world_up_type
+                        )
+                    )
+                if world_up_object and not cmds.objExists(world_up_object):
+                    raise ValueError(
+                        u"build: worldUpObject가 존재하지 않습니다: {}".format(
+                            world_up_object
+                        )
+                    )
+
+                orient_rotData_flag = {
+                    "aimVector": aim_vector,
+                    "upVector": up_vector,
+                    "worldUpType": world_up_type
+                }
+                if world_up_vector is not None:
+                    orient_rotData_flag["worldUpVector"] = world_up_vector
+                if world_up_object is not None:
+                    orient_rotData_flag["worldUpObject"] = world_up_object
+
+                if orient_mode == "aim":
+                    orient_maintainOffset = orientation_data.get("maintainOffset")
+                    if not isinstance(orient_maintainOffset, bool):
+                        raise ValueError(
+                            u"build: aim maintainOffset은 bool이어야 합니다."
+                        )
+                    orientManager = match.orientManager()
+                    orient_rotData_flag["maintainOffset"] = orient_maintainOffset
+                    orientManager.aimOrientObject(orient_source , target , False , orient_rotData_flag )
+
+                if orient_mode == "tangent":
+                    orientManager = match.orientManager()
+                    orientManager.tangentOrientObject(orient_source , target , False , orient_rotData_flag  )
+
+            # 사용자가 작성한 parent 연결 로직은 그대로 유지합니다.
+            if parent:
+                cmds.parent(target , parent)
+            parent = target
+        rootParent = self.build_plan.get("rootParent")
+        if cmds.objExists(rootParent):
+            cmds.parent(root , rootParent)
+        return self.build_plan
+
+
+    #helper
+    def _set_orientation_data(self, joint_data, mode, source=None,
+                              maintainOffset=None, aimVector=None,
+                              upVector=None, worldUpVector=None,
+                              worldUpType=None, worldUpObject=None):
+        '''
+        orientation dictionary의 모든 값을 한 번에 교체합니다.
+
+        같은 current_plan_data에서 aim을 정의한 뒤 orient로 변경하더라도
+        이전 aimVector나 worldUpObject 값이 남지 않도록 하기 위한 helper입니다.
+        '''
+        orientation_data = joint_data["orientation"]
+        orientation_data["mode"] = mode
+        orientation_data["source"] = source
+        orientation_data["maintainOffset"] = maintainOffset
+        orientation_data["aimVector"] = aimVector
+        orientation_data["upVector"] = upVector
+        orientation_data["worldUpVector"] = worldUpVector
+        orientation_data["worldUpType"] = worldUpType
+        orientation_data["worldUpObject"] = worldUpObject
+
+
+    def _validate_dag_object(self, item, method_name):
+        '''문자열로 전달된 Maya DAG object가 실제로 존재하는지 검사합니다.'''
+        if not isinstance(item, self.string_type):
+            raise ValueError(
+                u"{}: source는 문자열이어야 합니다.".format(method_name)
+            )
+        if not cmds.objExists(item) or not controlObject.isDag(item):
+            raise ValueError(
+                u"{}: {}는 존재하지 않거나 DAG object가 아닙니다.".format(
+                    method_name,
+                    item
+                )
+            )
+        return item
+
+
+    def _validate_curve(self, curve, method_name):
+        '''
+        입력값이 nurbsCurve shape이거나 nurbsCurve를 가진 transform인지 검사합니다.
+        '''
+        self._validate_dag_object(curve, method_name)
+
+        if cmds.nodeType(curve) == "nurbsCurve":
+            return curve
+
+        shapes = cmds.listRelatives(
+            curve,
+            shapes=True,
+            noIntermediate=True,
+            fullPath=True
+        ) or []
+
+        for shape in shapes:
+            if cmds.nodeType(shape) == "nurbsCurve":
+                return curve
+
+        raise ValueError(
+            u"{}: {}는 nurbsCurve가 아닙니다.".format(method_name, curve)
+        )
+
+
+    def _validate_optional_name(self, name, method_name, argument_name):
+        '''None 또는 node 이름으로 사용할 문자열인지 검사합니다.'''
+        if name is not None and not isinstance(name, self.string_type):
+            raise ValueError(
+                u"{}: {}은 문자열 또는 None이어야 합니다.".format(
+                    method_name,
+                    argument_name
+                )
+            )
+        return name
+
+
+    def _validate_bool(self, value, method_name, argument_name):
+        '''flag 값이 정확히 bool 형식인지 검사합니다.'''
+        if not isinstance(value, bool):
+            raise ValueError(
+                u"{}: {}은 bool이어야 합니다.".format(
+                    method_name,
+                    argument_name
+                )
+            )
+        return value
+
+
+    def _validate_vector(self, vector, method_name, argument_name):
+        '''3개의 숫자로 이루어진 vector를 검사하고 tuple로 반환합니다.'''
+        checked_vector = self._check_vector(vector)
+        if checked_vector is None:
+            raise ValueError(
+                u"{}: {}는 유효한 3D vector가 아닙니다: {}".format(
+                    method_name,
+                    argument_name,
+                    vector
+                )
+            )
+        return checked_vector
+
+
+    def _validate_optional_vector(self, vector, method_name, argument_name):
+        '''None은 허용하고, 값이 있으면 유효한 3D vector인지 검사합니다.'''
+        if vector is None:
+            return None
+        return self._validate_vector(vector, method_name, argument_name)
+
+
+    def _validate_world_up(self, worldUpType, worldUpObject, method_name):
+        '''aim/tangent constraint에서 사용할 world-up 설정을 검사합니다.'''
+        valid_types = ["scene", "object", "objectrotation", "vector", "none"]
+
+        if worldUpType is not None and worldUpType not in valid_types:
+            raise ValueError(
+                u"{}: {}는 유효한 worldUpType이 아닙니다.".format(
+                    method_name,
+                    worldUpType
+                )
+            )
+
+        if worldUpObject is not None:
+            self._validate_dag_object(worldUpObject, method_name)
+
+        if worldUpType in ["object", "objectrotation"]:
+            if worldUpObject is None:
+                raise ValueError(
+                    u"{}: worldUpType이 {}이면 worldUpObject가 필요합니다.".format(
+                        method_name,
+                        worldUpType
+                    )
+                )
+
+
+    def _validate_completed_plan_data(self, joint_data):
+        '''
+        작성이 끝난 task가 build_plan에 들어갈 수 있는 상태인지 검사합니다.
+
+        _check_data는 dictionary 모양만 검사하고, 이 helper는 실제 mode별로
+        필수 값이 입력되었는지를 검사합니다.
+        '''
+        if not self._check_data(joint_data):
+            raise ValueError(
+                u"add_current_plan_task: joint task의 데이터 형식이 올바르지 않습니다."
+            )
+
+        joint_name = joint_data.get("joint_name")
+        group_name = joint_data.get("group_name")
+        index = joint_data.get("index")
+        position_data = joint_data["position"]
+        orientation_data = joint_data["orientation"]
+        node_name_data = joint_data["node_names"]
+
+        if not isinstance(joint_name, self.string_type):
+            raise ValueError(
+                u"add_current_plan_task: joint_name이 정의되지 않았습니다."
+            )
+        self._validate_optional_name(group_name,
+                                     "add_current_plan_task",
+                                     "group_name")
+
+        if not isinstance(index, self.integer_type) or isinstance(index, bool):
+            raise ValueError(
+                u"add_current_plan_task: index가 정수로 정의되지 않았습니다."
+            )
+
+        position_mode = position_data.get("mode")
+        if position_mode not in ["point", "curve"]:
+            raise ValueError(
+                u"add_current_plan_task: position mode가 정의되지 않았습니다."
+            )
+
+        self._validate_bool(position_data.get("live"),
+                            "add_current_plan_task",
+                            "position.live")
+
+        if position_mode == "point":
+            self._validate_dag_object(position_data.get("source"),
+                                      "add_current_plan_task")
+
+        if position_mode == "curve":
+            self._validate_curve(position_data.get("source"),
+                                 "add_current_plan_task")
+            parameter = position_data.get("parameter")
+            if not isinstance(parameter, self.number_type) or isinstance(parameter, bool):
+                raise ValueError(
+                    u"add_current_plan_task: curve parameter가 숫자가 아닙니다."
+                )
+            if not isinstance(node_name_data.get("pocif"), self.string_type):
+                raise ValueError(
+                    u"add_current_plan_task: curve task에는 pocif 이름이 필요합니다."
+                )
+
+        self._validate_optional_name(node_name_data.get("pointMatrix"),
+                                     "add_current_plan_task",
+                                     "pointMatrix")
+
+        orientation_mode = orientation_data.get("mode")
+        valid_orientation_modes = ["orient", "aim", "tangent", "inherit", "none"]
+        if orientation_mode not in valid_orientation_modes:
+            raise ValueError(
+                u"add_current_plan_task: orientation mode가 정의되지 않았습니다."
+            )
+
+        if orientation_mode in ["orient", "aim"]:
+            self._validate_dag_object(orientation_data.get("source"),
+                                      "add_current_plan_task")
+
+        if orientation_mode == "tangent":
+            self._validate_curve(orientation_data.get("source"),
+                                 "add_current_plan_task")
+
+        if orientation_mode in ["aim", "tangent"]:
+            self._validate_vector(orientation_data.get("aimVector"),
+                                  "add_current_plan_task",
+                                  "orientation.aimVector")
+            self._validate_vector(orientation_data.get("upVector"),
+                                  "add_current_plan_task",
+                                  "orientation.upVector")
+            self._validate_optional_vector(
+                orientation_data.get("worldUpVector"),
+                "add_current_plan_task",
+                "orientation.worldUpVector"
+            )
+            self._validate_world_up(
+                orientation_data.get("worldUpType"),
+                orientation_data.get("worldUpObject"),
+                "add_current_plan_task"
+            )
+
+
+    def _resolve_plan_data(self, data=None):
+        # 우선순위:
+        # 1. 메서드에 직접 전달된 data
+        # 2. 현재 작성 중인 current_plan_data
+        # 3. joint_data_temp의 새로운 복사본
+
+        joint_data = data
+
+        if joint_data is None:
+            joint_data = self.current_plan_data
+
+        if joint_data is None:
+            # 템플릿 원본이 수정되는 것을 막기 위해
+            # 새로운 plan을 시작할 때만 deepcopy합니다.
+            joint_data = copy.deepcopy(self.joint_data_temp)
+
+        if not self._check_data(joint_data):
+            raise ValueError(
+                u"JointBuilder: data 형식이 올바르지 않습니다."
+            )
+
+        # 이후 define 메서드들이 data를 전달받지 않아도
+        # 현재 작성 중인 plan을 계속 사용할 수 있게 합니다.
+        self.current_plan_data = joint_data
+        return joint_data
+
     def _check_vector(self, vec):
         if not isinstance(vec, (tuple, list)):
             return None
         if len(vec) != 3:
             return None
-        if not all(isinstance(x, (int, float)) and not isinstance(x, bool) for x in vec):
+        if not all(isinstance(x, self.number_type) and not isinstance(x, bool) for x in vec):
             return None
         return tuple(vec)
 
 
+    def _check_data(self, data):
+        if not isinstance(data, dict):
+            return False
 
+        for key in self.check_task:
+            if key not in data:
+                return False
+
+        position_data = data.get("position")
+        orientation_data = data.get("orientation")
+        node_name_data = data.get("node_names")
+
+        # 내부 데이터도 반드시 dictionary인지 확인합니다.
+        if not isinstance(position_data, dict):
+            return False
+
+        if not isinstance(orientation_data, dict):
+            return False
+
+        if not isinstance(node_name_data, dict):
+            return False
+
+        for key in self.check_position_task:
+            if key not in position_data:
+                return False
+
+        for key in self.check_orientation_task:
+            if key not in orientation_data:
+                return False
+
+        for key in self.check_nodeName_task:
+            if key not in node_name_data:
+                return False
+
+        return True
+        
 
 class guideJointManager():
     def __init__(self):
-        pass
+        self.guide_data = None
+        # 구조:
+        # {
+        #     "items": {...},
+        #     "containers": {...},
+        #     "invalid": [...]
+        # }
+        #
+        # 아직 set_guide_data()를 호출하지 않았으므로 None으로 시작합니다.
+
+
+
+        self.modules = {}
+        # 전체 guide_data를 부위별로 분류한 결과를 저장합니다.
+        #
+        # key는 다음 세 metadata의 조합입니다.
+        # (rig_module, rig_build, rig_side)
+        #
+        # 예:
+        # {
+        #     ("root_type", "A", "C"): {...},
+        #     ("arm_type", "A", "L"): {...},
+        #     ("arm_type", "A", "R"): {...}
+        # }
+
+
+    def set_guide_data(self , guide_data):
+        if not isinstance(guide_data, dict):
+            return False
+        # 원본 전체 guide 데이터를 그대로 저장합니다.
+        self.guide_data = guide_data
+        # 원본 데이터를 부위별로 분류해서 self.modules에 저장합니다.
+        self.modules = self.group_modules(guide_data)
+        return True
+
+
+
+    def build_root(self, module_data , axis_data , jointNum = 6 ):
+        print (module_data)
 
 
 
 
 
+
+    #__data_helper
+
+    def _get_sorted_locs(self ,module_data, rig_role="main"):
+        """
+        module_data에서 locator 데이터를 찾아
+        rig_index 순서로 정렬해서 반환합니다.
+
+        주로 arm, leg처럼 한 방향으로 이어지는
+        linear chain을 처리할 때 사용합니다.
+        """
+        loc_items = self._find_items(
+                                        module_data,
+                                        rig_role=rig_role,
+                                        rig_data="loc"
+                                    )
+
+        indexed_locs = []
+
+        for detail in loc_items:
+            rig_index = detail.get("rig_index")
+
+            # bool은 int로 변환할 수 있지만
+            # 정상적인 rig_index 값이 아니므로 제외합니다.
+            if isinstance(rig_index, bool):
+                raise ValueError(u"locator의 rig_index가 bool입니다: {}".format( detail.get("node") )  )
+
+            try:
+                # guide metadata에서 읽은 "0", "1"과 같은
+                # 문자열 index를 정렬용 정수로 변환합니다.
+                numeric_index = int(rig_index)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    u"locator의 rig_index를 숫자로 변환할 수 없습니다: "
+                    u"node={}, rig_index={}".format(
+                        detail.get("node"),
+                        rig_index
+                    )
+                )
+
+            # 원본 detail의 rig_index는 변경하지 않고,
+            # 숫자로 변환한 index를 정렬에만 사용합니다.
+            indexed_locs.append((numeric_index, detail))
+
+        indexed_locs.sort(key=lambda item: item[0])
+        return [item[1] for item in indexed_locs]
+
+
+    def _find_one(self , module_data , rig_role=None,rig_data=None,rig_part=None  ):
+        """
+        조건에 맞는 guide detail을 정확히 하나만 찾아 반환합니다.
+
+        검색 결과가 없거나 여러 개라면
+        정상적인 module 데이터가 아니므로 ValueError를 발생시킵니다.
+        """
+        found_items = self._find_items(
+                            module_data,
+                            rig_role=rig_role,
+                            rig_data=rig_data,
+                            rig_part=rig_part
+                        )
+        # 조건에 맞는 데이터가 하나도 없는 경우입니다.
+        if len(found_items) == 0:
+            raise ValueError(
+                u"guide 데이터를 찾을 수 없습니다. "
+                u"role={}, data={}, part={}".format(
+                    rig_role,
+                    rig_data,
+                    rig_part
+                )
+            )
+        if len(found_items) > 1:
+            raise ValueError(
+                u"guide 데이터가 중복되었습니다. "
+                u"role={}, data={}, part={}, count={}".format(
+                    rig_role,
+                    rig_data,
+                    rig_part,
+                    len(found_items)
+                )
+        )
+        return found_items[0]
+
+
+    def _find_items(self , module_data , rig_role=None,rig_data=None,rig_part=None  ):
+        """
+        module_data의 items에서 조건에 맞는 guide detail을 찾습니다.
+
+        조건을 None으로 전달하면 해당 조건은 검사하지 않습니다.
+
+        예:
+            rig_data="loc"
+            → 모든 locator 검색
+
+            rig_data="curveShape", rig_part="shoulder"
+            → shoulder curve 검색
+        """
+        result = []
+        if not isinstance(module_data, dict):
+            return result
+        # module_data 안에서 일반 guide 데이터 get
+        #
+        # module_data 구조:
+        # {
+        #     "items": {...},
+        #     "containers": {...}
+        # }
+        items = module_data.get("items", {})
+        if not isinstance(items, dict):
+            return result
+        
+        # guide_id:
+        #     "arm_type:A:L:main:loc:shoulder"
+        # detail:
+        #     {
+        #         "node": "guide_biped:L_shoulder_loc",
+        #         "rig_module": "arm_type",
+        #         "rig_build": "A",
+        #         "rig_side": "L",
+        #         ...
+        #     }
+        for guide_id, detail in items.items():
+            if not isinstance(detail, dict):
+                continue
+
+            # rig_role/data/part 감별
+            if rig_role is not None:
+                if not detail.get("rig_role") == rig_role:
+                    continue
+            if rig_data is not None:
+                if not detail.get("rig_data") == rig_data:
+                    continue
+            if rig_part is not None:
+                if not detail.get("rig_part") == rig_part:
+                    continue
+            result.append(detail)
+        return result
+
+
+    def group_modules(self , guide_data):
+        modules = {}
+
+        for section_name in ["items", "containers"]:
+            # "items", "containers" 있는지
+            section_data = guide_data.get(section_name, {})
+            # section_data = guide_data.get("items") = {...}
+            # section_data = guide_data.get("containers") = {...}
+
+            if not isinstance(section_data, dict):
+                continue
+
+            # guide_id:
+            #     "arm_type:A:L:main:loc:shoulder"
+            # detail:
+            #     {
+            #         "node": "guide_biped:L_shoulder_loc",
+            #         "rig_module": "arm_type",
+            #         "rig_build": "A",
+            #         "rig_side": "L",
+            #         ...
+            #     }
+            for guide_id, detail in section_data.items():
+                if not isinstance(detail, dict):
+                    continue
+
+                # ("arm_type", "A", "L")
+                # if ("arm_type", "A", "L") not in modules:
+                module_key = (
+                    detail.get("rig_module"),
+                    detail.get("rig_build"),
+                    detail.get("rig_side")
+                )
+
+                # module 구분에 필요한 값이 하나라도 없으면 제외
+                if not all(module_key):
+                    continue
+                # ("arm_type", "A", "L")
+                # "key": module_key 편의용
+
+                if not module_key in modules:
+                    modules[module_key] = {
+                        "key": module_key,
+                        "items": {},
+                        "containers": {}
+                        }
+                # modules[module_key]["containers"][guide_id] = detail
+                modules[module_key][section_name][guide_id] = detail
+        return modules
