@@ -194,21 +194,30 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.export_nameData_Btn.clicked.connect(self.export_namningData)
         self.ui.import_nameData_Btn.clicked.connect(self.import_namingData)
         
-        self.ui.create_main_guideJnt_Btn.clicked.connect(self.debug)
+        self.ui.create_main_guideJnt_Btn.clicked.connect(self.debug2)
 
 
     def debug2(self):
         self._read_guide_data()
-        self._read_namning_data()
-        guideJointManager = guideManager.guideJointManager()
-        total_organizing_data = guideJointManager.group_modules(self.guide_data)
+        self.set_name_rule()
+        guideJointManager = guideManager.guideJointManager(
+            self._namingRule,
+            self.naming_Data["group"]
+        )
+        guideJointManager.set_guide_data(self.guide_data)
+        total_organizing_data = guideJointManager.modules
+
+        print(u"debug2 : extra guide refs")
+        pprint.pprint(self.extra_guide_refs)
+        print(u"debug2 : module keys")
+        pprint.pprint(sorted(total_organizing_data.keys()))
         
         root_module = total_organizing_data.get(('root_type','A','C'))
         neck_module = total_organizing_data.get(('neck_type','A','C'))
         head_module = total_organizing_data.get(('head_type','A','C'))
 
         left_arm_modules = []
-        right_arm_modueles = []
+        right_arm_modules = []
         left_leg_modules = []
         right_leg_modules = []
 
@@ -219,14 +228,48 @@ class DesignerUI(QtWidgets.QDialog):
                 if side == "L":
                     left_arm_modules.append(detail_data)
                 if side == "R":
-                    right_arm_modueles.append(detail_data)
+                    right_arm_modules.append(detail_data)
             if key_type == "leg_type":
                 if side == "L":
                     left_leg_modules.append(detail_data)
                 if side == "R":
                     right_leg_modules.append(detail_data)
 
-        pprint.pprint(left_arm_modules)
+        if not root_module:
+            raise ValueError(u"debug2 : root_type:A:C module을 찾을 수 없습니다.")
+
+        build_results = {
+            "root": guideJointManager.build_root(root_module),
+            "legs": []
+        }
+
+        leg_modules = left_leg_modules + right_leg_modules
+        leg_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+
+        for leg_module in leg_modules:
+            module_key = leg_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+
+            print(
+                u"debug2 : build_leg start - module={}, build={}, side={}".format(
+                    rig_module,
+                    rig_build,
+                    rig_side
+                )
+            )
+
+            leg_result = guideJointManager.build_leg(
+                leg_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["legs"].append({
+                "key": module_key,
+                "result": leg_result
+            })
+
+        print(u"debug2 : root/leg joint build complete")
+        pprint.pprint(build_results)
+        return build_results
 
 
 
@@ -856,7 +899,11 @@ class DesignerUI(QtWidgets.QDialog):
                 continue
 
             for prefix in valid_prefixes:
-                if x.startswith(prefix + "_") and x.endswith("RN"):
+                is_base_reference = x == prefix + "RN"
+                is_numbered_reference = (
+                    x.startswith(prefix + "_") and x.endswith("RN")
+                )
+                if is_base_reference or is_numbered_reference:
                     extra_guide_refs.append(x)
                     break
 

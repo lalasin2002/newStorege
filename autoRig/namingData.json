@@ -37,7 +37,7 @@
         "curveInfo": "CrvInfo",
         "pointOnCurveInfo": "Pocif",
         "nearestPointOnCurve": "Npoc",
-        "pointMatrixMult": "Pmm"
+        "pointMatrixMult": "PointMM"
     },
     "rule": {
         "non": "",
