@@ -30,7 +30,7 @@ if CURRENT_DIR not in sys.path:
 
 
 import autoRig_config as config
-from rig_module import guideManager
+from rig_module import guideManager, jointData
 from tools import controlAttribute ,controlObject , pysideHelper , naming
 
 
@@ -174,8 +174,8 @@ class DesignerUI(QtWidgets.QDialog):
         self._guideCombine = guideManager.guideCombine()
         self._namingRule = naming.namingRule()
 
-        self.naming_Data = None
-
+        self.naming_data = None
+        self.base_jnt_data = None
 
         self.init_ui(ui_path)
         self.connect_widget()
@@ -194,15 +194,15 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.export_nameData_Btn.clicked.connect(self.export_namningData)
         self.ui.import_nameData_Btn.clicked.connect(self.import_namingData)
         
-        self.ui.create_main_guideJnt_Btn.clicked.connect(self.debug2)
+        self.ui.create_main_guideJnt_Btn.clicked.connect(self.create_guide_joint)
 
 
-    def debug2(self):
+    def create_guide_joint(self):
         self._read_guide_data()
         self.set_name_rule()
         guideJointManager = guideManager.guideJointManager(
             self._namingRule,
-            self.naming_Data["group"]
+            self.naming_data["group"]
         )
         guideJointManager.set_guide_data(self.guide_data)
         total_organizing_data = guideJointManager.modules
@@ -218,8 +218,15 @@ class DesignerUI(QtWidgets.QDialog):
 
         left_arm_modules = []
         right_arm_modules = []
+        left_hand_modules = []
+        right_hand_modules = []
         left_leg_modules = []
         right_leg_modules = []
+        left_eye_modules = []
+        right_eye_modules = []
+        jaw_modules = []
+        tongue_modules = []
+        tail_modules = []
 
         for key_path_data , detail_data in total_organizing_data.items():
 
@@ -234,14 +241,136 @@ class DesignerUI(QtWidgets.QDialog):
                     left_leg_modules.append(detail_data)
                 if side == "R":
                     right_leg_modules.append(detail_data)
+            if key_type == "hand_type":
+                if side == "L":
+                    left_hand_modules.append(detail_data)
+                if side == "R":
+                    right_hand_modules.append(detail_data)
+            if key_type == "eye_type":
+                if side == "L":
+                    left_eye_modules.append(detail_data)
+                if side == "R":
+                    right_eye_modules.append(detail_data)
+            if key_type == "gum_type" and side == "C":
+                jaw_modules.append(detail_data)
+            if key_type == "tongue_type" and side == "C":
+                tongue_modules.append(detail_data)
+            if key_type == "tail_type" and side == "C":
+                tail_modules.append(detail_data)
 
         if not root_module:
             raise ValueError(u"debug2 : root_type:A:C module을 찾을 수 없습니다.")
 
         build_results = {
             "root": guideJointManager.build_root(root_module),
+            "neck": None,
+            "head": None,
+            "eyes": [],
+            "jaws": [],
+            "gums": [],
+            "tongues": [],
+            "tails": [],
+            "arms": [],
+            "hands": [],
             "legs": []
         }
+
+        if neck_module:
+            print(u"debug2 : build_neck start - module=neck_type, build=A, side=C")
+            build_results["neck"] = guideJointManager.build_neck(neck_module)
+
+        if head_module:
+            print(u"debug2 : build_head start - module=head_type, build=A, side=C")
+            build_results["head"] = guideJointManager.build_head(head_module)
+
+        eye_modules = left_eye_modules + right_eye_modules
+        eye_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+        for eye_module in eye_modules:
+            module_key = eye_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+            print(
+                u"debug2 : build_eye start - module={}, build={}, side={}".format(
+                    rig_module,
+                    rig_build,
+                    rig_side
+                )
+            )
+            eye_result = guideJointManager.build_eye(
+                eye_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["eyes"].append({
+                "key": module_key,
+                "result": eye_result
+            })
+
+        jaw_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+        for jaw_module in jaw_modules:
+            module_key = jaw_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+            print(
+                u"debug2 : build_jaw start - module={}, build={}, side={}".format(
+                    rig_module,
+                    rig_build,
+                    rig_side
+                )
+            )
+            jaw_result = guideJointManager.build_jaw(
+                jaw_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["jaws"].append({
+                "key": module_key,
+                "result": jaw_result
+            })
+            gum_result = guideJointManager.build_gum(
+                jaw_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["gums"].append({
+                "key": module_key,
+                "result": gum_result
+            })
+
+        tongue_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+        for tongue_module in tongue_modules:
+            module_key = tongue_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+            print(
+                u"debug2 : build_tongue start - module={}, build={}, side={}".format(
+                    rig_module,
+                    rig_build,
+                    rig_side
+                )
+            )
+            tongue_result = guideJointManager.build_tongue(
+                tongue_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["tongues"].append({
+                "key": module_key,
+                "result": tongue_result
+            })
+
+        tail_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+        for tail_module in tail_modules:
+            module_key = tail_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+            print(
+                u"debug2 : build_tail start - module={}, build={}, side={}".format(
+                    rig_module,
+                    rig_build,
+                    rig_side
+                )
+            )
+            tail_result = guideJointManager.build_tail(
+                tail_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["tails"].append({
+                "key": module_key,
+                "result": tail_result
+            })
 
         leg_modules = left_leg_modules + right_leg_modules
         leg_modules.sort(key=lambda data: data.get("key", ("", "", "")))
@@ -250,13 +379,7 @@ class DesignerUI(QtWidgets.QDialog):
             module_key = leg_module.get("key")
             rig_module, rig_build, rig_side = module_key
 
-            print(
-                u"debug2 : build_leg start - module={}, build={}, side={}".format(
-                    rig_module,
-                    rig_build,
-                    rig_side
-                )
-            )
+            print(u"debug2 : build_leg start - module={}, build={}, side={}".format( rig_module,  rig_build, rig_side ))
 
             leg_result = guideJointManager.build_leg(
                 leg_module,
@@ -267,7 +390,65 @@ class DesignerUI(QtWidgets.QDialog):
                 "result": leg_result
             })
 
-        print(u"debug2 : root/leg joint build complete")
+        arm_modules = left_arm_modules + right_arm_modules
+        arm_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+
+        for arm_module in arm_modules:
+            module_key = arm_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+
+            print(u"debug2 : build_arm start - module={}, build={}, side={}".format( rig_module,   rig_build,rig_side ))
+
+            arm_result = guideJointManager.build_arm(
+                arm_module,
+                insert_alp=(not rig_build == "A")
+            )
+            build_results["arms"].append({
+                "key": module_key,
+                "result": arm_result
+            })
+
+        hand_modules = left_hand_modules + right_hand_modules
+        hand_modules.sort(key=lambda data: data.get("key", ("", "", "")))
+
+        for hand_module in hand_modules:
+            module_key = hand_module.get("key")
+            rig_module, rig_build, rig_side = module_key
+
+            print(u"debug2 : build_hand start - module={}, build={}, side={}".format(rig_module,rig_build,rig_side ))
+
+            hand_root_parent = self._resolve_hand_root_parent(
+                hand_module,
+                guideJointManager
+            )
+            hand_result = guideJointManager.build_hand(
+                hand_module,
+                insert_alp=(not rig_build == "A"),
+                root_parent=hand_root_parent
+            )
+            build_results["hands"].append({
+                "key": module_key,
+                "result": hand_result
+            })
+
+        # JointBuilder의 반환 결과에 포함된 metadata를 실제 Guide Joint에 기록합니다.
+        # JointBuilder는 Maya attribute 저장에 관여하지 않으며, 저장 책임은
+        # jointData의 외부 함수와 JointDataManager가 담당합니다.
+        joint_data_manager = jointData.JointDataManager()
+        saved_joint_tags = jointData.writeGuideJointBuildResults(
+            build_results,
+            joint_data_manager
+        )
+        self.guide_joint_data = jointData.readGuideJointData(
+            joint_data_manager
+        )
+
+        print(
+            u"create_guide_joint : Guide Joint metadata 저장 완료 - {}개".format(
+                len(saved_joint_tags)
+            )
+        )
+        print(u"debug2 : root/neck/head/eye/jaw/gum/tongue/tail/arm/hand/leg joint build complete")
         pprint.pprint(build_results)
         return build_results
 
@@ -407,7 +588,7 @@ class DesignerUI(QtWidgets.QDialog):
 
     def export_namningData(self):
         self._read_namning_data()
-        data = self.naming_Data
+        data = self.naming_data
 
         default_path = os.path.join(config.AUTO_RIG_ROOT, "namingData.json")
         export_result = QFileDialog.getSaveFileName(self, "set a path",default_path ,**{"filter" : u"JSON Files (*.json);;All Files (*.*)" , "selectedFilter": u"JSON Files (*.json)"}  )
@@ -520,7 +701,9 @@ class DesignerUI(QtWidgets.QDialog):
         self.extra_guide_objs.extend(guide_objs)
         self.extra_guide_objs = list(set(self.extra_guide_objs))
 
-        if parent_item:
+        if self._guide_data_has_module(guide_data, "hand_type"):
+            self._attach_extra_hand_guide(guide_data, parent_item)
+        elif parent_item:
             self._set_attach_target_to_guide_data(guide_data, parent_item)
 
         # self.guide_data.update(guide_data)를 쓰면 items/containers 전체가 덮인다.
@@ -650,7 +833,7 @@ class DesignerUI(QtWidgets.QDialog):
             "group": self._parse_naming_map("group", group_data)
         }
 
-        self.naming_Data = data 
+        self.naming_data = data 
         return data
 
     def _parse_naming_map(self, name, text):
@@ -741,6 +924,277 @@ class DesignerUI(QtWidgets.QDialog):
                 attr_path = "{}.rig_attachTarget".format(node)
                 if cmds.objExists(attr_path):
                     cmds.setAttr(attr_path, parent_item, type="string")
+
+
+    def _guide_data_has_module(self, guide_data, rig_module):
+        if not isinstance(guide_data, dict):
+            return False
+
+        for section in ["items", "containers"]:
+            section_data = guide_data.get(section, {})
+            if not isinstance(section_data, dict):
+                continue
+
+            for detail in section_data.values():
+                if detail.get("rig_module") == rig_module:
+                    return True
+
+        return False
+
+
+    def _find_guide_record_by_node(self, node):
+        if not node or not cmds.objExists(node):
+            return None, None
+
+        node_paths = cmds.ls(node, long=True) or [node]
+        node_path = node_paths[0]
+
+        for section in ["items", "containers"]:
+            section_data = self.guide_data.get(section, {})
+            if not isinstance(section_data, dict):
+                continue
+
+            for guide_id, detail in section_data.items():
+                detail_node = detail.get("node")
+                if not detail_node or not cmds.objExists(detail_node):
+                    continue
+
+                detail_paths = cmds.ls(detail_node, long=True) or [detail_node]
+                if detail_paths[0] == node_path:
+                    return guide_id, detail
+
+        return None, None
+
+
+    def _find_arm_wrist_targets(self, rig_build=None):
+        targets = {"L": [], "R": []}
+        items = self.guide_data.get("items", {})
+        if not isinstance(items, dict):
+            return targets
+
+        for guide_id, detail in items.items():
+            if not detail.get("rig_module") == "arm_type":
+                continue
+            if not detail.get("rig_role") == "main":
+                continue
+            if not detail.get("rig_data") == "loc":
+                continue
+            if not detail.get("rig_part") == "wrist":
+                continue
+            if rig_build is not None:
+                if not detail.get("rig_build") == rig_build:
+                    continue
+
+            side = detail.get("rig_side")
+            if side in targets:
+                targets[side].append((guide_id, detail))
+
+        return targets
+
+
+    def _attach_extra_hand_guide(self, guide_data, parent_item=None):
+        selected_build = None
+
+        if parent_item:
+            _, selected_detail = self._find_guide_record_by_node(parent_item)
+            is_wrist = (
+                selected_detail
+                and selected_detail.get("rig_module") == "arm_type"
+                and selected_detail.get("rig_role") == "main"
+                and selected_detail.get("rig_data") == "loc"
+                and selected_detail.get("rig_part") == "wrist"
+            )
+            if is_wrist:
+                selected_build = selected_detail.get("rig_build")
+            else:
+                cmds.warning(
+                    u"extra hand의 parent는 arm wrist locator여야 합니다: {}".format(
+                        parent_item
+                    )
+                )
+
+        wrist_targets = self._find_arm_wrist_targets(selected_build)
+        hand_items = guide_data.get("items", {})
+        if not isinstance(hand_items, dict):
+            return {}
+
+        attach_results = {}
+
+        for _, hand_detail in hand_items.items():
+            if not hand_detail.get("rig_module") == "hand_type":
+                continue
+            if not hand_detail.get("rig_role") == "mirror":
+                continue
+            if not hand_detail.get("rig_part") == "mirrorRoot":
+                continue
+
+            side = hand_detail.get("rig_side")
+            side_targets = wrist_targets.get(side, [])
+            if not len(side_targets) == 1:
+                if len(side_targets) > 1:
+                    cmds.warning(
+                        u"{} hand에 연결할 wrist가 여러 개입니다. UI에서 wrist를 선택하십시오.".format(
+                            side
+                        )
+                    )
+                else:
+                    cmds.warning(
+                        u"{} hand에 연결할 arm wrist를 찾을 수 없습니다.".format(side)
+                    )
+                continue
+
+            target_id, target_detail = side_targets[0]
+            target_node = target_detail.get("node")
+            hand_root = hand_detail.get("node")
+            if not target_node or not hand_root:
+                continue
+            if not cmds.objExists(target_node) or not cmds.objExists(hand_root):
+                continue
+
+            old_constraints = cmds.listConnections(
+                hand_root,
+                source=True,
+                destination=False,
+                type="parentConstraint"
+            ) or []
+            if old_constraints:
+                cmds.delete(list(set(old_constraints)))
+
+            constraint = cmds.parentConstraint(
+                target_node,
+                hand_root,
+                maintainOffset=False
+            )[0]
+
+            hand_detail["rig_attachTarget"] = target_id
+            attach_attr = "{}.rig_attachTarget".format(hand_root)
+            if not cmds.objExists(attach_attr):
+                try:
+                    cmds.addAttr(hand_root, longName="rig_attachTarget", dataType="string")
+                except RuntimeError:
+                    pass
+            if cmds.objExists(attach_attr):
+                cmds.setAttr(attach_attr, target_id, type="string")
+
+            constraint_attr = "{}.rig_attachTarget".format(constraint)
+            if not cmds.objExists(constraint_attr):
+                cmds.addAttr(
+                    constraint,
+                    longName="rig_attachTarget",
+                    dataType="string"
+                )
+            cmds.setAttr(constraint_attr, target_id, type="string")
+            attach_results[side] = target_id
+
+        return attach_results
+
+
+    def _restore_hand_attach_targets(self, guide_data):
+        items = guide_data.get("items", {})
+        if not isinstance(items, dict):
+            return
+
+        for detail in items.values():
+            if not detail.get("rig_module") == "hand_type":
+                continue
+            if not detail.get("rig_role") == "mirror":
+                continue
+            if not detail.get("rig_part") == "mirrorRoot":
+                continue
+            if detail.get("rig_attachTarget"):
+                continue
+
+            hand_root = detail.get("node")
+            if not hand_root or not cmds.objExists(hand_root):
+                continue
+
+            constraints = cmds.listConnections(
+                hand_root,
+                source=True,
+                destination=False,
+                type="parentConstraint"
+            ) or []
+            for constraint in list(set(constraints)):
+                attr_path = "{}.rig_attachTarget".format(constraint)
+                if not cmds.objExists(attr_path):
+                    continue
+                target_id = cmds.getAttr(attr_path)
+                if target_id:
+                    detail["rig_attachTarget"] = target_id
+                    break
+
+
+    def _resolve_hand_root_parent(self, hand_module, guide_joint_manager):
+        if not isinstance(hand_module, dict):
+            return None
+
+        attach_target_id = None
+        hand_items = hand_module.get("items", {})
+        if not isinstance(hand_items, dict):
+            return None
+
+        for detail in hand_items.values():
+            if not detail.get("rig_role") == "mirror":
+                continue
+            if not detail.get("rig_part") == "mirrorRoot":
+                continue
+            attach_target_id = detail.get("rig_attachTarget")
+            if attach_target_id:
+                break
+
+        if not attach_target_id:
+            return None
+
+        target_detail = self.guide_data.get("items", {}).get(attach_target_id)
+        if not target_detail:
+            cmds.warning(
+                u"hand attach target을 guide_data에서 찾을 수 없습니다: {}".format(
+                    attach_target_id
+                )
+            )
+            return None
+
+        is_wrist = (
+            target_detail.get("rig_module") == "arm_type"
+            and target_detail.get("rig_role") == "main"
+            and target_detail.get("rig_data") == "loc"
+            and target_detail.get("rig_part") == "wrist"
+        )
+        if not is_wrist:
+            cmds.warning(
+                u"hand attach target이 arm wrist가 아닙니다: {}".format(
+                    attach_target_id
+                )
+            )
+            return None
+
+        side_type_map = {"L": "left", "R": "right"}
+        target_side = side_type_map.get(target_detail.get("rig_side"))
+        target_build = target_detail.get("rig_build")
+        if target_side is None or not target_build:
+            return None
+
+        hand_key = hand_module.get("key", (None, None, None))
+        hand_side = hand_key[2] if len(hand_key) == 3 else None
+        if not hand_side == target_detail.get("rig_side"):
+            cmds.warning(
+                u"hand와 attach wrist의 side가 일치하지 않습니다: hand={}, target={}".format(
+                    hand_side,
+                    target_detail.get("rig_side")
+                )
+            )
+            return None
+
+        target_alp = target_build if not target_build == "A" else ""
+        return guide_joint_manager.build_name(
+            item_name="wrist",
+            side=target_side,
+            extra_side="",
+            alp=target_alp,
+            num="",
+            rule="",
+            obj_type="joint"
+        )
 
     def _mirror_matrix_x(self, matrix):
         """
@@ -859,6 +1313,7 @@ class DesignerUI(QtWidgets.QDialog):
             self._merge_guide_data(guide_data)
 
         self.extra_guide_objs = list(set(self.extra_guide_objs))
+        self._restore_hand_attach_targets(self.guide_data)
         return self.guide_data
 
 

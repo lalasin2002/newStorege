@@ -7,7 +7,6 @@ import  os,copy ,json , re
 
 from autoRig_config import AUTO_RIG_ROOT, GUIDE_RIGS_PATH
 from tools import controlAttribute , controlObject , naming , createObject , match , grouping
-
 #--------------------------------------------------------------------------
 
 #rootPoint : space
@@ -838,6 +837,9 @@ class JointBuilder():
                             }
         self.joint_data_temp = {"joint_name" : None ,
                                 "group_name" : None ,
+                                # Builder는 metadata를 해석하거나 저장하지 않고
+                                # 호출자가 전달한 값을 build_result에 그대로 보존합니다.
+                                "metadata" : {},
                                            #"curve" / "point"
                                 "position" : {"mode" : None , "source" : None , "parameter" : None  },
                                             #"orient" / "aim" / "tangent"
@@ -893,6 +895,18 @@ class JointBuilder():
         joint_data = self._resolve_plan_data(data)
         joint_data["joint_name"] = joint_name
         joint_data["group_name"] = group_name
+        return joint_data
+
+
+    def define_metadata_planData(self, metadata, data=None):
+        '''현재 Joint plan에 외부 사용 목적의 metadata를 기록합니다.'''
+        if not isinstance(metadata, dict):
+            raise TypeError(
+                u"define_metadata_planData : metadata는 dict여야 합니다."
+            )
+
+        joint_data = self._resolve_plan_data(data)
+        joint_data["metadata"] = copy.deepcopy(metadata)
         return joint_data
 
 
@@ -1526,7 +1540,7 @@ class JointBuilder():
             # 사용자가 작성한 parent 연결 로직은 그대로 유지합니다.
             if parent:
                 cmds.parent(target , parent)
-            parent = target
+            parent = Jnt
         rootParent = self.build_plan.get("rootParent")
         if rootParent and cmds.objExists(rootParent):
             cmds.parent(root , rootParent)
@@ -1909,6 +1923,514 @@ class guideJointManager():
         return True
 
 
+    def build_hand(self, module_data, side_type=None, insert_alp=False,
+                   root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_hand : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_hand : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "hand_type":
+            return
+
+        side_type_map = {"L": "left", "R": "right"}
+        module_side_type = side_type_map.get(side)
+        if module_side_type is None:
+            raise ValueError(
+                u"build_hand : hand module의 side는 L 또는 R이어야 합니다: {}".format(side)
+            )
+
+        if side_type is None:
+            side_type = module_side_type
+        elif not side_type == module_side_type:
+            raise ValueError(
+                u"build_hand : module side({})와 side_type({})이 일치하지 않습니다.".format(
+                    side,
+                    side_type
+                )
+            )
+
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_hand : insert_alp는 bool이어야 합니다.")
+
+        name_alp = alp if insert_alp else ""
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="wrist",
+                side=side_type,
+                extra_side="",
+                alp=name_alp,
+                num="",
+                rule="",
+                obj_type="joint"
+            )
+
+        finger_types = ["thumb", "index", "middle", "ring", "pinky"]
+        hand_results = {}
+
+        for finger_type in finger_types:
+            finger_items = self._get_finger_locs(module_data, finger_type)
+            finger_joint_builder = JointBuilder()
+
+            for index, finger_item in enumerate(finger_items):
+                item_name = finger_item.get("rig_part")
+                locator_node = finger_item.get("node")
+
+                joint_name = self.build_name(
+                    item_name=item_name,
+                    side=side_type,
+                    extra_side="",
+                    alp=name_alp,
+                    num="",
+                    rule="",
+                    obj_type="joint"
+                )
+                group_name = self.group_naming_rule["group1"].format(
+                    item=joint_name
+                )
+                point_matrix_name = self.build_name(
+                    item_name=item_name,
+                    side=side_type,
+                    extra_side="",
+                    alp=name_alp,
+                    num="",
+                    rule="",
+                    obj_type="pointMatrixMult"
+                )
+
+                finger_joint_builder.define_joint_planData(
+                    joint_name,
+                    group_name
+                )
+                finger_joint_builder.define_point_planData(
+                    locator_node,
+                    point_matrix_name
+                )
+                finger_joint_builder.define_orient_planData(locator_node)
+                finger_joint_builder.define_index_planData(index)
+                self._define_guide_joint_metadata(
+                    finger_joint_builder,
+                    module_data,
+                    item_name,
+                    "primary",
+                    index
+                )
+                finger_joint_builder.add_current_plan_task()
+
+            finger_joint_builder.define_rootParent(root_parent)
+            hand_results[finger_type] = finger_joint_builder.build(0.15)
+
+        return hand_results
+
+
+    def build_arm(self, module_data, side_type=None, axis_data=None,
+                  insert_alp=False, joint_num=None, root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_arm : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_arm : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "arm_type":
+            return
+
+        side_type_map = {"L": "left", "R": "right"}
+        module_side_type = side_type_map.get(side)
+        if module_side_type is None:
+            raise ValueError(
+                u"build_arm : arm module의 side는 L 또는 R이어야 합니다: {}".format(side)
+            )
+
+        if side_type is None:
+            side_type = module_side_type
+        elif not side_type == module_side_type:
+            raise ValueError(
+                u"build_arm : module side({})와 side_type({})이 일치하지 않습니다.".format(
+                    side, side_type
+                )
+            )
+
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_arm : insert_alp는 bool이어야 합니다.")
+
+        if joint_num is not None:
+            if not isinstance(joint_num, self.integer_type) or isinstance(joint_num, bool):
+                raise TypeError(u"build_arm : joint_num은 int 또는 None이어야 합니다.")
+            if joint_num < 0:
+                raise ValueError(u"build_arm : joint_num은 0 이상이어야 합니다.")
+
+        name_alp = alp if insert_alp else ""
+
+        scapula_item_path = self._find_one(module_data, "main", "loc", "scapula")
+        shoulder_item_path = self._find_one(module_data, "main", "loc", "shoulder")
+        elbow_item_path = self._find_one(module_data, "main", "loc", "elbow")
+        wrist_item_path = self._find_one(module_data, "main", "loc", "wrist")
+        shoulder_aim_vector_path = self._find_one(
+            module_data, "main", "aimVector", "shoulder"
+        )
+
+        rig_type = shoulder_item_path.get("rig_type")
+        if rig_type not in ["biped", "quad"]:
+            raise ValueError(
+                u"build_arm : 지원하지 않는 rig_type입니다: {}".format(rig_type)
+            )
+
+        scapula_item_node = scapula_item_path.get("node")
+        shoulder_item_node = shoulder_item_path.get("node")
+        elbow_item_node = elbow_item_path.get("node")
+        wrist_item_node = wrist_item_path.get("node")
+        shoulder_aim_vector = shoulder_aim_vector_path.get("node")
+
+        shoulder_curve = self._find_curve_node(
+            module_data, "shoulder", shoulder_item_node
+        )
+        elbow_curve = self._find_curve_node(
+            module_data, "elbow", elbow_item_node
+        )
+        shoulder_insert_count = self._resolve_insert_count(
+            shoulder_item_node, joint_num
+        )
+        elbow_insert_count = self._resolve_insert_count(
+            elbow_item_node, joint_num
+        )
+
+        if rig_type == "biped":
+            wrist_end_item_path = self._find_one(
+                module_data, "main", "loc", "wristEnd"
+            )
+            wrist_end_item_node = wrist_end_item_path.get("node")
+            segment_data = [
+                {"part": "shoulder", "end_part": "elbow",
+                 "start": shoulder_item_node, "end": elbow_item_node,
+                 "curve": shoulder_curve,
+                 "aim_vector": shoulder_aim_vector,
+                 "insert_count": shoulder_insert_count,
+                 "joint_count": shoulder_insert_count + 4,
+                 "create_end": True},
+                {"part": "elbow", "end_part": "wrist",
+                 "start": elbow_item_node, "end": wrist_item_node,
+                 "curve": elbow_curve,
+                 "aim_vector": shoulder_aim_vector,
+                 "insert_count": elbow_insert_count,
+                 "joint_count": elbow_insert_count + 4,
+                 "create_end": True}
+            ]
+            point_orient_data = [
+                {"part": "wristEnd", "node": wrist_end_item_node}
+            ]
+
+            if side_type == "left":
+                aim_data = {
+                    "aim": (1, 0, 0),
+                    "u": (0, 1, 0),
+                    "wu": (0, 1, 0)
+                }
+            else:
+                aim_data = {
+                    "aim": (-1, 0, 0),
+                    "u": (0, -1, 0),
+                    "wu": (0, -1, 0)
+                }
+        else:
+            wrist_toe_item_path = self._find_one(
+                module_data, "main", "loc", "wristToe"
+            )
+            wrist_toe_end_item_path = self._find_one(
+                module_data, "main", "loc", "wristToeEnd"
+            )
+            scapula_aim_vector_path = self._find_one(
+                module_data, "main", "aimVector", "scapula"
+            )
+
+            wrist_toe_item_node = wrist_toe_item_path.get("node")
+            wrist_toe_end_item_node = wrist_toe_end_item_path.get("node")
+            scapula_aim_vector = scapula_aim_vector_path.get("node")
+
+            scapula_curve = self._find_curve_node(
+                module_data, "scapula", scapula_item_node
+            )
+            wrist_curve = self._find_curve_node(
+                module_data, "wrist", wrist_item_node
+            )
+            scapula_insert_count = self._resolve_insert_count(
+                scapula_item_node, joint_num
+            )
+            wrist_insert_count = self._resolve_insert_count(
+                wrist_item_node, joint_num
+            )
+
+            segment_data = [
+                {"part": "scapula", "end_part": "shoulder",
+                 "start": scapula_item_node, "end": shoulder_item_node,
+                 "curve": scapula_curve,
+                 "aim_vector": scapula_aim_vector,
+                 "insert_count": scapula_insert_count,
+                 "joint_count": scapula_insert_count + 4,
+                 "create_end": True},
+                {"part": "shoulder", "end_part": "elbow",
+                 "start": shoulder_item_node, "end": elbow_item_node,
+                 "curve": shoulder_curve,
+                 "aim_vector": shoulder_aim_vector,
+                 "insert_count": shoulder_insert_count,
+                 "joint_count": shoulder_insert_count + 4,
+                 "create_end": True},
+                {"part": "elbow", "end_part": "wrist",
+                 "start": elbow_item_node, "end": wrist_item_node,
+                 "curve": elbow_curve,
+                 "aim_vector": shoulder_aim_vector,
+                 "insert_count": elbow_insert_count,
+                 "joint_count": elbow_insert_count + 4,
+                 "create_end": True},
+                {"part": "wrist", "end_part": "wristToe",
+                 "start": wrist_item_node, "end": wrist_toe_item_node,
+                 "curve": wrist_curve,
+                 "aim_vector": shoulder_aim_vector,
+                 "insert_count": wrist_insert_count,
+                 "joint_count": wrist_insert_count + 4,
+                 "create_end": False}
+            ]
+            point_orient_data = [
+                {"part": "wristToe", "node": wrist_toe_item_node},
+                {"part": "wristToeEnd", "node": wrist_toe_end_item_node}
+            ]
+            aim_data = {
+                "aim": (0, -1, 0),
+                "u": (0, 0, 1),
+                "wu": (0, 0, 1)
+            }
+
+        if axis_data is not None:
+            self._check_aim_data(axis_data)
+            aim_data = axis_data
+
+        arm_joint_builder = JointBuilder()
+        build_index = 0
+
+        if rig_type == "biped":
+            scapula_joint_name = self.build_name(
+                item_name="scapula",
+                side=side_type,
+                extra_side="",
+                alp=name_alp,
+                num="",
+                rule="",
+                obj_type="joint"
+            )
+            scapula_group_name = self.group_naming_rule["group1"].format(
+                item=scapula_joint_name
+            )
+            scapula_point_matrix_name = self.build_name(
+                item_name="scapula",
+                side=side_type,
+                extra_side="",
+                alp=name_alp,
+                num="",
+                rule="",
+                obj_type="pointMatrixMult"
+            )
+
+            arm_joint_builder.define_joint_planData(
+                scapula_joint_name, scapula_group_name
+            )
+            arm_joint_builder.define_point_planData(
+                scapula_item_node, scapula_point_matrix_name
+            )
+            arm_joint_builder.define_orient_planData(scapula_item_node)
+            arm_joint_builder.define_index_planData(build_index)
+            self._define_guide_joint_metadata(
+                arm_joint_builder,
+                module_data,
+                "scapula",
+                "primary",
+                build_index
+            )
+            arm_joint_builder.add_current_plan_task()
+            build_index += 1
+
+        for segment_index, segment in enumerate(segment_data):
+            part = segment["part"]
+            end_part = segment["end_part"]
+            curve = segment["curve"]
+            end_node = segment["end"]
+            insert_count = segment["insert_count"]
+            segment_aim_vector = segment["aim_vector"]
+            create_end = segment["create_end"]
+
+            curve_joint_data = []
+            if segment_index == 0:
+                curve_joint_data.append({
+                    "item_name": part,
+                    "num": "",
+                    "parameter": 0.0,
+                    "orient_node": None
+                })
+
+            curve_joint_data.append({
+                "item_name": part,
+                "num": "01",
+                "parameter": 0.01,
+                "orient_node": None
+            })
+
+            for insert_index in range(insert_count):
+                insert_parameter = float(insert_index + 1) / (insert_count + 1)
+                curve_joint_data.append({
+                    "item_name": part,
+                    "num": str(insert_index + 2).zfill(2),
+                    "parameter": insert_parameter,
+                    "orient_node": None
+                })
+
+            curve_joint_data.append({
+                "item_name": part,
+                "num": str(insert_count + 2).zfill(2),
+                "parameter": 0.99,
+                "orient_node": None
+            })
+            if create_end:
+                curve_joint_data.append({
+                    "item_name": end_part,
+                    "num": "",
+                    "parameter": 1.0,
+                    "orient_node": end_node
+                })
+
+            for joint_data in curve_joint_data:
+                item_name = joint_data["item_name"]
+                number = joint_data["num"]
+                parameter = joint_data["parameter"]
+                orient_node = joint_data["orient_node"]
+
+                joint_name = self.build_name(
+                    item_name=item_name,
+                    side=side_type,
+                    extra_side="",
+                    alp=name_alp,
+                    num=number,
+                    rule="",
+                    obj_type="joint"
+                )
+                group_name = self.group_naming_rule["group1"].format(
+                    item=joint_name
+                )
+                pocif_name = self.build_name(
+                    item_name=item_name,
+                    side=side_type,
+                    extra_side="",
+                    alp=name_alp,
+                    num=number,
+                    rule="",
+                    obj_type="pointOnCurveInfo"
+                )
+                point_matrix_name = self.build_name(
+                    item_name=item_name,
+                    side=side_type,
+                    extra_side="",
+                    alp=name_alp,
+                    num=number,
+                    rule="",
+                    obj_type="pointMatrixMult"
+                )
+
+                arm_joint_builder.define_joint_planData(joint_name, group_name)
+                arm_joint_builder.define_pointOnCurve_planData(
+                    curve,
+                    parameter,
+                    pocif_name,
+                    point_matrix_name
+                )
+
+                if orient_node is None:
+                    arm_joint_builder.define_tangent_planData(
+                        curve,
+                        aim_data["aim"],
+                        aim_data["u"],
+                        aim_data["wu"],
+                        segment_aim_vector,
+                        "objectrotation"
+                    )
+                else:
+                    arm_joint_builder.define_orient_planData(orient_node)
+
+                arm_joint_builder.define_index_planData(build_index)
+                joint_role = "primary" if not number else "segment"
+                metadata_part = item_name if joint_role == "primary" else part
+                self._define_guide_joint_metadata(
+                    arm_joint_builder,
+                    module_data,
+                    metadata_part,
+                    joint_role,
+                    build_index
+                )
+                arm_joint_builder.add_current_plan_task()
+                build_index += 1
+
+        for point_orient in point_orient_data:
+            point_part = point_orient["part"]
+            point_node = point_orient["node"]
+
+            point_joint_name = self.build_name(
+                item_name=point_part,
+                side=side_type,
+                extra_side="",
+                alp=name_alp,
+                num="",
+                rule="",
+                obj_type="joint"
+            )
+            point_group_name = self.group_naming_rule["group1"].format(
+                item=point_joint_name
+            )
+            point_matrix_name = self.build_name(
+                item_name=point_part,
+                side=side_type,
+                extra_side="",
+                alp=name_alp,
+                num="",
+                rule="",
+                obj_type="pointMatrixMult"
+            )
+
+            arm_joint_builder.define_joint_planData(
+                point_joint_name,
+                point_group_name
+            )
+            arm_joint_builder.define_point_planData(
+                point_node,
+                point_matrix_name
+            )
+            arm_joint_builder.define_orient_planData(point_node)
+            arm_joint_builder.define_index_planData(build_index)
+            self._define_guide_joint_metadata(
+                arm_joint_builder,
+                module_data,
+                point_part,
+                "primary",
+                build_index
+            )
+            arm_joint_builder.add_current_plan_task()
+            build_index += 1
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="chest",
+                side="center",
+                extra_side="",
+                alp="",
+                num="",
+                rule="",
+                obj_type="joint"
+            )
+
+        arm_joint_builder.define_rootParent(root_parent)
+        return arm_joint_builder.build(0.75)
+
+
 
 
     def build_leg(self, module_data, side_type=None, axis_data=None,
@@ -1972,8 +2494,6 @@ class guideJointManager():
 
         hip_insert_count = self._resolve_insert_count(hip_item_node, joint_num)
         knee_insert_count = self._resolve_insert_count(knee_item_node, joint_num)
-        hip_joint_count = hip_insert_count + 4
-        knee_joint_count = knee_insert_count + 4
 
         if rig_type == "biped":
             toe_item_path = self._find_one(module_data, "main", "loc", "toe")
@@ -1987,12 +2507,10 @@ class guideJointManager():
             segment_data = [
                 {"part": "hip", "end_part": "knee",
                  "start": hip_item_node, "end": knee_item_node,
-                 "curve": hip_curve, "insert_count": hip_insert_count,
-                 "joint_count": hip_joint_count},
+                 "curve": hip_curve, "insert_count": hip_insert_count},
                 {"part": "knee", "end_part": "ankle",
                  "start": knee_item_node, "end": ankle_item_node,
-                 "curve": knee_curve, "insert_count": knee_insert_count,
-                 "joint_count": knee_joint_count}
+                 "curve": knee_curve, "insert_count": knee_insert_count}
             ]
             point_orient_data = [
                 {"part": "toe", "node": toe_item_node},
@@ -2003,8 +2521,8 @@ class guideJointManager():
                 module_data, "main", "curveShape", "ankle"
             )
             toe_root_item_path = self._find_one(module_data, "main", "loc", "toeRoot")
-            toe_item_path = self._find_one(module_data, "main", "loc", "toe1")
-            toe_end_item_path = self._find_one(module_data, "main", "loc", "toe2")
+            toe_item_path = self._find_one(module_data, "main", "loc", "toe")
+            toe_end_item_path = self._find_one(module_data, "main", "loc", "toeEnd")
             aim_vector_path = self._find_one(module_data, "main", "aimVector", "leg")
 
             ankle_curve = ankle_curve_path.get("node")
@@ -2015,22 +2533,18 @@ class guideJointManager():
             ankle_insert_count = self._resolve_insert_count(
                 ankle_item_node, joint_num
             )
-            ankle_joint_count = ankle_insert_count + 4
 
             segment_data = [
                 {"part": "hip", "end_part": "knee",
                  "start": hip_item_node, "end": knee_item_node,
-                 "curve": hip_curve, "insert_count": hip_insert_count,
-                 "joint_count": hip_joint_count},
+                 "curve": hip_curve, "insert_count": hip_insert_count},
                 {"part": "knee", "end_part": "ankle",
                  "start": knee_item_node, "end": ankle_item_node,
-                 "curve": knee_curve, "insert_count": knee_insert_count,
-                 "joint_count": knee_joint_count},
+                 "curve": knee_curve, "insert_count": knee_insert_count},
                 {"part": "ankle", "end_part": "toeRoot",
                  "start": ankle_item_node,
                  "end": toe_root_item_node, "curve": ankle_curve,
-                 "insert_count": ankle_insert_count,
-                 "joint_count": ankle_joint_count}
+                 "insert_count": ankle_insert_count}
             ]
             point_orient_data = [
                 {"part": "toe1", "node": toe_item_node},
@@ -2039,13 +2553,13 @@ class guideJointManager():
 
         if side_type == "left":
             aim_data = {
-                "aim": (0, 1, 0),
+                "aim": (0, -1, 0),
                 "u": (0, 0, 1),
                 "wu": (0, 0, 1)
             }
         else:
             aim_data = {
-                "aim": (0, -1, 0),
+                "aim": (0, 1, 0),
                 "u": (0, 0, -1),
                 "wu": (0, 0, -1)
             }
@@ -2074,8 +2588,8 @@ class guideJointManager():
                 })
 
             curve_joint_data.append({
-                "item_name": "{}_seg".format(part),
-                "num": "1",
+                "item_name": part,
+                "num": "01",
                 "parameter": 0.01,
                 "orient_node": None
             })
@@ -2084,17 +2598,11 @@ class guideJointManager():
                 insert_parameter = float(insert_index + 1) / (insert_count + 1)
                 curve_joint_data.append({
                     "item_name": part,
-                    "num": str(insert_index + 1).zfill(2),
+                    "num": str(insert_index + 2).zfill(2),
                     "parameter": insert_parameter,
                     "orient_node": None
                 })
 
-            curve_joint_data.append({
-                "item_name": "{}_seg".format(part),
-                "num": "2",
-                "parameter": 0.99,
-                "orient_node": None
-            })
             curve_joint_data.append({
                 "item_name": end_part,
                 "num": "",
@@ -2160,6 +2668,15 @@ class guideJointManager():
                     leg_joint_builder.define_orient_planData(orient_node)
 
                 leg_joint_builder.define_index_planData(build_index)
+                joint_role = "primary" if not number else "segment"
+                metadata_part = item_name if joint_role == "primary" else part
+                self._define_guide_joint_metadata(
+                    leg_joint_builder,
+                    module_data,
+                    metadata_part,
+                    joint_role,
+                    build_index
+                )
                 leg_joint_builder.add_current_plan_task()
                 build_index += 1
 
@@ -2196,6 +2713,13 @@ class guideJointManager():
             )
             leg_joint_builder.define_orient_planData(point_node)
             leg_joint_builder.define_index_planData(build_index)
+            self._define_guide_joint_metadata(
+                leg_joint_builder,
+                module_data,
+                part,
+                "primary",
+                build_index
+            )
             leg_joint_builder.add_current_plan_task()
             build_index += 1
 
@@ -2212,6 +2736,821 @@ class guideJointManager():
 
         leg_joint_builder.define_rootParent(root_parent)
         return leg_joint_builder.build(0.75)
+
+    def build_head(self, module_data, insert_alp=False, root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_head : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_head : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "head_type":
+            return
+        if not side == "C":
+            raise ValueError(
+                u"build_head : head module의 side는 C여야 합니다: {}".format(side)
+            )
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_head : insert_alp는 bool이어야 합니다.")
+
+        head_parts = ["head", "headA", "headB", "nose"]
+        head_nodes = {}
+        for head_part in head_parts:
+            head_path = self._find_one(
+                module_data, "main", "loc", head_part
+            )
+            head_nodes[head_part] = head_path.get("node")
+
+        name_alp = alp if insert_alp else ""
+        joint_names = {}
+        for head_part in head_parts:
+            joint_names[head_part] = self.build_name(
+                item_name=head_part, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="joint"
+            )
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="neckEnd", side="center", extra_side="", alp="",
+                num="", rule="", obj_type="joint"
+            )
+
+        parent_map = {
+            "head": root_parent,
+            "headA": joint_names["head"],
+            "headB": joint_names["head"],
+            "nose": joint_names["headB"]
+        }
+        head_results = {}
+
+        for head_part in head_parts:
+            joint_name = joint_names[head_part]
+            group_name = self.group_naming_rule["group1"].format(item=joint_name)
+            point_matrix_name = self.build_name(
+                item_name=head_part, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="pointMatrixMult"
+            )
+
+            head_joint_builder = JointBuilder()
+            head_joint_builder.define_joint_planData(joint_name, group_name)
+            head_joint_builder.define_point_planData(
+                head_nodes[head_part],
+                point_matrix_name
+            )
+            head_joint_builder.define_orient_planData(head_nodes[head_part])
+            head_joint_builder.define_index_planData(0)
+            self._define_guide_joint_metadata(
+                head_joint_builder,
+                module_data,
+                head_part,
+                "primary",
+                0
+            )
+            head_joint_builder.add_current_plan_task()
+            head_joint_builder.define_rootParent(parent_map[head_part])
+            head_results[head_part] = head_joint_builder.build(0.6)
+
+        return head_results
+
+
+    def build_eye(self, module_data, axis_data=None, insert_alp=False,
+                  root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_eye : module_data must be a dict.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_eye : module_data has no valid key.")
+
+        key_type, alp, side = module_key
+        if not key_type == "eye_type":
+            return
+
+        side_type_map = {"L": "left", "R": "right"}
+        side_type = side_type_map.get(side)
+        if side_type is None:
+            # The center eye module is an aim guide, not a joint module.
+            if side == "C":
+                return
+            raise ValueError(
+                u"build_eye : eye module side must be L or R. {}".format(side)
+            )
+
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_eye : insert_alp must be bool.")
+
+        eye_root_path = self._find_one(
+            module_data, "main", "loc", "eyeRoot"
+        )
+        eye_path = self._find_one(module_data, "main", "loc", "eye")
+        eye_end_path = self._find_one(
+            module_data, "main", "loc", "eyeEnd"
+        )
+        eye_vector_path = self._find_one(
+            module_data, "main", "aimVector", "eye"
+        )
+
+        eye_root_node = eye_root_path.get("node")
+        eye_node = eye_path.get("node")
+        eye_end_node = eye_end_path.get("node")
+        eye_vector_node = eye_vector_path.get("node")
+
+        if side_type == "left":
+            aim_data = {
+                "aim": (0, 0, 1),
+                "u": (0, 1, 0),
+                "wu": (0, 1, 0)
+            }
+        else:
+            aim_data = {
+                "aim": (0, 0, -1),
+                "u": (0, 1, 0),
+                "wu": (0, 1, 0)
+            }
+
+        if axis_data is not None:
+            self._check_aim_data(axis_data)
+            aim_data = axis_data
+
+        name_alp = alp if insert_alp else ""
+        eye_joint_builder = JointBuilder()
+        eye_data = [
+            ("eyeRoot", eye_root_node, "orient"),
+            ("eye", eye_node, "aim"),
+            ("eyeEnd", eye_end_node, "orient")
+        ]
+
+        for index, item_data in enumerate(eye_data):
+            item_name, locator_node, orient_mode = item_data
+            joint_name = self.build_name(
+                item_name=item_name, side=side_type, extra_side="",
+                alp=name_alp, num="", rule="", obj_type="joint"
+            )
+            group_name = self.group_naming_rule["group1"].format(
+                item=joint_name
+            )
+            point_matrix_name = self.build_name(
+                item_name=item_name, side=side_type, extra_side="",
+                alp=name_alp, num="", rule="", obj_type="pointMatrixMult"
+            )
+
+            eye_joint_builder.define_joint_planData(joint_name, group_name)
+            eye_joint_builder.define_point_planData(
+                locator_node,
+                point_matrix_name
+            )
+
+            if orient_mode == "aim":
+                eye_joint_builder.define_aim_planData(
+                    eye_vector_node,
+                    aim_data["aim"],
+                    aim_data["u"],
+                    aim_data["wu"],
+                    eye_root_node,
+                    "objectrotation"
+                )
+            else:
+                eye_joint_builder.define_orient_planData(locator_node)
+
+            eye_joint_builder.define_index_planData(index)
+            self._define_guide_joint_metadata(
+                eye_joint_builder,
+                module_data,
+                item_name,
+                "primary",
+                index
+            )
+            eye_joint_builder.add_current_plan_task()
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="headB", side="center", extra_side="", alp="",
+                num="", rule="", obj_type="joint"
+            )
+
+        eye_joint_builder.define_rootParent(root_parent)
+        return eye_joint_builder.build(0.15)
+
+
+    def build_jaw(self, module_data, axis_data=None, insert_alp=False,
+                  root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_jaw : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_jaw : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "gum_type":
+            return
+        if not side == "C":
+            raise ValueError(
+                u"build_jaw : jaw module의 side는 C여야 합니다: {}".format(side)
+            )
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_jaw : insert_alp는 bool이어야 합니다.")
+
+        jaw_item_path = self._find_one(module_data, "main", "loc", "jaw")
+        jaw_end_item_path = self._find_one(
+            module_data, "main", "loc", "jawEnd"
+        )
+        jaw_item_node = jaw_item_path.get("node")
+        jaw_end_item_node = jaw_end_item_path.get("node")
+        jaw_curve = self._find_curve_node(module_data, "jaw", jaw_item_node)
+
+        aim_data = {
+            "aim": (0, -1, 0),
+            "u": (0, 0, 1),
+            "wu": (0, 0, 1)
+        }
+        if axis_data is not None:
+            self._check_aim_data(axis_data)
+            aim_data = axis_data
+
+        name_alp = alp if insert_alp else ""
+        jaw_joint_builder = JointBuilder()
+        jaw_items = [
+            ("jaw", jaw_item_node, 0.0),
+            ("jawEnd", jaw_end_item_node, 1.0)
+        ]
+
+        for index, jaw_data in enumerate(jaw_items):
+            item_name, locator_node, parameter = jaw_data
+            joint_name = self.build_name(
+                item_name=item_name, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="joint"
+            )
+            group_name = self.group_naming_rule["group1"].format(item=joint_name)
+            pocif_name = self.build_name(
+                item_name=item_name, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="pointOnCurveInfo"
+            )
+            point_matrix_name = self.build_name(
+                item_name=item_name, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="pointMatrixMult"
+            )
+
+            jaw_joint_builder.define_joint_planData(joint_name, group_name)
+            jaw_joint_builder.define_pointOnCurve_planData(
+                jaw_curve,
+                parameter,
+                pocif_name,
+                point_matrix_name
+            )
+
+            if index == len(jaw_items) - 1:
+                jaw_joint_builder.define_orient_planData(locator_node)
+            else:
+                jaw_joint_builder.define_tangent_planData(
+                    jaw_curve,
+                    aim_data["aim"],
+                    aim_data["u"],
+                    aim_data["wu"],
+                    None,
+                    "vector"
+                )
+
+            jaw_joint_builder.define_index_planData(index)
+            self._define_guide_joint_metadata(
+                jaw_joint_builder,
+                module_data,
+                item_name,
+                "primary",
+                index
+            )
+            jaw_joint_builder.add_current_plan_task()
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="headA", side="center", extra_side="", alp="",
+                num="", rule="", obj_type="joint"
+            )
+
+        jaw_joint_builder.define_rootParent(root_parent)
+        return jaw_joint_builder.build(0.45)
+
+
+    def build_gum(self, module_data, insert_alp=False,
+                  gum_a_parent=None, gum_b_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_gum : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_gum : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "gum_type":
+            return
+        if not side == "C":
+            raise ValueError(
+                u"build_gum : gum module의 side는 C여야 합니다: {}".format(side)
+            )
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_gum : insert_alp는 bool이어야 합니다.")
+
+        name_alp = alp if insert_alp else ""
+        if gum_a_parent is None:
+            gum_a_parent = self.build_name(
+                item_name="jaw", side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="joint"
+            )
+        if gum_b_parent is None:
+            gum_b_parent = self.build_name(
+                item_name="headA", side="center", extra_side="",
+                alp="", num="", rule="", obj_type="joint"
+            )
+
+        gum_data = [
+            ("gumA", gum_a_parent),
+            ("gumB", gum_b_parent)
+        ]
+        gum_results = {}
+
+        for gum_part, gum_parent in gum_data:
+            gum_item_path = self._find_one(
+                module_data, "main", "loc", gum_part
+            )
+            gum_item_node = gum_item_path.get("node")
+            joint_name = self.build_name(
+                item_name=gum_part, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="joint"
+            )
+            group_name = self.group_naming_rule["group1"].format(item=joint_name)
+            point_matrix_name = self.build_name(
+                item_name=gum_part, side="center", extra_side="",
+                alp=name_alp, num="", rule="", obj_type="pointMatrixMult"
+            )
+
+            gum_joint_builder = JointBuilder()
+            gum_joint_builder.define_joint_planData(joint_name, group_name)
+            gum_joint_builder.define_point_planData(
+                gum_item_node,
+                point_matrix_name
+            )
+            gum_joint_builder.define_orient_planData(gum_item_node)
+            gum_joint_builder.define_index_planData(0)
+            self._define_guide_joint_metadata(
+                gum_joint_builder,
+                module_data,
+                gum_part,
+                "primary",
+                0
+            )
+            gum_joint_builder.add_current_plan_task()
+            gum_joint_builder.define_rootParent(gum_parent)
+            gum_results[gum_part] = gum_joint_builder.build(0.15)
+
+        return gum_results
+
+
+    def build_tongue(self, module_data, axis_data=None, insert_alp=False,
+                     joint_num=None, root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_tongue : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_tongue : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "tongue_type":
+            return
+        if not side == "C":
+            raise ValueError(
+                u"build_tongue : tongue module의 side는 C여야 합니다: {}".format(side)
+            )
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_tongue : insert_alp는 bool이어야 합니다.")
+        if joint_num is not None:
+            if not isinstance(joint_num, self.integer_type) or isinstance(joint_num, bool):
+                raise TypeError(u"build_tongue : joint_num은 int 또는 None이어야 합니다.")
+            if joint_num < 0:
+                raise ValueError(u"build_tongue : joint_num은 0 이상이어야 합니다.")
+
+        tongue_curve_path = self._find_one(
+            module_data, "main", "curveShape", "tongue"
+        )
+        tongue_start_path = self._find_one(
+            module_data, "main", "loc", "tongue1"
+        )
+        tongue_end_path = self._find_one(
+            module_data, "main", "loc", "tongue3"
+        )
+
+        aim_data = {
+            "aim": (0, 0, 1),
+            "u": (0, 1, 0),
+            "wu": (0, 1, 0)
+        }
+        if axis_data is not None:
+            self._check_aim_data(axis_data)
+            aim_data = axis_data
+
+        tongue_curve = tongue_curve_path.get("node")
+        tongue_start_node = tongue_start_path.get("node")
+        tongue_end_node = tongue_end_path.get("node")
+        insert_count = self._resolve_insert_count(tongue_start_node, joint_num)
+        joint_count = insert_count + 2
+        name_alp = alp if insert_alp else ""
+        tongue_joint_builder = JointBuilder()
+        parameter_div = 1.0 / (joint_count - 1)
+
+        for index in range(joint_count):
+            number = str(index + 1)
+            joint_name = self.build_name(
+                item_name="tongue", side="center", extra_side="",
+                alp=name_alp, num=number, rule="", obj_type="joint"
+            )
+            group_name = self.group_naming_rule["group1"].format(item=joint_name)
+            pocif_name = self.build_name(
+                item_name="tongue", side="center", extra_side="",
+                alp=name_alp, num=number, rule="", obj_type="pointOnCurveInfo"
+            )
+            point_matrix_name = self.build_name(
+                item_name="tongue", side="center", extra_side="",
+                alp=name_alp, num=number, rule="", obj_type="pointMatrixMult"
+            )
+
+            tongue_joint_builder.define_joint_planData(joint_name, group_name)
+            tongue_joint_builder.define_pointOnCurve_planData(
+                tongue_curve,
+                parameter_div * index,
+                pocif_name,
+                point_matrix_name
+            )
+
+            if index == joint_count - 1:
+                tongue_joint_builder.define_orient_planData(tongue_end_node)
+            else:
+                tongue_joint_builder.define_tangent_planData(
+                    tongue_curve,
+                    aim_data["aim"],
+                    aim_data["u"],
+                    aim_data["wu"],
+                    None,
+                    "vector"
+                )
+
+            tongue_joint_builder.define_index_planData(index)
+            joint_role = (
+                "primary"
+                if index in [0, joint_count - 1]
+                else "segment"
+            )
+            if index == 0:
+                metadata_part = "tongue1"
+            elif index == joint_count - 1:
+                metadata_part = "tongue3"
+            else:
+                metadata_part = "tongue"
+            self._define_guide_joint_metadata(
+                tongue_joint_builder,
+                module_data,
+                metadata_part,
+                joint_role,
+                index
+            )
+            tongue_joint_builder.add_current_plan_task()
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="jaw", side="center", extra_side="", alp="",
+                num="", rule="", obj_type="joint"
+            )
+
+        tongue_joint_builder.define_rootParent(root_parent)
+        return tongue_joint_builder.build(0.15)
+
+
+    def build_tail(self, module_data, axis_data=None, insert_alp=False,
+                   joint_num=None, root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_tail : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_tail : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "tail_type":
+            return
+        if not side == "C":
+            raise ValueError(
+                u"build_tail : tail module의 side는 C여야 합니다: {}".format(side)
+            )
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_tail : insert_alp는 bool이어야 합니다.")
+        if joint_num is not None:
+            if not isinstance(joint_num, self.integer_type) or isinstance(joint_num, bool):
+                raise TypeError(u"build_tail : joint_num은 int 또는 None이어야 합니다.")
+            if joint_num < 0:
+                raise ValueError(u"build_tail : joint_num은 0 이상이어야 합니다.")
+
+        tail_root_path = self._find_one(module_data, "main", "loc", "tailRoot")
+        tail_start_path = self._find_one(module_data, "main", "loc", "tail1")
+        tail_end_path = self._find_one(module_data, "main", "loc", "tailEnd")
+        tail_curve_path = self._find_one(
+            module_data, "main", "curveShape", "tail"
+        )
+        aim_vector_path = self._find_one(
+            module_data, "main", "aimVector", "root"
+        )
+
+        tail_root_node = tail_root_path.get("node")
+        tail_start_node = tail_start_path.get("node")
+        tail_end_node = tail_end_path.get("node")
+        tail_curve = tail_curve_path.get("node")
+        aim_vector = aim_vector_path.get("node")
+        insert_count = self._resolve_insert_count(tail_start_node, joint_num)
+        joint_count = insert_count + 2
+
+        aim_data = {
+            "aim": (0, 0, -1),
+            "u": (0, 1, 0),
+            "wu": (0, 1, 0)
+        }
+        if axis_data is not None:
+            self._check_aim_data(axis_data)
+            aim_data = axis_data
+
+        name_alp = alp if insert_alp else ""
+        tail_joint_builder = JointBuilder()
+        build_index = 0
+
+        tail_root_joint_name = self.build_name(
+            item_name="tailRoot", side="center", extra_side="",
+            alp=name_alp, num="", rule="", obj_type="joint"
+        )
+        tail_root_group_name = self.group_naming_rule["group1"].format(
+            item=tail_root_joint_name
+        )
+        tail_root_point_matrix_name = self.build_name(
+            item_name="tailRoot", side="center", extra_side="",
+            alp=name_alp, num="", rule="", obj_type="pointMatrixMult"
+        )
+
+        tail_joint_builder.define_joint_planData(
+            tail_root_joint_name,
+            tail_root_group_name
+        )
+        tail_joint_builder.define_point_planData(
+            tail_root_node,
+            tail_root_point_matrix_name
+        )
+        tail_joint_builder.define_orient_planData(tail_root_node)
+        tail_joint_builder.define_index_planData(build_index)
+        self._define_guide_joint_metadata(
+            tail_joint_builder,
+            module_data,
+            "tailRoot",
+            "primary",
+            build_index
+        )
+        tail_joint_builder.add_current_plan_task()
+        build_index += 1
+
+        parameter_div = 1.0 / (joint_count - 1)
+        for index in range(joint_count):
+            is_end = index == joint_count - 1
+            item_name = "tailEnd" if is_end else "tail"
+            number = "" if is_end else str(index + 1).zfill(2)
+
+            joint_name = self.build_name(
+                item_name=item_name, side="center", extra_side="",
+                alp=name_alp, num=number, rule="", obj_type="joint"
+            )
+            group_name = self.group_naming_rule["group1"].format(item=joint_name)
+            pocif_name = self.build_name(
+                item_name=item_name, side="center", extra_side="",
+                alp=name_alp, num=number, rule="", obj_type="pointOnCurveInfo"
+            )
+            point_matrix_name = self.build_name(
+                item_name=item_name, side="center", extra_side="",
+                alp=name_alp, num=number, rule="", obj_type="pointMatrixMult"
+            )
+
+            tail_joint_builder.define_joint_planData(joint_name, group_name)
+            tail_joint_builder.define_pointOnCurve_planData(
+                tail_curve,
+                parameter_div * index,
+                pocif_name,
+                point_matrix_name
+            )
+
+            if is_end:
+                tail_joint_builder.define_orient_planData(tail_end_node)
+            else:
+                tail_joint_builder.define_tangent_planData(
+                    tail_curve,
+                    aim_data["aim"],
+                    aim_data["u"],
+                    aim_data["wu"],
+                    aim_vector,
+                    "objectrotation"
+                )
+
+            tail_joint_builder.define_index_planData(build_index)
+            joint_role = (
+                "primary"
+                if index in [0, joint_count - 1]
+                else "segment"
+            )
+            metadata_part = "tail1" if index == 0 else item_name
+            self._define_guide_joint_metadata(
+                tail_joint_builder,
+                module_data,
+                metadata_part,
+                joint_role,
+                build_index
+            )
+            tail_joint_builder.add_current_plan_task()
+            build_index += 1
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="root", side="center", extra_side="", alp="",
+                num="", rule="", obj_type="joint"
+            )
+
+        tail_joint_builder.define_rootParent(root_parent)
+        return tail_joint_builder.build(0.5)
+
+
+    def build_neck(self, module_data, axis_data=None, joint_num=None,
+                   insert_alp=False, root_parent=None):
+        if not isinstance(module_data, dict):
+            raise TypeError(u"build_neck : module_data는 dict여야 합니다.")
+
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(u"build_neck : module_data에 유효한 key가 없습니다.")
+
+        key_type, alp, side = module_key
+        if not key_type == "neck_type":
+            return
+        if not side == "C":
+            raise ValueError(
+                u"build_neck : neck module의 side는 C여야 합니다: {}".format(side)
+            )
+        if not isinstance(insert_alp, bool):
+            raise TypeError(u"build_neck : insert_alp는 bool이어야 합니다.")
+
+        neck_root_item_path = self._find_one(
+            module_data, "main", "loc", "neckRoot"
+        )
+        neck_end_item_path = self._find_one(
+            module_data, "main", "loc", "neckEnd"
+        )
+        neck_curve_path = self._find_one(
+            module_data, "main", "curveShape", "neck"
+        )
+
+        neck_root_item_node = neck_root_item_path.get("node")
+        neck_end_item_node = neck_end_item_path.get("node")
+        neck_curve = neck_curve_path.get("node")
+        aim_vector = self._find_aim_vector_node(
+            module_data,
+            "neckRoot",
+            neck_root_item_node
+        )
+        rig_type = neck_root_item_path.get("rig_type")
+
+        if isinstance(joint_num, self.integer_type) and not isinstance(joint_num, bool):
+            joint_count = joint_num
+        else:
+            insert_attr = "{}.insertJnt".format(neck_root_item_node)
+            if not cmds.objExists(insert_attr):
+                raise ValueError(
+                    u"build_neck : insertJnt attr을 찾을 수 없습니다: {}".format(
+                        neck_root_item_node
+                    )
+                )
+            joint_count = int(cmds.getAttr(insert_attr)) + 2
+
+        if joint_count < 2:
+            raise ValueError(u"build_neck : joint_num은 2 이상이어야 합니다.")
+
+        if rig_type == "biped":
+            aim_data = {
+                "aim": (0, 1, 0),
+                "u": (0, 0, 1),
+                "wu": (0, 0, 1)
+            }
+        elif rig_type == "quad":
+            aim_data = {
+                "aim": (0, 0, 1),
+                "u": (0, 1, 0),
+                "wu": (0, 1, 0)
+            }
+        else:
+            raise ValueError(
+                u"build_neck : 지원하지 않는 rig_type입니다: {}".format(rig_type)
+            )
+
+        if axis_data is not None:
+            self._check_aim_data(axis_data)
+            aim_data = axis_data
+
+        name_alp = alp if insert_alp else ""
+        neck_joint_builder = JointBuilder()
+        parameter_div = 1.0 / (joint_count - 1)
+
+        for index in range(joint_count):
+            if index == 0:
+                item_name = "neckRoot"
+                number = ""
+            elif index == joint_count - 1:
+                item_name = "neckEnd"
+                number = ""
+            else:
+                item_name = "neck"
+                number = str(index).zfill(2)
+
+            joint_name = self.build_name(
+                item_name=item_name,
+                side="center",
+                extra_side="",
+                alp=name_alp,
+                num=number,
+                rule="",
+                obj_type="joint"
+            )
+            group_name = self.group_naming_rule["group1"].format(
+                item=joint_name
+            )
+            pocif_name = self.build_name(
+                item_name=item_name,
+                side="center",
+                extra_side="",
+                alp=name_alp,
+                num=number,
+                rule="",
+                obj_type="pointOnCurveInfo"
+            )
+            point_matrix_name = self.build_name(
+                item_name=item_name,
+                side="center",
+                extra_side="",
+                alp=name_alp,
+                num=number,
+                rule="",
+                obj_type="pointMatrixMult"
+            )
+
+            parameter = parameter_div * index
+            neck_joint_builder.define_joint_planData(joint_name, group_name)
+            neck_joint_builder.define_pointOnCurve_planData(
+                neck_curve,
+                parameter,
+                pocif_name,
+                point_matrix_name
+            )
+
+            if index == joint_count - 1:
+                neck_joint_builder.define_orient_planData(neck_end_item_node)
+            else:
+                neck_joint_builder.define_tangent_planData(
+                    neck_curve,
+                    aim_data["aim"],
+                    aim_data["u"],
+                    aim_data["wu"],
+                    aim_vector,
+                    "objectrotation"
+                )
+
+            neck_joint_builder.define_index_planData(index)
+            joint_role = (
+                "primary"
+                if index in [0, joint_count - 1]
+                else "segment"
+            )
+            self._define_guide_joint_metadata(
+                neck_joint_builder,
+                module_data,
+                item_name,
+                joint_role,
+                index
+            )
+            neck_joint_builder.add_current_plan_task()
+
+        if root_parent is None:
+            root_parent = self.build_name(
+                item_name="chest",
+                side="center",
+                extra_side="",
+                alp="",
+                num="",
+                rule="",
+                obj_type="joint"
+            )
+
+        neck_joint_builder.define_rootParent(root_parent)
+        return neck_joint_builder.build(0.75)
+
 
     def build_root(self, module_data, axis_data = None, joint_num=None):
         if not isinstance(module_data, dict):
@@ -2291,6 +3630,18 @@ class guideJointManager():
             else:
                 rootJoint_builder.define_tangent_planData(root_curve ,aim_data["aim"] , aim_data["u"] , aim_data["wu"],  aim_vector , "objectrotation" )
             rootJoint_builder.define_index_planData(index)
+            joint_role = (
+                "primary"
+                if index in [0, joint_count - 1]
+                else "segment"
+            )
+            self._define_guide_joint_metadata(
+                rootJoint_builder,
+                module_data,
+                item_name_dict[index],
+                joint_role,
+                index
+            )
             rootJoint_builder.add_current_plan_task()
         return rootJoint_builder.build(0.75)
 
@@ -2300,6 +3651,187 @@ class guideJointManager():
 
 
     #__data_helper
+
+    def _define_guide_joint_metadata(self, joint_builder, module_data,
+                                     rig_part, joint_role, rig_index):
+        '''
+        Guide Joint를 만드는 위치에서 이미 알고 있는 의미 정보를 plan에 기록합니다.
+
+        이 메서드는 Maya attribute를 만들지 않습니다. 작성된 metadata는
+        JointBuilder.build()의 반환값에 남고, 외부 저장 코드가 나중에 사용합니다.
+        '''
+        module_key = module_data.get("key")
+        if not isinstance(module_key, (tuple, list)) or not len(module_key) == 3:
+            raise ValueError(
+                u"define_guide_joint_metadata : module_data에 유효한 key가 없습니다."
+            )
+        if not isinstance(rig_part, self.string_type) or not rig_part:
+            raise ValueError(
+                u"define_guide_joint_metadata : rig_part는 빈 문자열이 아니어야 합니다."
+            )
+        if joint_role not in ["primary", "segment"]:
+            raise ValueError(
+                u"define_guide_joint_metadata : 지원하지 않는 joint role입니다: {}".format(
+                    joint_role
+                )
+            )
+
+        rig_module, rig_build, rig_side = module_key
+        joint_builder.define_metadata_planData({
+            "rig_id": "{}:{}:{}:{}:{}".format(
+                rig_module,
+                rig_build,
+                rig_side,
+                rig_part,
+                rig_index
+            ),
+            "rig_module": rig_module,
+            "rig_build": rig_build,
+            "rig_side": rig_side,
+            "rig_part": rig_part,
+            "rig_index": str(rig_index),
+            "rig_system": "guide",
+            "rig_jointRole": joint_role
+        })
+
+    def _get_finger_locs(self, module_data, finger_type):
+        if finger_type not in ["thumb", "index", "middle", "ring", "pinky"]:
+            raise ValueError(
+                u"get_finger_locs : 지원하지 않는 finger type입니다: {}".format(
+                    finger_type
+                )
+            )
+
+        finger_pattern = r"^{}(?:Root|[0-9]+)$".format(finger_type)
+        loc_items = self._find_items(
+            module_data,
+            rig_role="main",
+            rig_data="loc"
+        )
+        finger_items = []
+
+        for detail in loc_items:
+            rig_part = detail.get("rig_part") or ""
+            if not re.match(finger_pattern, rig_part):
+                continue
+
+            rig_index = detail.get("rig_index")
+            if isinstance(rig_index, bool):
+                raise ValueError(
+                    u"get_finger_locs : rig_index가 bool입니다: {}".format(
+                        detail.get("node")
+                    )
+                )
+            try:
+                numeric_index = int(rig_index)
+            except (TypeError, ValueError):
+                raise ValueError(
+                    u"get_finger_locs : rig_index를 숫자로 변환할 수 없습니다: "
+                    u"node={}, rig_index={}".format(
+                        detail.get("node"),
+                        rig_index
+                    )
+                )
+
+            finger_items.append((numeric_index, detail))
+
+        if not finger_items:
+            raise ValueError(
+                u"get_finger_locs : finger locator를 찾을 수 없습니다: {}".format(
+                    finger_type
+                )
+            )
+
+        finger_items.sort(key=lambda item: item[0])
+        sorted_indexes = [item[0] for item in finger_items]
+        if not sorted_indexes == list(range(len(finger_items))):
+            raise ValueError(
+                u"get_finger_locs : rig_index가 0부터 연속적이지 않습니다: "
+                u"finger={}, indexes={}".format(
+                    finger_type,
+                    sorted_indexes
+                )
+            )
+
+        return [item[1] for item in finger_items]
+
+
+    def _find_aim_vector_node(self, module_data, rig_part, reference_node):
+        aim_items = self._find_items(
+            module_data,
+            rig_role="main",
+            rig_data="aimVector",
+            rig_part=rig_part
+        )
+
+        if len(aim_items) > 1:
+            raise ValueError(
+                u"find_aim_vector_node : aimVector data가 중복되었습니다: {}".format(
+                    rig_part
+                )
+            )
+        if len(aim_items) == 1:
+            return aim_items[0].get("node")
+
+        namespace = ""
+        if ":" in reference_node:
+            namespace = reference_node.rsplit(":", 1)[0] + ":"
+
+        module_key = module_data.get("key", (None, None, None))
+        side = module_key[2]
+        aim_vector_node = "{}{}_{}_vector".format(
+            namespace,
+            side,
+            rig_part
+        )
+
+        if cmds.objExists(aim_vector_node):
+            return aim_vector_node
+
+        raise ValueError(
+            u"find_aim_vector_node : aimVector를 찾을 수 없습니다: {}".format(
+                aim_vector_node
+            )
+        )
+
+    def _find_curve_node(self, module_data, rig_part, reference_node):
+        curve_items = self._find_items(
+            module_data,
+            rig_role="main",
+            rig_data="curveShape",
+            rig_part=rig_part
+        )
+
+        if len(curve_items) > 1:
+            raise ValueError(
+                u"find_curve_node : curveShape data가 중복되었습니다: {}".format(
+                    rig_part
+                )
+            )
+        if len(curve_items) == 1:
+            return curve_items[0].get("node")
+
+        namespace = ""
+        if ":" in reference_node:
+            namespace = reference_node.rsplit(":", 1)[0] + ":"
+
+        module_key = module_data.get("key", (None, None, None))
+        side = module_key[2]
+        curve_candidates = [
+            "{}{}_{}_CrvShape".format(namespace, side, rig_part),
+            "{}{}_{}_curveShape".format(namespace, side, rig_part)
+        ]
+
+        for curve_node in curve_candidates:
+            if cmds.objExists(curve_node):
+                return curve_node
+
+        raise ValueError(
+            u"find_curve_node : curveShape을 찾을 수 없습니다: part={}, candidates={}".format(
+                rig_part,
+                curve_candidates
+            )
+        )
 
     def _resolve_insert_count(self, item_node, joint_num=None):
         if joint_num is not None:

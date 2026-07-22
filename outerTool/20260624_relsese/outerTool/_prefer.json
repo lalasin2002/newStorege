@@ -16,6 +16,6 @@
     "clean_useSetUp": true,
     "ma_type": false,
     "mb_type": true,
-    "save_type": false,
+    "save_type": true,
     "save_as_type": false
 }
