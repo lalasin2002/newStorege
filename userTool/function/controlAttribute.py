@@ -25,7 +25,7 @@ def getValidAttrTarget(target, attrName):
 
 def addSeparateAttr(item , longName , lockBool =True ,separateName = "_______________" ):
     attrPath = "{}.{}".format(item , longName)
-    isAttr = cmds.attributeQuery(longName , node =item , exists = True)
+    isAttr = cmds.attributeQuery(longName + "_sep", node =item , exists = True)
     if isAttr:
         if lockBool:
             getLock = cmds.getAttr(attrPath ,lock =1)
@@ -35,7 +35,7 @@ def addSeparateAttr(item , longName , lockBool =True ,separateName = "__________
                 cmds.setAttr(attrPath , lock =1)
         return attrPath
     
-    cmds.addAttr(item , ln=longName , nn = separateName  , en = ":{}".format(longName) , at ="enum", k=True)
+    cmds.addAttr(item , ln=longName + "_sep", nn = separateName  , en = ":{}".format(longName) , at ="enum", k=True)
     if lockBool:
         cmds.setAttr(attrPath , lock =True)
     return attrPath

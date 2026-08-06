@@ -55,11 +55,11 @@ class IKspline:
         self.FoldFuncExpItemDic  = None
         self.FoldOffsetAttrExpDic = None
 
-        self.NamingFormat = "NoneName_" + "{count}{name}"
+        self.NamingFormat = "{item}{count}{name}"
         self.IsNamingFormat = True
+        self.PrefixName = PrefixName
+        self.NamingItem = self.Jntlst[0] if self.Jntlst else ""
 
-        if PrefixName:
-            self.NamingFormat = PrefixName + "{count}{name}"
         
             
 
@@ -94,13 +94,25 @@ class IKspline:
         reNameJnts= []
         for i , x in enumerate(self.Jntlst):
             #print (x)
-            reNameString = self.NamingFormat.format(count = "_" + str(i +1).zfill(2) , name ="_Jnt" )
+            reNameString = self._setNameingFormat(
+                item = x,
+                count = "_" + str(i +1).zfill(2),
+                name = "_Jnt",
+                prefix = self.PrefixName
+            )
             Jnt = cmds.rename(x ,reNameString )
             reNameJnts.append(Jnt)
 
         self.Jntlst = reNameJnts
         if len(self.Jntlst) > 0 and cmds.objectType(self.Jntlst[0]) == "joint":
             self.Root = self.Jntlst[0]
+
+    def _setNameingFormat(self , item , count , name  , prefix = None):
+        """PrefixName이 없으면 전달받은 조인트 이름을 네이밍 기준으로 사용한다."""
+        namingItem = prefix if prefix else item
+        return self.NamingFormat.format(item = namingItem , count = count , name = name)
+
+
 
     def setAxis(self , Axis = "X"):
         '''
@@ -136,7 +148,7 @@ class IKspline:
             if   ScaleDefault and cmds.objExists(ScaleDefault):
                 self.ScaleDefault = ScaleDefault
             else:
-                self.ScaleDefault = cmds.createNode("transform" , n = self.NamingFormat.format(count = "" , name = "_ScaleDefault"))
+                self.ScaleDefault = cmds.createNode("transform" , n = self._setNameingFormat(self.NamingItem, "", "_ScaleDefault", self.PrefixName))
         if self.ScaleDefault:
             self.ScaleDefaultExpDic = {"ScaleDefaultExpFunc" : "float $ScaleDefault = {}.sx;\n" .format(self.ScaleDefault) , "ScaleDefaultVar" : "$ScaleDefault"}
 
@@ -218,9 +230,9 @@ class IKspline:
                 for x in self.Jntlst:
                     Pos = tuple(cmds.xform(x , q =1 , t =1 ,ws =1))
                     Poslist.append(Pos)
-                Crv = cmds.curve(n = self.NamingFormat.format(count = "",name = "_Crv") , p = Poslist ,d =3 )
+                Crv = cmds.curve(n = self._setNameingFormat(self.NamingItem, "", "_Crv", self.PrefixName) , p = Poslist ,d =3 )
                 Crv = cmds.rebuildCurve( Crv , ch =1 , rpo =1 , rt =0 , end =1 , kr = 0 , kep =1 , kt =0 ,s = len(self.Jntlst)-1, d =3 , tol = 100 )
-                CrvShp = cmds.rename(cmds.listRelatives(Crv[0] , s =1 )[0] , self.NamingFormat.format(count = "" , name = "_CrvShape"))
+                CrvShp = cmds.rename(cmds.listRelatives(Crv[0] , s =1 )[0] , self._setNameingFormat(self.NamingItem, "", "_CrvShape", self.PrefixName))
 
                 self.Crv = [Crv[0] , CrvShp]
         else: 
@@ -267,7 +279,7 @@ class IKspline:
 
 
 
-            IKSet = cmds.ikHandle( n = self.NamingFormat.format(count = "" , name = "_IK") , c = self.Crv[0] , ee =self.Jntlst[-1] , sj = self.Jntlst[0] , sol = "ikSplineSolver",ccv = 0)
+            IKSet = cmds.ikHandle( n = self._setNameingFormat(self.NamingItem, "", "_IK", self.PrefixName) , c = self.Crv[0] , ee =self.Jntlst[-1] , sj = self.Jntlst[0] , sol = "ikSplineSolver",ccv = 0)
             self.IK = IKSet
             DisTanceNodes = []
             if self.IsStretch or self.IsVolume:
@@ -281,8 +293,8 @@ class IKspline:
                 Parameter = 0
 
                 for i , Jnt in enumerate(self.Jntlst):
-                    DM = cmds.createNode("decomposeMatrix" , n = self.NamingFormat.format(count = "_" + str(i+1).zfill(2) , name = "_DM"))
-                    NPOC = cmds.createNode("nearestPointOnCurve" , n = self.NamingFormat.format(count = "_" + str(i+1).zfill(2) , name = "_NPOC"))
+                    DM = cmds.createNode("decomposeMatrix" , n = self._setNameingFormat(self.NamingItem, "_" + str(i+1).zfill(2), "_DM", self.PrefixName))
+                    NPOC = cmds.createNode("nearestPointOnCurve" , n = self._setNameingFormat(self.NamingItem, "_" + str(i+1).zfill(2), "_NPOC", self.PrefixName))
                     cmds.connectAttr(self.Crv[1] + ".worldSpace[0]" , NPOC + ".inputCurve" ,f =1)
                     cmds.connectAttr(Jnt + ".worldMatrix[0]" , DM + ".inputMatrix")
 
@@ -295,13 +307,13 @@ class IKspline:
                     except:
                         pass
 
-                    POCIF = cmds.createNode("pointOnCurveInfo" , n = self.NamingFormat.format(count = "_" + str(i+1).zfill(2) , name = "_POCIF"))
+                    POCIF = cmds.createNode("pointOnCurveInfo" , n = self._setNameingFormat(self.NamingItem, "_" + str(i+1).zfill(2), "_POCIF", self.PrefixName))
                     cmds.connectAttr(self.Crv[1] + ".worldSpace[0]" , POCIF + ".inputCurve")
                     cmds.setAttr(POCIF + ".turnOnPercentage" , 1)
                     cmds.setAttr(POCIF + ".parameter" , Parameter)
 
                     if OldPOCIF:
-                        Distance = cmds.createNode("distanceBetween" , n = self.NamingFormat.format(name = "_DTB" , count = "_" + str(i+1).zfill(2)))
+                        Distance = cmds.createNode("distanceBetween" , n = self._setNameingFormat(self.NamingItem, "_" + str(i+1).zfill(2), "_DTB", self.PrefixName))
                         for Axis in "XYZ":
                             cmds.connectAttr(OldPOCIF + ".position{}" .format(Axis) , Distance + ".point1{}" .format(Axis) ,f =1)
                             cmds.connectAttr(POCIF + ".position{}" .format(Axis) , Distance + ".point2{}" .format(Axis) ,f =1)
@@ -399,7 +411,7 @@ class IKspline:
 
             if self.IsStretch or self.IsVolume:
                 print (self.ExpTotal )
-                ExpName = "Exp_" + self.NamingFormat.format(count = "" , name = "") + "_Func"
+                ExpName = "Exp_" + self._setNameingFormat(self.NamingItem, "", "", self.PrefixName) + "_Func"
                 if cmds.objExists(ExpName):
                     cmds.delete(ExpName)
                 cmds.expression(string= self.ExpTotal,  n = ExpName)

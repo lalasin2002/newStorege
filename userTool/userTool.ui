@@ -1549,7 +1549,7 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
          </size>
         </property>
         <property name="currentIndex">
-         <number>1</number>
+         <number>0</number>
         </property>
         <widget class="QWidget" name="object_tab">
          <attribute name="title">
@@ -3328,13 +3328,13 @@ QCheckBox::indicator:checked:disabled, QRadioButton::indicator:checked:disabled 
                       </size>
                      </property>
                      <property name="buttonSymbols">
-                      <enum>QAbstractSpinBox::ButtonSymbols::PlusMinus</enum>
+                      <enum>QAbstractSpinBox::ButtonSymbols::UpDownArrows</enum>
                      </property>
                      <property name="minimum">
                       <number>1</number>
                      </property>
                      <property name="value">
-                      <number>2</number>
+                      <number>3</number>
                      </property>
                     </widget>
                    </item>
@@ -6225,6 +6225,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
                           <property name="decimals">
                            <number>3</number>
                           </property>
+                          <property name="minimum">
+                           <double>-99999999.000000000000000</double>
+                          </property>
+                          <property name="maximum">
+                           <double>99999999.000000000000000</double>
+                          </property>
                          </widget>
                         </item>
                        </layout>
@@ -6269,6 +6275,12 @@ li.checked::marker { content: &quot;\2612&quot;; }
                           </property>
                           <property name="decimals">
                            <number>3</number>
+                          </property>
+                          <property name="minimum">
+                           <double>-99999999.000000000000000</double>
+                          </property>
+                          <property name="maximum">
+                           <double>99999999.000000000000000</double>
                           </property>
                          </widget>
                         </item>

@@ -1,0 +1,18 @@
+@echo off
+echo ==== Maya 2020 (Python 2.7) 컴파일 시작 ====
+
+set MAYAPY="C:\Program Files\Autodesk\Maya2020\bin\mayapy.exe"
+
+:: 1. Cython 모듈이 없다면 설치
+%MAYAPY% -m pip install cython
+
+:: 2. 컴파일 실행 (--inplace 옵션은 현재 폴더에 pyd를 생성하라는 뜻)
+%MAYAPY% setup.py build_ext --inplace
+
+:: 3. 이름 정리 (컴파일된 파일이 StandOuterTool.pyd 로 나오도록)
+if exist "StandOuterTool.pyd" (
+    rename StandOuterTool.pyd StandOuterTool2020.pyd
+)
+
+echo ==== 컴파일 완료 ====
+pause

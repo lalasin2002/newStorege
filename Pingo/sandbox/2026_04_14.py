@@ -288,3 +288,24 @@ class MultiFollowManager:
             cmds.addAttr("{}.{}".format(item, attr), e=True, en=addEnum)
         else:
             cmds.addAttr(item, ln=attr, at="enum", en=addEnum, k=True)
+
+import re
+selects = cmds.ls(sl=1)
+search = re.compile(r"([A-Za-z0-9]+_.+)(_CON)")
+if search.search(selects[0]):
+    match = search.search(selects[0])
+    get = match.group(1)
+    print (get)
+
+
+
+if get:
+    manager = MultiFollowManager(selects[0], "space")
+    manager.defineEnumAttr()
+    enums = manager.enumElements
+    enumsData = {}
+    for x in enums:
+        enumsData[x] = "{}_{}_space".format(get , x)
+    manager.createMultiFollow(mainConstraintName="{}_follow_Manager".format(get), PosTarget=selects[0] , customNames=enumsData)
+
+

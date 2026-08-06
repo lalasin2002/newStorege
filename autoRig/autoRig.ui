@@ -718,6 +718,36 @@ QLabel {
                 </property>
                 <layout class="QVBoxLayout" name="verticalLayout_8">
                  <item>
+                  <layout class="QHBoxLayout" name="padding_H">
+                   <item>
+                    <widget class="QLabel" name="label_9">
+                     <property name="text">
+                      <string>num padding ::</string>
+                     </property>
+                     <property name="alignment">
+                      <set>Qt::AlignmentFlag::AlignRight|Qt::AlignmentFlag::AlignTrailing|Qt::AlignmentFlag::AlignVCenter</set>
+                     </property>
+                    </widget>
+                   </item>
+                   <item>
+                    <widget class="QSpinBox" name="padding_Sb"/>
+                   </item>
+                   <item>
+                    <spacer name="horizontalSpacer_3">
+                     <property name="orientation">
+                      <enum>Qt::Orientation::Horizontal</enum>
+                     </property>
+                     <property name="sizeHint" stdset="0">
+                      <size>
+                       <width>40</width>
+                       <height>20</height>
+                      </size>
+                     </property>
+                    </spacer>
+                   </item>
+                  </layout>
+                 </item>
+                 <item>
                   <widget class="QTextEdit" name="nameFleid_Te">
                    <property name="html">
                     <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;

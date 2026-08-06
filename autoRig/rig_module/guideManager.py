@@ -1924,7 +1924,7 @@ class guideJointManager():
 
 
     def build_hand(self, module_data, side_type=None, insert_alp=False,
-                   root_parent=None):
+                   root_parent=None, padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_hand : module_data는 dict여야 합니다.")
 
@@ -1976,7 +1976,19 @@ class guideJointManager():
             finger_joint_builder = JointBuilder()
 
             for index, finger_item in enumerate(finger_items):
-                item_name = finger_item.get("rig_part")
+                metadata_part = finger_item.get("rig_part")
+                item_name = metadata_part
+                number = ""
+                number_match = re.match(
+                    r"^{}([0-9]+)$".format(re.escape(finger_type)),
+                    metadata_part or ""
+                )
+                if number_match:
+                    item_name = finger_type
+                    number = self._format_number(
+                        int(number_match.group(1)),
+                        padding
+                    )
                 locator_node = finger_item.get("node")
 
                 joint_name = self.build_name(
@@ -1984,7 +1996,7 @@ class guideJointManager():
                     side=side_type,
                     extra_side="",
                     alp=name_alp,
-                    num="",
+                    num=number,
                     rule="",
                     obj_type="joint"
                 )
@@ -1996,7 +2008,7 @@ class guideJointManager():
                     side=side_type,
                     extra_side="",
                     alp=name_alp,
-                    num="",
+                    num=number,
                     rule="",
                     obj_type="pointMatrixMult"
                 )
@@ -2014,7 +2026,7 @@ class guideJointManager():
                 self._define_guide_joint_metadata(
                     finger_joint_builder,
                     module_data,
-                    item_name,
+                    metadata_part,
                     "primary",
                     index
                 )
@@ -2027,7 +2039,8 @@ class guideJointManager():
 
 
     def build_arm(self, module_data, side_type=None, axis_data=None,
-                  insert_alp=False, joint_num=None, root_parent=None):
+                  insert_alp=False, joint_num=None, root_parent=None,
+                  padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_arm : module_data는 dict여야 합니다.")
 
@@ -2272,7 +2285,7 @@ class guideJointManager():
 
             curve_joint_data.append({
                 "item_name": part,
-                "num": "01",
+                "num": self._format_number(1, padding),
                 "parameter": 0.01,
                 "orient_node": None
             })
@@ -2281,14 +2294,14 @@ class guideJointManager():
                 insert_parameter = float(insert_index + 1) / (insert_count + 1)
                 curve_joint_data.append({
                     "item_name": part,
-                    "num": str(insert_index + 2).zfill(2),
+                    "num": self._format_number(insert_index + 2, padding),
                     "parameter": insert_parameter,
                     "orient_node": None
                 })
 
             curve_joint_data.append({
                 "item_name": part,
-                "num": str(insert_count + 2).zfill(2),
+                "num": self._format_number(insert_count + 2, padding),
                 "parameter": 0.99,
                 "orient_node": None
             })
@@ -2434,7 +2447,8 @@ class guideJointManager():
 
 
     def build_leg(self, module_data, side_type=None, axis_data=None,
-                  insert_alp=False, joint_num=None, root_parent=None):
+                  insert_alp=False, joint_num=None, root_parent=None,
+                  padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_leg : module_data는 dict여야 합니다.")
 
@@ -2589,7 +2603,7 @@ class guideJointManager():
 
             curve_joint_data.append({
                 "item_name": part,
-                "num": "01",
+                "num": self._format_number(1, padding),
                 "parameter": 0.01,
                 "orient_node": None
             })
@@ -2598,7 +2612,7 @@ class guideJointManager():
                 insert_parameter = float(insert_index + 1) / (insert_count + 1)
                 curve_joint_data.append({
                     "item_name": part,
-                    "num": str(insert_index + 2).zfill(2),
+                    "num": self._format_number(insert_index + 2, padding),
                     "parameter": insert_parameter,
                     "orient_node": None
                 })
@@ -3108,7 +3122,7 @@ class guideJointManager():
 
 
     def build_tongue(self, module_data, axis_data=None, insert_alp=False,
-                     joint_num=None, root_parent=None):
+                     joint_num=None, root_parent=None, padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_tongue : module_data는 dict여야 합니다.")
 
@@ -3160,7 +3174,7 @@ class guideJointManager():
         parameter_div = 1.0 / (joint_count - 1)
 
         for index in range(joint_count):
-            number = str(index + 1)
+            number = self._format_number(index + 1, padding)
             joint_name = self.build_name(
                 item_name="tongue", side="center", extra_side="",
                 alp=name_alp, num=number, rule="", obj_type="joint"
@@ -3227,7 +3241,7 @@ class guideJointManager():
 
 
     def build_tail(self, module_data, axis_data=None, insert_alp=False,
-                   joint_num=None, root_parent=None):
+                   joint_num=None, root_parent=None, padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_tail : module_data는 dict여야 합니다.")
 
@@ -3317,7 +3331,11 @@ class guideJointManager():
         for index in range(joint_count):
             is_end = index == joint_count - 1
             item_name = "tailEnd" if is_end else "tail"
-            number = "" if is_end else str(index + 1).zfill(2)
+            number = (
+                ""
+                if is_end
+                else self._format_number(index + 1, padding)
+            )
 
             joint_name = self.build_name(
                 item_name=item_name, side="center", extra_side="",
@@ -3381,7 +3399,7 @@ class guideJointManager():
 
 
     def build_neck(self, module_data, axis_data=None, joint_num=None,
-                   insert_alp=False, root_parent=None):
+                   insert_alp=False, root_parent=None, padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_neck : module_data는 dict여야 합니다.")
 
@@ -3468,7 +3486,7 @@ class guideJointManager():
                 number = ""
             else:
                 item_name = "neck"
-                number = str(index).zfill(2)
+                number = self._format_number(index, padding)
 
             joint_name = self.build_name(
                 item_name=item_name,
@@ -3552,7 +3570,8 @@ class guideJointManager():
         return neck_joint_builder.build(0.75)
 
 
-    def build_root(self, module_data, axis_data = None, joint_num=None):
+    def build_root(self, module_data, axis_data=None, joint_num=None,
+                   padding=0):
         if not isinstance(module_data, dict):
             raise TypeError(u"build_root : module_data는 dict여야 합니다.")
 
@@ -3611,7 +3630,7 @@ class guideJointManager():
             item_name_dict[index] = name_item
 
         for index in range(joint_count):
-            count_string = str(index).zfill(2)
+            count_string = self._format_number(index, padding)
             if index == 0 :
                 count_string = ""
             if index == joint_count-1:
@@ -3840,8 +3859,28 @@ class guideJointManager():
         insert_attr = "{}.insertJnt".format(item_node)
         if cmds.objExists(insert_attr):
             return int(cmds.getAttr(insert_attr))
-
         return 0
+
+    def _format_number(self, number, padding=0):
+        if not isinstance(number, self.integer_type) or isinstance(number, bool):
+            raise TypeError(
+                u"format_number : number는 int여야 합니다: {}".format(number)
+            )
+        if not isinstance(padding, self.integer_type) or isinstance(padding, bool):
+            raise TypeError(
+                u"format_number : padding은 int여야 합니다: {}".format(padding)
+            )
+        if padding < 0:
+            raise ValueError(
+                u"format_number : padding은 0 이상이어야 합니다: {}".format(
+                    padding
+                )
+            )
+
+        number_string = str(number)
+        if padding == 0:
+            return number_string
+        return number_string.zfill(padding)
 
     def _check_aim_data(self, data):
         if not isinstance(data , dict):

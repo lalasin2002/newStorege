@@ -31,7 +31,7 @@ if CURRENT_DIR not in sys.path:
 
 import autoRig_config as config
 from rig_module import guideManager, jointData
-from tools import controlAttribute ,controlObject , pysideHelper , naming
+from tools import controlAttribute ,controlObject , pysideHelper , naming 
 
 
 ui_name = "autoRig.ui"
@@ -49,6 +49,7 @@ class DesignerUI(QtWidgets.QDialog):
         self._prevData ={}
         self._prevMap =[
             ("mirrorGuideAttr",              "match_attrOption_Chb",          "isChecked",             "setChecked",        True ),
+            ("padding",                     "padding_Sb",                   "value",                 "setValue",          0),
             
             ("nameFleid",                    "nameFleid_Te",                  "toPlainText",           "setPlainText",      "{side}{extra_side}_{item_name}{alp}{num}_{rule}{extra}_{obj_type}"),
             ("sideData",                     "sideData_Te",                   "toPlainText",           "setPlainText",      (
@@ -107,7 +108,7 @@ class DesignerUI(QtWidgets.QDialog):
                 '"fkik_blend" : "FkIk_blend",\n'
                 '"detail" : "Detail",\n'
                 '"bend" : "Bend",\n'
-                '"arc" : "Arc".\n'
+                '"arc" : "Arc",\n'
                 '"deform" : "Deform",\n'
                 '"bind" : "Bind",\n'
                 '"aim" : "Aim",\n'
@@ -176,6 +177,7 @@ class DesignerUI(QtWidgets.QDialog):
 
         self.naming_data = None
         self.base_jnt_data = None
+        self.root_base_joint = None
 
         self.init_ui(ui_path)
         self.connect_widget()
@@ -195,11 +197,57 @@ class DesignerUI(QtWidgets.QDialog):
         self.ui.import_nameData_Btn.clicked.connect(self.import_namingData)
         
         self.ui.create_main_guideJnt_Btn.clicked.connect(self.create_guide_joint)
+        self.ui.build_Btn.clicked.connect(self.crete_base_joint)
+
+    def crete_base_joint(self):
+        self._read_guide_data()
+        self.set_name_rule()
+        self.getBase_joint_data()
+
+        joint_data = self.base_jnt_data.get("joints")
+        jointControlManager = jointData.jointControlManager()
+
+        if not joint_data:
+            return
+        #pprint.pprint (joint_data)
+        #unParent
+        for data in joint_data:
+            path = joint_data[data]
+            joint = path.get('node')
+
+            jointControlManager.unParent_transform(joint , True)
+        create_base_rig_manager = jointData.create_base_rig_joint()
+        create_base_rig_manager.set_main_data(self.base_jnt_data)
+        create_base_rig_manager.set_naming_rule(self._namingRule)
+        root_modules = [ "fk" , "detail"]
+
+        root_joints = create_base_rig_manager.organize_joint_data(self.base_jnt_data , "root_type" , "A" , "C")
+        
+        create_base_rig_manager.root_dulicate(root_modules)
+
+        
+
+
+
+        
+
+
+
+
+
+
 
 
     def create_guide_joint(self):
+        self.getBase_joint_data()
+        if self.root_base_joint:
+            if cmds.objExists(self.root_base_joint[0]):
+                cmds.delete(self.root_base_joint)
+                self.root_base_joint = None
+
         self._read_guide_data()
         self.set_name_rule()
+        padding = self.naming_data.get("padding", 0)
         guideJointManager = guideManager.guideJointManager(
             self._namingRule,
             self.naming_data["group"]
@@ -207,10 +255,10 @@ class DesignerUI(QtWidgets.QDialog):
         guideJointManager.set_guide_data(self.guide_data)
         total_organizing_data = guideJointManager.modules
 
-        print(u"debug2 : extra guide refs")
-        pprint.pprint(self.extra_guide_refs)
-        print(u"debug2 : module keys")
-        pprint.pprint(sorted(total_organizing_data.keys()))
+        #print(u"debug2 : extra guide refs")
+        #pprint.pprint(self.extra_guide_refs)
+        #print(u"debug2 : module keys")
+        #pprint.pprint(sorted(total_organizing_data.keys()))
         
         root_module = total_organizing_data.get(('root_type','A','C'))
         neck_module = total_organizing_data.get(('neck_type','A','C'))
@@ -262,7 +310,10 @@ class DesignerUI(QtWidgets.QDialog):
             raise ValueError(u"debug2 : root_type:A:C module을 찾을 수 없습니다.")
 
         build_results = {
-            "root": guideJointManager.build_root(root_module),
+            "root": guideJointManager.build_root(
+                root_module,
+                padding=padding
+            ),
             "neck": None,
             "head": None,
             "eyes": [],
@@ -276,11 +327,14 @@ class DesignerUI(QtWidgets.QDialog):
         }
 
         if neck_module:
-            print(u"debug2 : build_neck start - module=neck_type, build=A, side=C")
-            build_results["neck"] = guideJointManager.build_neck(neck_module)
+            #print(u"debug2 : build_neck start - module=neck_type, build=A, side=C")
+            build_results["neck"] = guideJointManager.build_neck(
+                neck_module,
+                padding=padding
+            )
 
         if head_module:
-            print(u"debug2 : build_head start - module=head_type, build=A, side=C")
+            #print(u"debug2 : build_head start - module=head_type, build=A, side=C")
             build_results["head"] = guideJointManager.build_head(head_module)
 
         eye_modules = left_eye_modules + right_eye_modules
@@ -288,13 +342,7 @@ class DesignerUI(QtWidgets.QDialog):
         for eye_module in eye_modules:
             module_key = eye_module.get("key")
             rig_module, rig_build, rig_side = module_key
-            print(
-                u"debug2 : build_eye start - module={}, build={}, side={}".format(
-                    rig_module,
-                    rig_build,
-                    rig_side
-                )
-            )
+            #print(u"debug2 : build_eye start - module={}, build={}, side={}".format(   rig_module,   rig_build,  rig_side  ) )
             eye_result = guideJointManager.build_eye(
                 eye_module,
                 insert_alp=(not rig_build == "A")
@@ -308,13 +356,7 @@ class DesignerUI(QtWidgets.QDialog):
         for jaw_module in jaw_modules:
             module_key = jaw_module.get("key")
             rig_module, rig_build, rig_side = module_key
-            print(
-                u"debug2 : build_jaw start - module={}, build={}, side={}".format(
-                    rig_module,
-                    rig_build,
-                    rig_side
-                )
-            )
+            #print(u"debug2 : build_jaw start - module={}, build={}, side={}".format(rig_module,rig_build,rig_side))
             jaw_result = guideJointManager.build_jaw(
                 jaw_module,
                 insert_alp=(not rig_build == "A")
@@ -336,16 +378,11 @@ class DesignerUI(QtWidgets.QDialog):
         for tongue_module in tongue_modules:
             module_key = tongue_module.get("key")
             rig_module, rig_build, rig_side = module_key
-            print(
-                u"debug2 : build_tongue start - module={}, build={}, side={}".format(
-                    rig_module,
-                    rig_build,
-                    rig_side
-                )
-            )
+            #print(u"debug2 : build_tongue start - module={}, build={}, side={}".format(rig_module,rig_build,rig_side))
             tongue_result = guideJointManager.build_tongue(
                 tongue_module,
-                insert_alp=(not rig_build == "A")
+                insert_alp=(not rig_build == "A"),
+                padding=padding
             )
             build_results["tongues"].append({
                 "key": module_key,
@@ -356,16 +393,11 @@ class DesignerUI(QtWidgets.QDialog):
         for tail_module in tail_modules:
             module_key = tail_module.get("key")
             rig_module, rig_build, rig_side = module_key
-            print(
-                u"debug2 : build_tail start - module={}, build={}, side={}".format(
-                    rig_module,
-                    rig_build,
-                    rig_side
-                )
-            )
+            #print(u"debug2 : build_tail start - module={}, build={}, side={}".format(rig_module,rig_build,rig_side))
             tail_result = guideJointManager.build_tail(
                 tail_module,
-                insert_alp=(not rig_build == "A")
+                insert_alp=(not rig_build == "A"),
+                padding=padding
             )
             build_results["tails"].append({
                 "key": module_key,
@@ -379,11 +411,12 @@ class DesignerUI(QtWidgets.QDialog):
             module_key = leg_module.get("key")
             rig_module, rig_build, rig_side = module_key
 
-            print(u"debug2 : build_leg start - module={}, build={}, side={}".format( rig_module,  rig_build, rig_side ))
+            #print(u"debug2 : build_leg start - module={}, build={}, side={}".format( rig_module,  rig_build, rig_side ))
 
             leg_result = guideJointManager.build_leg(
                 leg_module,
-                insert_alp=(not rig_build == "A")
+                insert_alp=(not rig_build == "A"),
+                padding=padding
             )
             build_results["legs"].append({
                 "key": module_key,
@@ -397,11 +430,12 @@ class DesignerUI(QtWidgets.QDialog):
             module_key = arm_module.get("key")
             rig_module, rig_build, rig_side = module_key
 
-            print(u"debug2 : build_arm start - module={}, build={}, side={}".format( rig_module,   rig_build,rig_side ))
+            #print(u"debug2 : build_arm start - module={}, build={}, side={}".format( rig_module,   rig_build,rig_side ))
 
             arm_result = guideJointManager.build_arm(
                 arm_module,
-                insert_alp=(not rig_build == "A")
+                insert_alp=(not rig_build == "A"),
+                padding=padding
             )
             build_results["arms"].append({
                 "key": module_key,
@@ -415,7 +449,7 @@ class DesignerUI(QtWidgets.QDialog):
             module_key = hand_module.get("key")
             rig_module, rig_build, rig_side = module_key
 
-            print(u"debug2 : build_hand start - module={}, build={}, side={}".format(rig_module,rig_build,rig_side ))
+            #print(u"debug2 : build_hand start - module={}, build={}, side={}".format(rig_module,rig_build,rig_side ))
 
             hand_root_parent = self._resolve_hand_root_parent(
                 hand_module,
@@ -424,7 +458,8 @@ class DesignerUI(QtWidgets.QDialog):
             hand_result = guideJointManager.build_hand(
                 hand_module,
                 insert_alp=(not rig_build == "A"),
-                root_parent=hand_root_parent
+                root_parent=hand_root_parent,
+                padding=padding
             )
             build_results["hands"].append({
                 "key": module_key,
@@ -448,11 +483,150 @@ class DesignerUI(QtWidgets.QDialog):
                 len(saved_joint_tags)
             )
         )
-        print(u"debug2 : root/neck/head/eye/jaw/gum/tongue/tail/arm/hand/leg joint build complete")
-        pprint.pprint(build_results)
-        return build_results
+        #print(u"debug2 : root/neck/head/eye/jaw/gum/tongue/tail/arm/hand/leg joint build complete")
+        #pprint.pprint(build_results)
+        self.getBase_joint_data()
+
+        #pprint.pprint(self.base_jnt_data)
 
 
+
+    def getBase_joint_data(self):
+        joint_data_manager = jointData.JointDataManager()
+        guide_joint_data = jointData.readGuideJointData(joint_data_manager)
+
+        base_joint_data = {
+            "joints": {},
+            "modules": {},
+            "roots": [],
+            "invalid": []
+        }
+
+        if not guide_joint_data:
+            return
+
+        # 먼저 rig_id를 기준으로 Joint 본체와 module 색인을 만듭니다.
+        # hierarchy는 모든 rig_id가 수집된 뒤 두 번째 단계에서 연결합니다.
+        for module_key, module_records in guide_joint_data.items():
+            if not isinstance(module_key, (tuple, list)) or len(module_key) != 3:
+                base_joint_data["invalid"].append({
+                    "reason": "invalid module key",
+                    "module_key": module_key
+                })
+                continue
+
+            rig_module, rig_build, rig_side = module_key
+            if not all(module_key):
+                base_joint_data["invalid"].append({
+                    "reason": "empty module key",
+                    "module_key": module_key
+                })
+                continue
+
+            module_joint_ids = (
+                base_joint_data["modules"]
+                .setdefault(rig_module, {})
+                .setdefault(rig_build, {})
+                .setdefault(rig_side, [])
+            )
+
+            for joint_record in module_records:
+                joint_item = joint_record.get("node")
+                tags = dict(joint_record.get("tags") or {})
+                rig_id = tags.get("rig_id")
+
+                if not joint_item or not rig_id:
+                    base_joint_data["invalid"].append({
+                        "reason": "missing node or rig_id",
+                        "node": joint_item,
+                        "rig_id": rig_id
+                    })
+                    continue
+
+                if rig_id in base_joint_data["joints"]:
+                    base_joint_data["invalid"].append({
+                        "reason": "duplicated rig_id",
+                        "node": joint_item,
+                        "rig_id": rig_id
+                    })
+                    continue
+
+                try:
+                    tags["rig_index"] = int(tags.get("rig_index"))
+                except (TypeError, ValueError):
+                    base_joint_data["invalid"].append({
+                        "reason": "invalid rig_index",
+                        "node": joint_item,
+                        "rig_id": rig_id,
+                        "rig_index": tags.get("rig_index")
+                    })
+                    continue
+
+                base_joint_data["joints"][rig_id] = {
+                    "node": joint_item,
+                    "tags": tags,
+                    "parent_id": None,
+                    "children_ids": []
+                }
+                module_joint_ids.append(rig_id)
+
+        # 중간 offset group을 건너뛰고 가장 가까운 상위 Guide Joint를 찾습니다.
+        for rig_id, joint_record in base_joint_data["joints"].items():
+            parent_id = jointData._findGuideParentId(joint_record["node"])
+
+            if parent_id is None:
+                base_joint_data["roots"].append(rig_id)
+                continue
+
+            if parent_id not in base_joint_data["joints"]:
+                base_joint_data["invalid"].append({
+                    "reason": "parent rig_id does not exist",
+                    "node": joint_record["node"],
+                    "rig_id": rig_id,
+                    "parent_id": parent_id
+                })
+                continue
+
+            joint_record["parent_id"] = parent_id
+            base_joint_data["joints"][parent_id]["children_ids"].append(rig_id)
+
+        def joint_sort_key(rig_id):
+            joint_record = base_joint_data["joints"][rig_id]
+            return (
+                joint_record["tags"].get("rig_index", 0),
+                rig_id
+            )
+
+        base_joint_data["roots"].sort(key=joint_sort_key)
+
+        for joint_record in base_joint_data["joints"].values():
+            joint_record["children_ids"].sort(key=joint_sort_key)
+
+        for build_data in base_joint_data["modules"].values():
+            for side_data in build_data.values():
+                for module_joint_ids in side_data.values():
+                    module_joint_ids.sort(key=joint_sort_key)
+
+        if base_joint_data["invalid"]:
+            self.base_jnt_data = base_joint_data
+            raise ValueError(
+                u"getBase_joint_data : 올바르지 않은 Guide Joint 데이터가 있습니다: {}".format(
+                    base_joint_data["invalid"]
+                )
+            )
+
+        self.base_jnt_data = base_joint_data
+        try:
+            self.root_base_joint = None
+            self.root_base_joint = base_joint_data["joints"]['root_type:A:C:root:0']["node"]
+            parent_node = cmds.listRelatives(self.root_base_joint , p = 1)
+            if parent_node:
+                self.root_base_joint = parent_node
+        except Exception as e:
+            print ("self.root_base_joint" ,  e)
+
+
+        return self.base_jnt_data
 
 
 
@@ -533,7 +707,7 @@ class DesignerUI(QtWidgets.QDialog):
     def set_name_rule(self):
         self._namingRule = naming.namingRule()
         data = self._read_namning_data()
-        
+
         self._namingRule.set_name_field(data.get("nameField"))
         tokens = {}
 
@@ -546,6 +720,8 @@ class DesignerUI(QtWidgets.QDialog):
         self._namingRule.set_sideType_map(data.get("side"))
         self._namingRule.set_extraSideType_map(data.get("extraSide"))
         self._namingRule.set_ruleType_map(data.get("rule"))
+
+
 
 
     def import_namingData(self):
@@ -567,7 +743,24 @@ class DesignerUI(QtWidgets.QDialog):
         if not import_data:
             print(u"import_namingData 에러 : {} 에 데이터 없음".format(import_path))
 
-        if not all(import_data[key] for key in check_key ):
+        if not import_data:
+            return
+
+        padding = import_data.get("padding", 0)
+        if (
+            not isinstance(padding, int)
+            or isinstance(padding, bool)
+            or padding < 0
+        ):
+            print(
+                u"import_namingData error : padding must be an int of 0 or greater - {}".format(
+                    padding
+                )
+            )
+            return
+        import_data["padding"] = padding
+
+        if not all(import_data.get(key) for key in check_key ):
             print(u"import_namingData 에러 : {} 에 데이터 없음".format(import_path))
             return
 
@@ -577,12 +770,16 @@ class DesignerUI(QtWidgets.QDialog):
                      ("objTypeData_Te"   , "objType"),
                      ("nodetypeData_Te"  , "nodeType"),
                      ("ruleData_Te"      , "rule"),
-                     ("groupData_Te"     , "group")
+                     ("groupData_Te"     , "group"),
+                     ("padding_Sb"       , "padding")
                     ]
 
         for widgetName , key in task_map:
             widget = getattr(self.ui , widgetName)
-            getattr(widget , "setPlainText")(import_data[key])
+            if widgetName == "padding_Sb":
+                getattr(widget , "setValue")(import_data[key])
+            else:
+                getattr(widget , "setPlainText")(import_data[key])
 
             #print (widget  , import_data[key]) 디버그용
 
@@ -766,10 +963,11 @@ class DesignerUI(QtWidgets.QDialog):
             result = []
             
             for guide_id, source_data in items.items():
-                
                 if not source_data.get("rig_side") == source_side:
                     continue
-                #타겟변환
+                
+
+
                 target_id = self._replace_guide_id_side(guide_id, target_side)
                 if not target_id:
                     continue
@@ -799,13 +997,26 @@ class DesignerUI(QtWidgets.QDialog):
                 if source_data.get("matrix") == None:
                     continue
 
+                if source_data.get("rig_data") == "aimVector":
+                    # aimVector의 방향은 부모 aimConstraint가 계산한다.
+                    # 자식에 입력된 사용자 rotate offset은 반사하지 않고
+                    # 소스와 대상의 로컬 채널 값이 같도록 그대로 복사한다.
+                    source_rotate = cmds.getAttr("{}.rotate".format(source_node))[0]
+                    cmds.setAttr(
+                        "{}.rotate".format(target_node),
+                        -source_rotate[0],
+                        -source_rotate[1],
+                        source_rotate[2],
+                        type="double3"
+                    )
+                else:
+                    source_matrix = cmds.xform(source_node, q=True, ws=True, m=True)
+                    mirror_matrix = self._mirror_matrix_x(source_matrix)
 
-                source_matrix = cmds.xform(source_node, q=True, ws=True, m=True)
-                mirror_matrix = self._mirror_matrix_x(source_matrix)
+                    cmds.xform(target_node, ws=True, m=mirror_matrix)
 
-                cmds.xform(target_node, ws=True, m=mirror_matrix)
-
-                target_data["matrix"] = [round(v, 5) for v in mirror_matrix]
+                target_matrix = cmds.xform(target_node, q=True, ws=True, m=True)
+                target_data["matrix"] = [round(v, 5) for v in target_matrix]
                 target_data["pos"] = [round(v, 3) for v in cmds.xform(target_node, q=True, ws=True, t=True)]
 
                 result.append((source_node, target_node))
@@ -822,6 +1033,7 @@ class DesignerUI(QtWidgets.QDialog):
         nodeType_data = self.ui.nodetypeData_Te.toPlainText()
         rule_data = self.ui.ruleData_Te.toPlainText()
         group_data = self.ui.groupData_Te.toPlainText()
+        padding_data = self.ui.padding_Sb.value()
 
         data = {
             "nameField": nameField_data,
@@ -830,7 +1042,8 @@ class DesignerUI(QtWidgets.QDialog):
             "objType": self._parse_naming_map("objType", objType_data),
             "nodeType": self._parse_naming_map("nodeType", nodeType_data),
             "rule": self._parse_naming_map("rule", rule_data),
-            "group": self._parse_naming_map("group", group_data)
+            "group": self._parse_naming_map("group", group_data),
+            "padding" :  padding_data
         }
 
         self.naming_data = data 

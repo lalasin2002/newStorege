@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-from Cython import basestring
+
 import maya.api.OpenMaya as om
 import maya.cmds as cmds
 import os,sys
@@ -92,6 +92,13 @@ class jointInserter():
         #---------------------------------------------------
         self._validate_object(startJnt)
         self._validate_object(endJnt)
+
+        # cmds.ls(allPaths=True)와 listRelatives()의 반환 형식이 섞이면
+        # 같은 조인트도 "parent|child"와 "child"라는 서로 다른 문자열이 된다.
+        # 삽입 후 hierarchy가 바뀌어도 이름을 계속 사용할 수 있도록 long path가
+        # 아닌 Maya의 shortest unique name으로 입력을 통일한다.
+        startJnt = cmds.ls(startJnt, shortNames=True)[0]
+        endJnt = cmds.ls(endJnt, shortNames=True)[0]
         
 
         
